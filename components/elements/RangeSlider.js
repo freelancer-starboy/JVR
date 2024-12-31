@@ -12,6 +12,7 @@ export default function RangeSlider() {
             <div className="productsidebar__range">
                 <div className="price-filter mt-10">
                     <input
+                    
                         type="range"
                         min="1"
                         max="50000"
