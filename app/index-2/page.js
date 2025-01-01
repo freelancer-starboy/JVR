@@ -1,6 +1,7 @@
 
 import Layout from "@/components/layout/Layout"
 import Banner1 from "@/components/sections/Banner1"
+// import Banner1 from "@/components/sections/Banner3"
 import Blog1 from "@/components/sections/Blog1"
 import Brand1 from "@/components/sections/Brand1"
 import Exclusive from "@/components/sections/Exclusive"

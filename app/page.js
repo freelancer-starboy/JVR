@@ -3,6 +3,7 @@ import Category from "@/components/sections/Category"
 import DealProduct1 from "@/components/sections/DealProduct1"
 import Product1 from "@/components/sections/Product1"
 import Shop from "@/components/sections/Shop"
+import Home2 from "@/app/index-2/page.js"
 import Slider1 from "@/components/sections/Slider1"
 export const metadata = {
   title: 'Ninico - Minimal NextJS React Template',
@@ -11,13 +12,16 @@ export const metadata = {
 export default function Home() {
     return (
         <>
-            <Layout headerStyle={1} footerStyle={1}>
-                <Slider1 />
-                <Category />
-                <Product1 />
-                <DealProduct1 />
-                <Shop />
-            </Layout>
+            {/* <Layout headerStyle={1} footerStyle={1}> */}
+                {/* <Slider1 /> */}
+                {/* <Category /> */}
+                {/* <Product1 /> */}
+                {/* <DealProduct1 /> */}
+                {/* <Shop /> */}
+            {/* </Layout> */}
+
+            <Home2/> 
+
         </>
     )
 }
