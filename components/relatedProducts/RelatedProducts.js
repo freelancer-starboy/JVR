@@ -69,7 +69,7 @@ const RelatedProducts = ({ category }) => {
             <SwiperSlide>
               <div className="tpproduct pb-15 mb-30">
                 <div className="tpproduct__thumb p-relative">
-                  <Link href={`/shopDetails/${product._id}`}>
+                  <Link href={`/ShopDetails/${product._id}`}>
                     <img
                       src={product.productImage[0]}
                       alt="product-thumb"
@@ -87,7 +87,7 @@ const RelatedProducts = ({ category }) => {
                     <Link className="comphare" href="#">
                       <i className="fal fa-exchange" />
                     </Link>
-                    <Link className="quckview" href="#">
+                    <Link className="quckview" href={product.productImage[1]}>
                       <i className="fal fa-eye" />
                     </Link>
                     <Link className="wishlist" href="/wishlist">
