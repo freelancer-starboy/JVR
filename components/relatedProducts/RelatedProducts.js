@@ -65,7 +65,6 @@ const RelatedProducts = ({ category }) => {
         <div className="swiper-container related-product-active">
           <Swiper {...swiperOptions}>
             {relatedProducts.map((product) => (
-                
             <SwiperSlide>
               <div className="tpproduct pb-15 mb-30">
                 <div className="tpproduct__thumb p-relative">
