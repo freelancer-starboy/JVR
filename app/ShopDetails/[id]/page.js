@@ -13,12 +13,12 @@ import  { auth} from "@/lib/firebase/firebase"
 import { useAddToCartMutation } from "@/features/api/cartApi"
 import loading from "@/app/loading"
 import { toast } from "react-toastify"
+import { useAuth } from "@/components/AuthContent/AuthContent"
 export default function ShopDetails2() {
     const [activeIndex, setActiveIndex] = useState(2)
     const [value, setValue] = useState(1)
-    const [userId, setUserId] = useState("")
     const [Loading, setLoading] = useState(false)
-
+    const { userId} = useAuth()
     /* see here */
     const [addToCart, { data: cartItems, error: cartError, isLoading: cartLoading }] = useAddToCartMutation();
 
@@ -26,24 +26,7 @@ export default function ShopDetails2() {
     const id = params.id
     const { data: product, error, isLoading } = useFetchProductsByIdQuery(id)
 
-    useEffect(() => {
-        const auth = getAuth();
-        const unsubscribe = onAuthStateChanged(auth, (user) => {
-          if (user) {
-            // User is signed in, fetch uid
-            setUserId(user.uid);
-            console.log("User signed in:", user.uid);
-          } else {
-            // User is signed out
-            setUserId(null);
-            console.warn("No user is logged in");
-          }
-        });
-    
-        // Cleanup subscription on unmount
-        return () => unsubscribe();
-      }, []);
-
+  
       const handleAddToCart = async () => {
         setLoading(true);
         try {

@@ -7,27 +7,13 @@ import { useSelector } from "react-redux"
 import  { auth} from "@/lib/firebase/firebase"
 import { getAuth, onAuthStateChanged } from "firebase/auth"
 import { useFetchCartQuery } from "@/features/api/cartApi"
+import { useAuth } from "@/components/AuthContent/AuthContent"
 
 
 export default function Cart() {
     const { cart } = useSelector((state) => state.shop) || {}
-    const [userId, setUserId] = useState("")
-    
-     useEffect(() => {
-            const auth = getAuth()
-            const unsubscribe = onAuthStateChanged(auth, (user) => {
-                if (user) {
-                    // User is signed in, fetch uid
-                    setUserId(user.uid);
-                    console.log("User signed in:", user.uid);
-                } else {
-                    // User is signed out
-                    setUserId(null);
-                    console.warn("No user is logged in");
-                }
-            })
-            return () => unsubscribe()
-        }, [])
+const { userId}  = useAuth()   
+   
 
         const {data: cartItems, isLoading, isError} = useFetchCartQuery(userId)
             if(isLoading) {

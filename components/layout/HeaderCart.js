@@ -6,12 +6,13 @@ import Link from "next/link"
 import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import  { auth} from "@/lib/firebase/firebase"
+import { useAuth } from "../AuthContent/AuthContent"
 
 
 export default function HeaderCart({ isCartSidebar, handleCartSidebar }) {
     const { cart } = useSelector((state) => state.shop) || {}
-    const [userId, setUserId] = useState("")
-
+    const { userId } = useAuth()
+    
     const dispatch = useDispatch()
 
     // delete cart item
@@ -22,28 +23,11 @@ export default function HeaderCart({ isCartSidebar, handleCartSidebar }) {
     // qty handler
   
     useEffect(() => {
-        const auth = getAuth()
-        const unsubscribe = onAuthStateChanged(auth, (user) => {
-            if (user) {
-                // User is signed in, fetch uid
-                setUserId(user.uid);
-                console.log("User signed in:", user.uid);
-            } else {
-                // User is signed out
-                setUserId(null);
-                console.warn("No user is logged in");
-            }
-        })
-        return () => unsubscribe()
+        console.log("userId from context", userId)
     }, [])
 
     const {data: cartItems, isLoading, isError} = useFetchCartQuery(userId)
-    if(isLoading) {
-        return <p>Loading...</p>
-    }
-    if(isError) {
-        return <p>Error</p>
-    }
+   
     let total = 0;
     cartItems?.forEach((item) => {
         const price = item.quantity * item.productPrice;
