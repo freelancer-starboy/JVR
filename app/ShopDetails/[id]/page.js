@@ -2,43 +2,95 @@
 import Layout from "@/components/layout/Layout"
 import RelatedProducts from "@/components/relatedProducts/RelatedProducts"
 import { useFetchProductsByIdQuery, useRelatedProductsQuery } from "@/features/api/productApi"
+import { getAuth, onAuthStateChanged } from "firebase/auth"
+import Cookies from "js-cookie"
 import Link from "next/link"
 import { useParams } from "next/navigation"
 import { useState, useEffect } from "react"
 import { Autoplay, Navigation, Pagination } from "swiper/modules"
 import { Swiper, SwiperSlide } from "swiper/react"
+import  { auth} from "@/lib/firebase/firebase"
+import { useAddToCartMutation } from "@/features/api/cartApi"
+import loading from "@/app/loading"
+import { toast } from "react-toastify"
 export default function ShopDetails2() {
     const [activeIndex, setActiveIndex] = useState(2)
-    const [category, setCategory] = useState(null)  // category should always exist, even if null initially
+    const [value, setValue] = useState(1)
+    const [userId, setUserId] = useState("")
+    const [Loading, setLoading] = useState(false)
 
-    const handleOnClick = (index) => {
-        setActiveIndex(index)
-    }
-    
+    /* see here */
+    const [addToCart, { data: cartItems, error: cartError, isLoading: cartLoading }] = useAddToCartMutation();
+
     const params = useParams()
     const id = params.id
-    
     const { data: product, error, isLoading } = useFetchProductsByIdQuery(id)
-    if (isLoading) return <div>Loading...</div>
-    if (error) return <div>Error : {error.message}</div>
 
-    // useEffect(() => {
-    //     if (product && product.productCategory) {
-    //         setCategory(product.productCategory)
-    //     }
-    // }, [product])
-
-    // Related products query: Always called but skips execution when category is not set
-    // const { data: relatedProduct, error: relatedError, isLoading: relatedIsLoading } = useRelatedProductsQuery(category, {
-    //     skip: !category,
-    // })
+    useEffect(() => {
+        const auth = getAuth();
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+          if (user) {
+            // User is signed in, fetch uid
+            setUserId(user.uid);
+            console.log("User signed in:", user.uid);
+          } else {
+            // User is signed out
+            setUserId(null);
+            console.warn("No user is logged in");
+          }
+        });
     
-    // if (relatedIsLoading) return <div>Loading related products...</div>
-    // if (relatedError) return <div>Error loading related products: {relatedError.message}</div>
+        // Cleanup subscription on unmount
+        return () => unsubscribe();
+      }, []);
+
+      const handleAddToCart = async () => {
+        setLoading(true);
+        try {
+            if (!userId) {
+                throw new Error('Please login to add items to cart');
+            }
+            
+            if (!product?._id) {
+                throw new Error('Product details not found');
+            }
+    
+            const cartData = {
+                userId,
+                productId: product._id,
+                quantity: value
+            };
+    
+            const response = await addToCart(cartData);
+            
+            // RTK Query returns result in a nested data property
+            if (response.data) {
+                toast.success('Item added to cart successfully');
+            } else if (response.error) {
+                // Handle RTK Query error
+                const errorMessage = response.error.data?.message || 'Failed to add item to cart';
+                toast.error(errorMessage);
+            }
+        } catch (error) {
+            // Handle any other errors
+            toast.error(error.message || 'An unexpected error occurred');
+            console.error('Cart error:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+    
+    if (isLoading) return <div>Loading...</div>
+    if (error) return <div>Error: {error.message}</div>
+
+    if (cartLoading) return <div>Loading cart...</div>
+    if (cartError) return <div>Error: {cartError?.message || "An unknown error occurred."}</div>;
+
 
     return (
         <>
             <Layout headerStyle={3} footerStyle={2} breadcrumbTitle="Shop Details 2">
+                {Loading && <div>Loading...</div>}
                 <section className="product-area pt-80 pb-50">
                     <div className="container">
                         <div className="row">
@@ -58,6 +110,11 @@ export default function ShopDetails2() {
                                     </div> */}
                                 </div>
                             </div>
+                            {/* {cartItems && cartItems.map((item) => (
+                                <div>
+                                    {item.userId}
+                                </div>
+                            ))} */}
                             <div className="col-lg-5 col-md-7">
                                 <div className="tpproduct-details__content tpproduct-details__sticky">
                                     <div className="tpproduct-details__tag-area d-flex align-items-center mb-5">
@@ -81,13 +138,19 @@ export default function ShopDetails2() {
                                         <p>{product.productDescription}</p>
                                     </div>
                                     <div className="tpproduct-details__count d-flex align-items-center flex-wrap mb-25">
-                                        <div className="tpproduct-details__quantity">
+                                        {/* <div className="tpproduct-details__quantity">
                                             <span className="cart-minus"><i className="far fa-minus" /></span>
                                             <input className="tp-cart-input" type="text" defaultValue={1} />
                                             <span className="cart-plus"><i className="far fa-plus" /></span>
+                                        </div> */}
+                                        <div className="tpproduct-details__quantity">
+                                            
+                                            <button onClick={() => setValue(value === 1 ? 1 : value - 1)}><i className="fal fa-minus" /></button>
+                                            <span>{value}</span>
+                                            <button onClick={() => setValue(value + 1)}><i className="fal fa-plus" /></button>
                                         </div>
                                         <div className="tpproduct-details__cart ml-20">
-                                            <button><i className="fal fa-shopping-cart" /> Add To Cart</button>
+                                            <button onClick={handleAddToCart}><i className="fal fa-shopping-cart" /> Add To Cart</button>
                                         </div>
                                         <div className="tpproduct-details__wishlist ml-20">
                                             <button><i className="fal fa-heart" /></button>

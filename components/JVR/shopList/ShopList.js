@@ -1,4 +1,6 @@
+'use client'
 import Link from "next/link";
+import { useState } from "react";
 const ShopList = ({
   id,
   name,
@@ -10,6 +12,7 @@ const ShopList = ({
   type,
   brand,
 }) => {
+  const [value , setValue] = useState(0)
   return (
     <>
     
@@ -26,6 +29,7 @@ const ShopList = ({
       <p className="custom-product-price">₹ <span>{price}</span></p>
       </div>
         </Link>
+       
     </div>
     
     </>

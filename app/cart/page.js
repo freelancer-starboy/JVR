@@ -2,14 +2,45 @@
 import CartItems from "@/components/elements/CartItems"
 import Layout from "@/components/layout/Layout"
 import Link from "next/link"
+import { useEffect, useState } from "react"
 import { useSelector } from "react-redux"
+import  { auth} from "@/lib/firebase/firebase"
+import { getAuth, onAuthStateChanged } from "firebase/auth"
+import { useFetchCartQuery } from "@/features/api/cartApi"
+
+
 export default function Cart() {
     const { cart } = useSelector((state) => state.shop) || {}
-    let total = 0
-    cart?.forEach((item) => {
-        const price = item.qty * item.price?.max
-        total = total + price
-    })
+    const [userId, setUserId] = useState("")
+    
+     useEffect(() => {
+            const auth = getAuth()
+            const unsubscribe = onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    // User is signed in, fetch uid
+                    setUserId(user.uid);
+                    console.log("User signed in:", user.uid);
+                } else {
+                    // User is signed out
+                    setUserId(null);
+                    console.warn("No user is logged in");
+                }
+            })
+            return () => unsubscribe()
+        }, [])
+
+        const {data: cartItems, isLoading, isError} = useFetchCartQuery(userId)
+            if(isLoading) {
+                return <p>Loading...</p>
+            }
+            if(isError) {
+                return <p>Error</p>
+            }
+            let total = 0;
+            cartItems?.forEach((item) => {
+                const price = item.quantity * item.productPrice;
+                total = total + price;
+            });
     return (
         <>
             <Layout headerStyle={3} footerStyle={1} breadcrumbTitle="Cart">
@@ -31,7 +62,9 @@ export default function Cart() {
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <CartItems />
+                                                {cartItems?.map((item) => (
+                                                <CartItems id={item.productId} name={item.productName} price={item.productPrice} quantity={item.quantity} image={item.productImage} total={total} />
+                                                ))}
                                             </tbody>
                                         </table>
                                     </div>

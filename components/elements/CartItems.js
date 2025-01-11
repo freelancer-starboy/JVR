@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useDispatch, useSelector } from "react-redux";
 import { addQty, deleteCart } from "@/features/shopSlice";
 
-const CartItems = () => {
+const CartItems = ({ id, name, quantity, price, total, image}) => {
     const { cart } = useSelector((state) => state.shop) || {};
 
     const dispatch = useDispatch();
@@ -20,22 +20,22 @@ const CartItems = () => {
 
     return (
         <>
-            {cart?.map((item) => (
-                <tr className="cart-item" key={item.id}>
+            
+                <tr className="cart-item" key={id}>
                     <td className="product-thumbnail">
-                        <Link href={`/shop/${item.id}`}>
+                        <Link href={`${image}`}>
                             <img 
-                            src={`/assets/img/product/${item.imgf}`} alt="cart added product" />
+                            src={`${image}`} alt="cart added product" />
                         </Link>
                     </td>
 
                     <td className="product-name">
-                        <Link href={`/shop/${item.id}`}>
-                            {item.title}
+                        <Link href={`/ShopDetails/${id}`}>
+                            {name}
                         </Link>
                     </td>
 
-                    <td className="product-price">${item.price.max}</td>
+                    <td className="product-price">${price}</td>
 
                     <td className="product-quantity">
                         <div className="item-quantity">
@@ -43,31 +43,31 @@ const CartItems = () => {
                                 type="number"
                                 className="qty"
                                 name="qty"
-                                defaultValue={item?.qty}
+                                defaultValue={quantity}
                                 min={1}
-                                onChange={(e) =>
-                                    qtyHandler(item?.id, e.target.value)
-                                }
+                                // onChange={(e) =>
+                                //     qtyHandler(item?.id, e.target.value)
+                                // }
                             />
                         </div>
                     </td>
 
                     <td className="product-subtotal"> 
                         <span className="amount">
-                            ${(item?.qty * item?.price.max).toFixed(2)}
+                            {/* ${(item?.qty * item?.price.max).toFixed(2)} */}
                         </span>
                     </td>
 
                     <td className="product-remove">
                         <button
-                            onClick={() => deleteCartHandler(item?.id)}
+                            // onClick={() => deleteCartHandler(item?.id)}
                             className="remove"
                         >
                             <span className="flaticon-dustbin">Remove</span>
                         </button>
                     </td>
                 </tr>
-            ))}
+            
         </>
     );
 };
