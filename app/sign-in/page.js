@@ -4,15 +4,17 @@ import Link from "next/link";
 import { useState, useEffect, createContext } from "react";
 import { auth } from "@/lib/firebase/firebase";
 import { GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged, getAuth } from "firebase/auth";
-import { useRouter } from "next/navigation";
-import { destroyCookie } from "nookies";
+import { useCreateTokenMutation, useDeleteTokenMutation } from "@/features/api/authApi";
+import { toast } from "react-toastify";
 
 export default function SignIn() {
   const userId = createContext(null)
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
+ 
 
+  const [addCookies , { loading : cookieLoading, error}] = useCreateTokenMutation()
+  const [deleteCookies ] = useDeleteTokenMutation()
   // Monitor authentication state
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -24,35 +26,7 @@ export default function SignIn() {
     return () => unsubscribe();
   }, []);
 
-  // useEffect(() => {
-  //   const controller = new AbortController();
-  //     const getAuthToken = async () => {
-  //       const auth = getAuth();
-  //       const currentUser = auth.currentUser;
-  //       if (currentUser) {
-  //         try {
-  //           const token = await currentUser.getIdToken();
-  //           if (!controller.signal.aborted) {
-  //             console.log("Token:", token);
-  //           }
-  //         } catch (error) {
-  //           if (!controller.signal.aborted) {
-  //             console.error("Error getting token:", error);
-  //           }
-  //         }
-  //       } else {
-  //         if (!controller.signal.aborted) {
-  //           console.warn("No user is logged in");
-  //         }
-  //       }
-  //     };
-  //     getAuthToken()
-  //     return () => {
-  //       controller.abort()
-  //     } 
-  //   }
-  //  , [user])
-  // Handle Google Sign-In
+
   const handleGoogleSignIn = async () => {
     setLoading(true);
     try {
@@ -61,23 +35,16 @@ export default function SignIn() {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
       
-      // Get Firebase ID token
       const token = await user.getIdToken();
       
-      // Call the API to save the token in a cookie
-      const res = await fetch('/api/cookies', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ token }),
-      });
+      const response = await addCookies(token).unwrap()
+      
+      
 
-      if (res.ok) {
-        router.push('/'); // Redirect to a protected page
-      } else {
-        console.error('Failed to save token');
+      if (response.error) {
+        toast.error('Login Failed')
       }
+      toast.success('Login Successful')
     } catch (error) {
       console.error('Error during login', error);
     } finally {
@@ -89,14 +56,14 @@ export default function SignIn() {
     try {
   await signOut(auth);
 
-      const response = await fetch('/api/cookies/signout', {
-        method: 'DELETE',
-      });
-      if (response.ok) {
-        console.log('Cookie deleted and user signed out successfully');
-      } else {
-        console.error('Failed to delete cookie');
+      const response = await deleteCookies().unwrap()
+
+      if (response.success) {
+        toast.success('Logout Successful')
+      }else{
+        toast.error('Logout Failed')
       }
+
     } catch (error) {
       console.error('Error during sign-out:', error);
     }

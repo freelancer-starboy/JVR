@@ -1,4 +1,3 @@
-import { setCookie } from 'nookies';
 
 export async function POST(req) {
   try {
