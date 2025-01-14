@@ -49,7 +49,9 @@ export default function SignIn() {
       }
       toast.success('Login Successful')
       refetch()
-      router.push('/')
+      router.push('/shop-2').then(() => {
+        window.location.reload();
+      })
 
     } catch (error) {
       console.error('Error during login', error);
