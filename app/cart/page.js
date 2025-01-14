@@ -80,11 +80,27 @@ const { userId}  = useAuth()
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                {cartItems?.map((item) => (
-                                                    <>
-                                                <CartItems id={item.productId} name={item.productName} quanLoading={quanLoading} price={item.productPrice} quantity={item.quantity} image={item.productImage} total={total} onQuantityChange={handleQuantityChange} onDelete={handleDelete} />
-                                                    </>
-                                                ))}
+                                            {
+  cartItems && cartItems.length === 0 ? (
+    <CartItems showEmptyMessage={true} /> 
+  ) : (
+    cartItems?.map((item) => (
+      <CartItems
+        key={item.productId}
+        id={item.productId}
+        name={item.productName}
+        quanLoading={quanLoading}
+        price={item.productPrice}
+        quantity={item.quantity}
+        image={item.productImage}
+        total={total}
+        onQuantityChange={handleQuantityChange}
+        onDelete={handleDelete}
+        showEmptyMessage={false}  
+      />
+    ))
+  )
+}
                                             </tbody>
                                         </table>
                                     </div>

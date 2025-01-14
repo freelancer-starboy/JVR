@@ -16,9 +16,7 @@ export default function HeaderCart({ isCartSidebar, handleCartSidebar }) {
     const dispatch = useDispatch()
 
     // delete cart item
-    const deleteCartHandler = (id) => {
-        dispatch(deleteCart(id))
-    }
+
 
     // qty handler
   
@@ -46,7 +44,9 @@ export default function HeaderCart({ isCartSidebar, handleCartSidebar }) {
                     <div className="tpcart__product" style={{ overflow : "scroll"}}>
                         <div className="tpcart__product-list">
                             <ul>
-                                {cartItems?.map((item,i) => (
+                                {cartItems?.length === 0 ? <p className="text-center">Add products to show in cart!</p>
+                                :
+                                cartItems?.map((item,i) => (
                                     <li key={i}>
                                         <div className="tpcart__item">
                                             <div className="tpcart__img">
@@ -65,7 +65,9 @@ export default function HeaderCart({ isCartSidebar, handleCartSidebar }) {
                                             </div>
                                         </div>
                                     </li>
-                                ))}
+                                ))
+                                }
+                                
                             </ul>
                         </div>
                         <div className="tpcart__checkout">
