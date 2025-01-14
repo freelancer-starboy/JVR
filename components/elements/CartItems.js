@@ -56,17 +56,24 @@ const [ showConfirm, setShowConfirm] = useState(false)
                   type="number"
                   className="qty"
                   name="qty"
-                  value={quantity} // Assuming 'quantity' is the correct value here
-                  onChange={onQuantityChange} // Use the correct handler
+                  value={quan} // Assuming 'quantity' is the correct value here
+                  onChange={handleChange} // Use the correct handler
                   min={1}
                 />
+                  {showConfirm && 
+            <button id="add-to-cart" className="add-to-cart" onClick={handleConfirm}>
+                Confirm
+            </button>
+        
+           
+        }
               </div>
             </td>
             <td className="product-subtotal">
               <span className="amount">${(quantity * price).toFixed(2)}</span>
             </td>
             <td className="product-remove">
-              <button className="remove" onClick={onDelete}>
+              <button className="remove" onClick={handleDelete}>
                 <span className="flaticon-dustbin">Remove</span>
               </button>
             </td>
