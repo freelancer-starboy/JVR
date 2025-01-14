@@ -100,7 +100,7 @@ const RelatedProducts = ({ category }) => {
                   </h3>
                   <div className="tpproduct__priceinfo p-relative">
                     <div className="tpproduct__priceinfo-list">
-                      <span>₹ {product.productPrice}</span>
+                      <span>$ {product.productPrice}</span>
                     </div>
                     <div className="tpproduct__cart">
                       <Link href="/cart">

@@ -2,9 +2,37 @@
 import Link from "next/link";
 import { useDispatch, useSelector } from "react-redux";
 import { addQty, deleteCart } from "@/features/shopSlice";
+import { useState } from "react";
+import { set } from "mongoose";
+import { useDeleteCartItemMutation } from "@/features/api/cartApi";
+import { toast } from "react-toastify";
 
-const CartItems = ({ id, name, quantity, price, total, image }) => {
+const CartItems = ({ id, name, quantity, price, total, image, onQuantityChange, onDelete }) => {
+   const[ quan, setQuan] = useState(quantity)
+const [ showConfirm, setShowConfirm] = useState(false)
+
+   const handleConfirm = (e) => {
+    e.preventDefault()
+    if(onQuantityChange){
+        console.log(id, quan)
+        onQuantityChange(id, quan)
+        setShowConfirm(false)
+    }
+   }
+   const handleChange = (e) => {
+    e.preventDefault()
+    setQuan(e.target.value)
+    setShowConfirm(true)
+    }
+
+    const handleDelete = (e) => {
+        e.preventDefault()
+        if(onDelete){
+            onDelete(id)
+        }
+    }
     return (
+        <>
       <tr className="cart-item" key={id}>
         <td className="product-thumbnail">
           <Link href={`${image}`}>
@@ -21,20 +49,31 @@ const CartItems = ({ id, name, quantity, price, total, image }) => {
               type="number"
               className="qty"
               name="qty"
-              defaultValue={quantity}
+              value={quan}
+              onChange={handleChange}
               min={1}
             />
+             {showConfirm && 
+            <button id="add-to-cart" className="add-to-cart" onClick={handleConfirm}>
+                Confirm
+            </button>
+        
+           
+        }
+            
+           
           </div>
         </td>
         <td className="product-subtotal">
           <span className="amount">${(quantity * price).toFixed(2)}</span>
         </td>
         <td className="product-remove">
-          <button className="remove">
+          <button className="remove" onClick={handleDelete}>
             <span className="flaticon-dustbin">Remove</span>
           </button>
         </td>
       </tr>
+        </>
     );
   };
   

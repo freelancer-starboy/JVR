@@ -6,9 +6,11 @@ import { auth } from "@/lib/firebase/firebase";
 import { GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged, getAuth } from "firebase/auth";
 import { useCreateTokenMutation, useDeleteTokenMutation } from "@/features/api/authApi";
 import { toast } from "react-toastify";
+import { useAuth } from "@/components/AuthContent/AuthContent";
+import { useFetchCartQuery } from "@/features/api/cartApi";
 
 export default function SignIn() {
-  const userId = createContext(null)
+  const { userId} = useAuth()
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(false);
  
@@ -25,7 +27,7 @@ export default function SignIn() {
     });
     return () => unsubscribe();
   }, []);
-
+  const { refetch} = useFetchCartQuery(userId)
 
   const handleGoogleSignIn = async () => {
     setLoading(true);
@@ -45,6 +47,8 @@ export default function SignIn() {
         toast.error('Login Failed')
       }
       toast.success('Login Successful')
+      refetch()
+
     } catch (error) {
       console.error('Error during login', error);
     } finally {
@@ -60,6 +64,7 @@ export default function SignIn() {
 
       if (response.success) {
         toast.success('Logout Successful')
+        refetch()
       }else{
         toast.error('Logout Failed')
       }

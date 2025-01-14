@@ -6,18 +6,22 @@ import { useEffect, useState } from "react"
 import { useSelector } from "react-redux"
 import  { auth} from "@/lib/firebase/firebase"
 import { getAuth, onAuthStateChanged } from "firebase/auth"
-import { useFetchCartQuery } from "@/features/api/cartApi"
+import { useDeleteCartItemMutation, useFetchCartQuery, useUpdateCartMutation } from "@/features/api/cartApi"
 import { useAuth } from "@/components/AuthContent/AuthContent"
+import { toast } from "react-toastify"
+import Preloader from "@/components/elements/Preloader"
 
 
 export default function Cart() {
     const { cart } = useSelector((state) => state.shop) || {}
-const { userId}  = useAuth()   
-   
+const { userId}  = useAuth()
+    const [updateQuantity, {loading : quanLoading,  error}] = useUpdateCartMutation()
 
-        const {data: cartItems, isLoading, isError} = useFetchCartQuery(userId)
+    const [deleteCartItem, { error: deleteCartError}] = useDeleteCartItemMutation()
+
+        const {data: cartItems, isLoading, isError, refetch} = useFetchCartQuery(userId)
             if(isLoading) {
-                return <p>Loading...</p>
+                return <Preloader />
             }
             if(isError) {
                 return <p>Error</p>
@@ -27,6 +31,34 @@ const { userId}  = useAuth()
                 const price = item.quantity * item.productPrice;
                 total = total + price;
             });
+
+            const handleQuantityChange = async(id, quantity) => {
+                const response = await updateQuantity({ id, quantity });
+
+                if (response.error) {
+                    toast.error("Failed to update quantity");
+                } else {
+                    toast.success("Quantity updated successfully");
+                    refetch()
+                    }
+                
+            }
+
+            const handleDelete = async (id) => {
+                try {
+                  const response = await deleteCartItem(id).unwrap();
+              
+                  if (response) {
+                    toast.success('Item removed successfully');
+                    refetch(); 
+                  } else {
+                    toast.error('Failed to remove item');
+                  }
+                } catch (error) {
+                  console.error("Error deleting item:", error); 
+                  toast.error('Failed to remove item');
+                }
+              };
     return (
         <>
             <Layout headerStyle={3} footerStyle={1} breadcrumbTitle="Cart">
@@ -49,7 +81,9 @@ const { userId}  = useAuth()
                                             </thead>
                                             <tbody>
                                                 {cartItems?.map((item) => (
-                                                <CartItems id={item.productId} name={item.productName} price={item.productPrice} quantity={item.quantity} image={item.productImage} total={total} />
+                                                    <>
+                                                <CartItems id={item.productId} name={item.productName} quanLoading={quanLoading} price={item.productPrice} quantity={item.quantity} image={item.productImage} total={total} onQuantityChange={handleQuantityChange} onDelete={handleDelete} />
+                                                    </>
                                                 ))}
                                             </tbody>
                                         </table>
@@ -62,9 +96,9 @@ const { userId}  = useAuth()
                                                     <button className="tp-btn tp-color-btn banner-animation" name="apply_coupon" type="submit">Apply
                                                         Coupon</button>
                                                 </div>
-                                                <div className="coupon2">
+                                                {/* <div className="coupon2">
                                                     <button className="tp-btn tp-color-btn banner-animation" name="update_cart" type="submit">Update cart</button>
-                                                </div>
+                                                </div> */}
                                             </div>
                                         </div>
                                     </div>

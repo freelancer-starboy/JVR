@@ -10,24 +10,27 @@ import { useState, useEffect } from "react"
 import { Autoplay, Navigation, Pagination } from "swiper/modules"
 import { Swiper, SwiperSlide } from "swiper/react"
 import  { auth} from "@/lib/firebase/firebase"
-import { useAddToCartMutation } from "@/features/api/cartApi"
+import { useAddToCartMutation, useFetchCartQuery } from "@/features/api/cartApi"
 import loading from "@/app/loading"
 import { toast } from "react-toastify"
 import { useAuth } from "@/components/AuthContent/AuthContent"
+import Preloader from "@/components/elements/Preloader"
 export default function ShopDetails2() {
+    
     const [activeIndex, setActiveIndex] = useState(2)
     const [value, setValue] = useState(1)
     const [Loading, setLoading] = useState(false)
     const { userId} = useAuth()
     /* see here */
-    const [addToCart, { data: cartItems, error: cartError, isLoading: cartLoading }] = useAddToCartMutation();
+    const [addToCart, { data: cartItems, error: cartError, loading: cartLoading }] = useAddToCartMutation();
 
     const params = useParams()
     const id = params.id
     const { data: product, error, isLoading } = useFetchProductsByIdQuery(id)
-
+    const { refetch } = useFetchCartQuery(userId)
   
-      const handleAddToCart = async () => {
+      const handleAddToCart = async (e) => {
+        e.preventDefault();
         setLoading(true);
         try {
             if (!userId) {
@@ -49,6 +52,7 @@ export default function ShopDetails2() {
             // RTK Query returns result in a nested data property
             if (response.data) {
                 toast.success('Item added to cart successfully');
+                refetch()
             } else if (response.error) {
                 // Handle RTK Query error
                 const errorMessage = response.error.data?.message || 'Failed to add item to cart';
@@ -63,10 +67,10 @@ export default function ShopDetails2() {
         }
     };
     
-    if (isLoading) return <div>Loading...</div>
+    if (isLoading) return <div><Preloader /></div>
     if (error) return <div>Error: {error.message}</div>
 
-    if (cartLoading) return <div>Loading cart...</div>
+    if (cartLoading) return <div><Preloader /></div>
     if (cartError) return <div>Error: {cartError?.message || "An unknown error occurred."}</div>;
 
 
@@ -114,7 +118,7 @@ export default function ShopDetails2() {
                                         <span className="tpproduct-details__stock">In Stock</span>
                                     </div>
                                     <div className="tpproduct-details__price mb-30">
-                                        <del>₹ 9.35</del>
+                                        <del>$ 9.35</del>
                                         <span>{product.productPrice}</span>
                                     </div>
                                     <div className="tpproduct-details__pera">

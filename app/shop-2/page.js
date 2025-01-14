@@ -1,4 +1,5 @@
 "use client";
+import Preloader from "@/components/elements/Preloader";
 import ShopList from "@/components/JVR/shopList/ShopList";
 import Layout from "@/components/layout/Layout";
 import FilterShopBox from "@/components/shop/FilterShopBox";
@@ -12,7 +13,7 @@ export default function Shop2() {
   //     setActiveIndex(index)
   // }
   const { data: products, error, isLoading } = useFetchProductsQuery();
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <div><Preloader /></div>;
   if (error) return <div>Error: {error.message}</div>;
 
   return (

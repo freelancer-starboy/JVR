@@ -22,11 +22,14 @@ export default function HeaderCart({ isCartSidebar, handleCartSidebar }) {
 
     // qty handler
   
+    
+    const {data: cartItems, isLoading, isError, refetch} = useFetchCartQuery(userId)
     useEffect(() => {
-        console.log("userId from context", userId)
-    }, [])
+        if(userId){
 
-    const {data: cartItems, isLoading, isError} = useFetchCartQuery(userId)
+            refetch()
+        }
+    }, [userId, refetch])
    
     let total = 0;
     cartItems?.forEach((item) => {
@@ -57,7 +60,7 @@ export default function HeaderCart({ isCartSidebar, handleCartSidebar }) {
                                                 </span>
                                                 <div className="tpcart__cart-price">
                                                     <span className="quantity">{item?.quantity} x </span>
-                                                    <span className="new-price">₹ {item?.productPrice}</span>
+                                                    <span className="new-price">$ {item?.productPrice}</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -68,7 +71,7 @@ export default function HeaderCart({ isCartSidebar, handleCartSidebar }) {
                         <div className="tpcart__checkout">
                             <div className="tpcart__total-price d-flex justify-content-between align-items-center">
                                 <span> Subtotal:</span>
-                                <span className="heilight-price"> ₹{total.toFixed(2)}</span>
+                                <span className="heilight-price"> ${total.toFixed(2)}</span>
                             </div>
                             <div className="tpcart__checkout-btn">
                                 <Link className="tpcart-btn mb-10" href="/cart">View Cart</Link>

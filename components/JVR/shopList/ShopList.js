@@ -26,7 +26,7 @@ const ShopList = ({
       <div className="custom-content-main">
      <h6>{brand}</h6>
       <h3 className="custom-product-title">{name}</h3>
-      <p className="custom-product-price">₹ <span>{price}</span></p>
+      <p className="custom-product-price">$ <span>{price}</span></p>
       </div>
         </Link>
        

@@ -10125,3 +10125,13 @@ only screen and (min-width: 768px) and (max-width: 991px),
     }
   }
   
+.add-to-cart{
+    display: flex;
+    align-items: center;
+    background-color: #252525;
+    padding: 0.5rem 2rem 0.5rem 2rem;
+    justify-content: center;
+    margin: 1rem auto;
+    color: white;
+
+}

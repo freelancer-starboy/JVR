@@ -12,6 +12,8 @@
     },
     "dependencies": {
         "@reduxjs/toolkit": "^2.5.0",
+        "@tanstack/react-query": "^5.64.1",
+        "aws4": "^1.13.2",
         "cloudinary": "^2.5.1",
         "firebase": "^11.1.0",
         "firebase-admin": "^13.0.2",

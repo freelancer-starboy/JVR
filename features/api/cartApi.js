@@ -14,8 +14,24 @@ export const cartApi = createApi({
     }),
     fetchCart: builder.query({
       query: (userId) => `cart/fetchCart?userId=${userId}`
+    }),
+    updateCart : builder.mutation({
+      query : ({id, quantity}) => ({
+        url : 'cart/fetchCart',
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body : { id, quantity}
+      })
+    }),
+    deleteCartItem : builder.mutation({
+      query : (id) => ({
+        url : 'cart/fetchCart',
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body : JSON.stringify({id})
+      })
     })
   })
 });
 
-export const { useAddToCartMutation, useFetchCartQuery } = cartApi;
+export const { useAddToCartMutation, useFetchCartQuery, useUpdateCartMutation, useDeleteCartItemMutation } = cartApi;
