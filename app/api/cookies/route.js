@@ -12,7 +12,7 @@ export async function POST(req) {
         response.headers.set(
           'Set-Cookie',
           `firebaseToken=${token}; Max-Age=${30 * 24 * 60 * 60}; Path=/; HttpOnly; ${
-            process.env.NODE_ENV === 'production' ? 'Secure' : ''
+            process.env.NODE_ENV === 'production'
           }`
         );
       } else {

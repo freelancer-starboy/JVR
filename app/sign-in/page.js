@@ -41,17 +41,17 @@ export default function SignIn() {
       const token = await user.getIdToken();
       
       const response = await addCookies(token).unwrap()
-      
-      
 
-      if (response.error) {
+     
+      if(response){
+
+        toast.success('Login Successful')
+        refetch()
+              router.push('/shop-2')
+
+      }else{
         toast.error('Login Failed')
       }
-      toast.success('Login Successful')
-      refetch()
-      router.push('/shop-2').then(() => {
-        window.location.reload();
-      })
 
     } catch (error) {
       console.error('Error during login', error);
