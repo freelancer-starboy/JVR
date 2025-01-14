@@ -8,6 +8,7 @@ import { useCreateTokenMutation, useDeleteTokenMutation } from "@/features/api/a
 import { toast } from "react-toastify";
 import { useAuth } from "@/components/AuthContent/AuthContent";
 import { useFetchCartQuery } from "@/features/api/cartApi";
+import { useRouter } from "next/navigation";
 
 export default function SignIn() {
   const { userId} = useAuth()
@@ -28,7 +29,7 @@ export default function SignIn() {
     return () => unsubscribe();
   }, []);
   const { refetch} = useFetchCartQuery(userId)
-
+  const router = useRouter()
   const handleGoogleSignIn = async () => {
     setLoading(true);
     try {
@@ -48,6 +49,7 @@ export default function SignIn() {
       }
       toast.success('Login Successful')
       refetch()
+      router.push('/')
 
     } catch (error) {
       console.error('Error during login', error);
