@@ -24,34 +24,34 @@ export default function SignIn() {
     return () => unsubscribe();
   }, []);
 
-  useEffect(() => {
-    const controller = new AbortController();
-      const getAuthToken = async () => {
-        const auth = getAuth();
-        const currentUser = auth.currentUser;
-        if (currentUser) {
-          try {
-            const token = await currentUser.getIdToken();
-            if (!controller.signal.aborted) {
-              console.log("Token:", token);
-            }
-          } catch (error) {
-            if (!controller.signal.aborted) {
-              console.error("Error getting token:", error);
-            }
-          }
-        } else {
-          if (!controller.signal.aborted) {
-            console.warn("No user is logged in");
-          }
-        }
-      };
-      getAuthToken()
-      return () => {
-        controller.abort()
-      } 
-    }
-   , [user])
+  // useEffect(() => {
+  //   const controller = new AbortController();
+  //     const getAuthToken = async () => {
+  //       const auth = getAuth();
+  //       const currentUser = auth.currentUser;
+  //       if (currentUser) {
+  //         try {
+  //           const token = await currentUser.getIdToken();
+  //           if (!controller.signal.aborted) {
+  //             console.log("Token:", token);
+  //           }
+  //         } catch (error) {
+  //           if (!controller.signal.aborted) {
+  //             console.error("Error getting token:", error);
+  //           }
+  //         }
+  //       } else {
+  //         if (!controller.signal.aborted) {
+  //           console.warn("No user is logged in");
+  //         }
+  //       }
+  //     };
+  //     getAuthToken()
+  //     return () => {
+  //       controller.abort()
+  //     } 
+  //   }
+  //  , [user])
   // Handle Google Sign-In
   const handleGoogleSignIn = async () => {
     setLoading(true);

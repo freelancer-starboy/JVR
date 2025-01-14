@@ -40,7 +40,7 @@ export default function HeaderCart({ isCartSidebar, handleCartSidebar }) {
                 <button className="tpcart__close" onClick={handleCartSidebar}><i className="fal fa-times" /></button>
                 <div className="tpcart">
                     <h4 className="tpcart__title">Your Cart</h4>
-                    <div className="tpcart__product">
+                    <div className="tpcart__product" style={{ overflow : "scroll"}}>
                         <div className="tpcart__product-list">
                             <ul>
                                 {cartItems?.map((item,i) => (

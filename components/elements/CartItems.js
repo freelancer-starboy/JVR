@@ -20,7 +20,8 @@ const CartItems = ({ id, name, quantity, price, total, image}) => {
 
     return (
         <>
-            
+            <div style={{ overflow: 'scroll' }}>
+
                 <tr className="cart-item" key={id}>
                     <td className="product-thumbnail">
                         <Link href={`${image}`}>
@@ -67,6 +68,7 @@ const CartItems = ({ id, name, quantity, price, total, image}) => {
                         </button>
                     </td>
                 </tr>
+            </div>
             
         </>
     );
