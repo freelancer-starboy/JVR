@@ -84,3 +84,28 @@ export async function POST(req) {
     );
   }
 } 
+
+
+
+export async function PUT(req){
+  try {
+    
+    const cartItems = await req.json()
+    if(!Array.isArray(cartItems) || cartItems.length === 0){
+      return new Response(JSON.stringify({message : "Invalid cart items"}), {status : 400})
+    }
+    await connectDb()
+    let updatedProducts = []
+    for( const { productId, quantity} of cartItems){
+      const updatedProduct = await Product.findOneAndUpdate({ _id : productId}, { $inc: {productStock : -quantity}}, {new : true})
+      updatedProducts.push(updatedProduct)
+    }
+    
+        return new Response(JSON.stringify({ message : "Stock updated successfully", updatedProducts}), { status: 200 });
+    
+  } catch (error) {
+      return new Response(
+        JSON.stringify({ message : error.message}), { status : 500}
+      )
+  }
+}

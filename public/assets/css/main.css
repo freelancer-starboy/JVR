@@ -10233,3 +10233,230 @@ only screen and (min-width: 768px) and (max-width: 991px),
     }
   }
   
+  .button-razorpay {
+    background-color: #3399cc; /* Razorpay theme color */
+    color: white; /* Text color */
+    border: none; /* Remove default border */
+    padding: 12px 24px; /* Add padding for the button */
+    font-size: 16px; /* Font size */
+    font-weight: bold; /* Bold text */
+    border-radius: 8px; /* Rounded corners */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: background-color 0.3s ease, transform 0.2s ease; /* Add transition effect */
+  }
+  
+  .button-razorpay:hover {
+    background-color: #2879a3; /* Darker shade on hover */
+    transform: translateY(-2px); /* Slight lift on hover */
+  }
+  
+  .button-razorpay:active {
+    background-color: #1e6084; /* Even darker shade on click */
+    transform: translateY(0); /* Reset lift on click */
+  }
+  
+
+  .custom-success-container {
+    min-height: 100vh;
+    background: linear-gradient(to bottom right, #f0fdf4, #eff6ff);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+  }
+  
+  .custom-success-card {
+    max-width: 28rem;
+    width: 100%;
+    background-color: white;
+    padding: 1.5rem;
+    border-radius: 1rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    transform: translateY(2.5rem);
+    opacity: 0;
+    transition: all 1s ease;
+  }
+  
+  .custom-success-show {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  
+  .custom-success-icon-container {
+    text-align: center;
+    position: relative;
+    display: inline-flex;
+    margin: 0 auto;
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .custom-success-icon-ping {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background-color: #dcfce7;
+    animation: ping 1.5s infinite;
+  }
+  
+  .custom-success-icon {
+    position: relative;
+    color: #22c55e;
+    width: 5rem;
+    height: 5rem;
+    animation: bounce 2s infinite;
+  }
+  
+  .custom-success-message {
+    text-align: center;
+    margin: 2rem 0;
+  }
+  
+  .custom-success-title {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 0.5rem;
+  }
+  
+  .custom-success-subtitle {
+    color: #4b5563;
+  }
+  
+  .custom-success-details {
+    background-color: #f9fafb;
+    border-radius: 0.75rem;
+    padding: 1rem;
+    margin: 1.5rem 0;
+  }
+  
+  .custom-success-order-number {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .custom-success-package-icon {
+    color: #3b82f6;
+  }
+  
+  .custom-success-label {
+    font-size: 0.875rem;
+    color: #4b5563;
+    margin-bottom: 0.25rem;
+  }
+  
+  .custom-success-value {
+    font-weight: 600;
+    color: #111827;
+  }
+  
+  .custom-success-divider {
+    height: 1px;
+    background-color: #e5e7eb;
+    margin: 1rem 0;
+  }
+  
+  .custom-success-delivery {
+    margin-top: 0.5rem;
+  }
+  
+  .custom-success-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .custom-success-primary-button {
+    width: 100%;
+    background-color: #2563eb;
+    color: white;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+  
+  .custom-success-primary-button:hover {
+    background-color: #1d4ed8;
+    transform: scale(1.05);
+  }
+  
+  .custom-success-secondary-button {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    color: #4b5563;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    transition: all 0.2s;
+  }
+  
+  .custom-success-secondary-button:hover {
+    background-color: #f9fafb;
+  }
+  
+  .custom-success-arrow-icon {
+    width: 1rem;
+    height: 1rem;
+  }
+  
+  @keyframes ping {
+    0% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    75%, 100% {
+      transform: scale(2);
+      opacity: 0;
+    }
+  }
+  
+  @keyframes bounce {
+    0%, 100% {
+      transform: translateY(-25%);
+      animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+    }
+    50% {
+      transform: translateY(0);
+      animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+    }
+  }
+
+  /* Global styles or add to a specific CSS/SCSS file */
+.loader-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.7); /* Blurred background */
+    backdrop-filter: blur(5px); /* Apply blur */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999; /* Ensure it stays above all other content */
+  }
+  
+  .loader-spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid rgba(0, 0, 0, 0.1); /* Light border */
+    border-top: 4px solid #3498db; /* Blue spinner color */
+    border-radius: 50%;
+    animation: spin 1s linear infinite; /* Rotating animation */
+  }
+  
+  /* Keyframes for rotation */
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+  

@@ -1,8 +1,11 @@
 "use client";
 
+import { set } from "mongoose";
+import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
-export default function PaymentPage() {
+export default function PaymentPage({ amount, onPaymentSuccess, transactionId, setTransactionId }) {
+  const router = useRouter()
   useEffect(() => {
     // Ensure Razorpay script is loaded
     const script = document.createElement("script");
@@ -16,7 +19,7 @@ export default function PaymentPage() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        amount: 5, // Amount in INR
+        amount: parseInt(amount), // Amount in INR
         currency: "INR",
         receipt: `receipt_${Date.now()}`,
         notes: { purpose: "Test Payment" },
@@ -34,14 +37,33 @@ export default function PaymentPage() {
       key: "rzp_test_VYuZWJPpXhlvvU",
       amount: order.amount,
       currency: order.currency,
-      name: "Your Company Name",
+      name: "JVR Textiles",
       description: "Test Transaction",
       order_id: order.id,
-      handler: function (response) {
+      handler: async function (response) {
         console.log("Payment Successful:", response);
-        alert(`Payment ID: ${response.razorpay_payment_id}`);
-        alert(`Order ID: ${response.razorpay_order_id}`);
-        alert(`Signature: ${response.razorpay_signature}`);
+        try {
+          const ini = await fetch("/api/payments/verifyPayment", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ paymentId: response.razorpay_payment_id }),
+          })
+          const data = await ini.json()
+          if (ini.ok) {
+            console.log("Transaction Details:", data);
+            setTransactionId(data.transaction_id)
+            onPaymentSuccess()
+            // Redirect to success page with transaction ID
+            // router.push(`/success?transactionId=${data.transaction_id}`);
+          } else {
+            console.error("Error:", data.error);
+            alert("Failed to fetch transaction details.");
+          }
+        } catch (error) {
+          console.error("Error verifying payment:", error);
+    alert("An unexpected error occurred.");
+        }
+        
       },
       prefill: {
         name: "John Doe",
@@ -64,8 +86,7 @@ export default function PaymentPage() {
 
   return (
     <div>
-      <h1>Razorpay Payment Integration</h1>
-      <button onClick={handlePayment}>Pay Now</button>
+      <button className="button-razorpay" onClick={handlePayment}>Pay with RazorPay</button>
     </div>
   );
 }

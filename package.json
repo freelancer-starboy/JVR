@@ -18,6 +18,7 @@
         "firebase": "^11.1.0",
         "firebase-admin": "^13.0.2",
         "js-cookie": "^3.0.5",
+        "lucide-react": "^0.471.1",
         "mongoose": "^8.9.3",
         "next": "14.0.1",
         "nookies": "^2.5.2",

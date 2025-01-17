@@ -2,11 +2,21 @@
 import { useAuth } from "@/components/AuthContent/AuthContent"
 import Preloader from "@/components/elements/Preloader"
 import Layout from "@/components/layout/Layout"
+import Loader from "@/components/Loader/page"
+import PaymentPage from "@/components/paymentSample/PaymentPage"
 import { useFetchCartQuery } from "@/features/api/cartApi"
+import { useUpdateStockMutation } from "@/features/api/checkout"
+import { set } from "mongoose"
 import Link from "next/link"
-import { useState } from "react"
+import { useRouter } from "next/navigation"
+import { useEffect, useState } from "react"
+import { toast } from "react-toastify"
 export default function Checkout() {
+    const [successOrder, setSuccessOrder] = useState(false)
     const [isLoginToggle, setLoginToggle] = useState(false)
+    const [showContent, setShowContent] = useState(false);
+    const [transactionId, setTransactionId] = useState(null);
+    const [loadingScreen, setLoadingScreen] = useState(false)
     const handleLoginToggle = () => setLoginToggle(!isLoginToggle)
 
     const [isCuponToggle, setCuponToggle] = useState(false)
@@ -23,20 +33,40 @@ export default function Checkout() {
         key: 1,
     })
 
-    const handleClick = (key) => {
-        if (isActive.key === key) {
-            setIsActive({
-                status: false,
-            })
-        } else {
-            setIsActive({
-                status: true,
-                key,
-            })
-        }
-    }
+    const router = useRouter()
     const { userId} = useAuth()
     const { data : cartItems , isLoading, isError, refetch } = useFetchCartQuery(userId)
+    const [updateStockValue, {loading, error}] = useUpdateStockMutation()
+    useEffect(() => {
+        if (successOrder) {
+            setLoadingScreen(true)
+          const updateStock = async () => {
+            
+            try {
+              const response = await updateStockValue(cartItems).unwrap();
+                const data = response.updatedProducts
+              // Log the success response for debugging
+              console.log("Success from frontend:", data);
+      
+              // Show success toast and navigate to the success page
+              toast.success("Order Placed Successfully");
+              router.push(`/orderSuccess?transactionId=${transactionId}`);
+            } catch (error) {
+              // Handle error case and show appropriate error message
+              console.error("Error updating stock:", error); // Log full error for debugging
+              toast.error(error?.data?.message || "Error updating stock");
+            } finally {
+              // Reset the successOrder flag in both success and failure cases
+              setSuccessOrder(false);
+              setLoadingScreen(false);
+            }
+          };
+      
+          updateStock();
+        }
+      }, [successOrder, cartItems]);
+      
+   
     if(isLoading) {
         return <Preloader />
     }
@@ -56,10 +86,11 @@ export default function Checkout() {
     if(total > 0) {
         orderTotal = total + shipping
     }
-
+    
     return (
         <>
             <Layout headerStyle={3} footerStyle={1} breadcrumbTitle="Checkout">
+                {loadingScreen && <Loader />}
                 <div>
                     <section className="coupon-area pt-80 pb-30 wow fadeInUp" data-wow-duration=".8s" data-wow-delay=".2s">
                         <div className="container">
@@ -242,43 +273,7 @@ export default function Checkout() {
                                             <div className="payment-method">
                                                 <div className="accordion" id="checkoutAccordion">
                                                     <div className="accordion-item">
-                                                        <h2 className="accordion-header" id="checkoutOne" onClick={() => handleClick(1)}>
-                                                            <button className={isActive.key == 1 ? "accordion-button" : "accordion-button collapsed"}>
-                                                                Direct Bank Transfer
-                                                            </button>
-                                                        </h2>
-                                                        <div id="bankOne" className={isActive.key == 1 ? "accordion-collapse collapse show" : "accordion-collapse collapse"}>
-                                                            <div className="accordion-body">
-                                                                Make your payment directly into our bank account. Please use your Order ID as the payment reference. Your order won’t be shipped until the funds have cleared in our account.
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div className="accordion-item">
-                                                        <h2 className="accordion-header" id="paymentTwo" onClick={() => handleClick(2)}>
-                                                            <button className={isActive.key == 2 ? "accordion-button" : "accordion-button collapsed"} type="button">
-                                                                Cheque Payment
-                                                            </button>
-                                                        </h2>
-                                                        <div id="payment" className={isActive.key == 2 ? "accordion-collapse collapse show" : "accordion-collapse collapse"}>
-                                                            <div className="accordion-body">
-                                                                Please send your cheque to Store Name, Store Street, Store Town, Store
-                                                                State / County, Store
-                                                                Postcode.
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div className="accordion-item">
-                                                        <h2 className="accordion-header" id="paypalThree" onClick={() => handleClick(3)}>
-                                                            <button className={isActive.key == 3 ? "accordion-button" : "accordion-button collapsed"} type="button">
-                                                                PayPal
-                                                            </button>
-                                                        </h2>
-                                                        <div id="paypal" className={isActive.key == 3 ? "accordion-collapse collapse show" : "accordion-collapse collapse"} aria-labelledby="paypalThree" data-bs-parent="#checkoutAccordion">
-                                                            <div className="accordion-body">
-                                                                Pay via PayPal; you can pay with your credit card if you don’t have a
-                                                                PayPal account.
-                                                            </div>
-                                                        </div>
+                                                        <PaymentPage amount={orderTotal} onPaymentSuccess={() => setSuccessOrder(true)} transactionId={transactionId} setTransactionId={setTransactionId} />
                                                     </div>
                                                 </div>
                                                 <div className="order-button-payment mt-20">
@@ -292,7 +287,7 @@ export default function Checkout() {
                         </div>
                     </section>
                 </div>
-
+            
             </Layout>
         </>
     )
