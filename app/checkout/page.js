@@ -1,5 +1,8 @@
 'use client'
+import { useAuth } from "@/components/AuthContent/AuthContent"
+import Preloader from "@/components/elements/Preloader"
 import Layout from "@/components/layout/Layout"
+import { useFetchCartQuery } from "@/features/api/cartApi"
 import Link from "next/link"
 import { useState } from "react"
 export default function Checkout() {
@@ -32,9 +35,31 @@ export default function Checkout() {
             })
         }
     }
+    const { userId} = useAuth()
+    const { data : cartItems , isLoading, isError, refetch } = useFetchCartQuery(userId)
+    if(isLoading) {
+        return <Preloader />
+    }
+    if(isError) {
+        return <p>Error</p>
+    }
+    let total = 0;
+    cartItems?.forEach((item) => {
+        const price = item.quantity * item.productPrice;
+        total = total + price;
+    })
+    let shipping = 50
+    if(total >= 1000 ) {
+        shipping = 0
+    }
+    let orderTotal = 0
+    if(total > 0) {
+        orderTotal = total + shipping
+    }
+
     return (
         <>
-            <Layout headerStyle={3} footerStyle={1} breadcrumbTitle="Chaeckout">
+            <Layout headerStyle={3} footerStyle={1} breadcrumbTitle="Checkout">
                 <div>
                     <section className="coupon-area pt-80 pb-30 wow fadeInUp" data-wow-duration=".8s" data-wow-delay=".2s">
                         <div className="container">
@@ -102,80 +127,59 @@ export default function Checkout() {
                                         <div className="checkbox-form">
                                             <h3>Billing Details</h3>
                                             <div className="row">
+                                                
                                                 <div className="col-md-12">
-                                                    <div className="country-select">
-                                                        <label>Country <span className="required">*</span></label>
-                                                        <select>
-                                                            <option value="volvo">United States</option>
-                                                            <option value="saab">Algeria</option>
-                                                            <option value="mercedes">Canada</option>
-                                                            <option value="audi">Givenchyy</option>
-                                                            <option value="audi2">England</option>
-                                                            <option value="audi3">Qatar</option>
-                                                            <option value="audi5">Dominican Republic</option>
-                                                        </select>
+                                                    <div className="checkout-form-list">
+                                                        <label>Full Name <span className="required">*</span></label>
+                                                        <input type="text" name="fullName" required />
                                                     </div>
                                                 </div>
-                                                <div className="col-md-6">
+                                                
+                                                <div className="col-md-12">
                                                     <div className="checkout-form-list">
-                                                        <label>First Name <span className="required">*</span></label>
-                                                        <input type="text" />
-                                                    </div>
-                                                </div>
-                                                <div className="col-md-6">
-                                                    <div className="checkout-form-list">
-                                                        <label>Last Name <span className="required">*</span></label>
-                                                        <input type="text" />
+                                                        <label>Phone<span className="required">*</span></label>
+                                                        <input type="text" name="phone" placeholder="98989 98989" required/>
                                                     </div>
                                                 </div>
                                                 <div className="col-md-12">
                                                     <div className="checkout-form-list">
-                                                        <label>Company Name</label>
-                                                        <input type="text" />
+                                                        <label>Address Line 1 <span className="required">*</span></label>
+                                                        <input type="text" name="addressLine1" placeholder="Street address" required />
                                                     </div>
                                                 </div>
                                                 <div className="col-md-12">
                                                     <div className="checkout-form-list">
-                                                        <label>Address <span className="required">*</span></label>
-                                                        <input type="text" placeholder="Street address" />
+                                                        <label>Address Line 2 </label>
+                                                        <input type="text" placeholder="Street address" name="addressLine2" />
                                                     </div>
                                                 </div>
-                                                <div className="col-md-12">
-                                                    <div className="checkout-form-list">
-                                                        <input type="text" placeholder="Apartment, suite, unit etc. (optional)" />
-                                                    </div>
-                                                </div>
+
                                                 <div className="col-md-12">
                                                     <div className="checkout-form-list">
                                                         <label>Town / City <span className="required">*</span></label>
-                                                        <input type="text" placeholder="Town / City" />
+                                                        <input type="text" placeholder="Town / City" name="city"  required/>
                                                     </div>
                                                 </div>
                                                 <div className="col-md-6">
                                                     <div className="checkout-form-list">
-                                                        <label>State / County <span className="required">*</span></label>
-                                                        <input type="text" />
+                                                        <label>State <span className="required">*</span></label>
+                                                        <input type="text" name="state" placeholder="State" required />
                                                     </div>
                                                 </div>
                                                 <div className="col-md-6">
                                                     <div className="checkout-form-list">
                                                         <label>Postcode / Zip <span className="required">*</span></label>
-                                                        <input type="text" placeholder="Postcode / Zip" />
+                                                        <input type="text" placeholder="Postcode / Zip" name="postalCode" required/>
                                                     </div>
                                                 </div>
-                                                <div className="col-md-6">
-                                                    <div className="checkout-form-list">
-                                                        <label>Email Address <span className="required">*</span></label>
-                                                        <input type="email" />
-                                                    </div>
-                                                </div>
-                                                <div className="col-md-6">
-                                                    <div className="checkout-form-list">
-                                                        <label>Phone <span className="required">*</span></label>
-                                                        <input type="text" placeholder="Postcode / Zip" />
-                                                    </div>
-                                                </div>
+
                                                 <div className="col-md-12">
+                                                    <div className="checkout-form-list">
+                                                        <label>Country <span className="required">*</span></label>
+                                                        <input type="text" value="India" disabled name="country" />
+                                                    </div>
+                                                </div>
+                                                {/* <div className="col-md-12">
                                                     <div className="checkout-form-list create-acc">
                                                         <input id="cbox" type="checkbox" onClick={handleCboxToggle} />
                                                         <label>Create an account?</label>
@@ -186,100 +190,9 @@ export default function Checkout() {
                                                         <label>Account password <span className="required">*</span></label>
                                                         <input type="password" placeholder="password" />
                                                     </div>
-                                                </div>
+                                                </div> */}
                                             </div>
-                                            <div className="different-address">
-                                                <div className="ship-different-title">
-                                                    <h3>
-                                                        <label>Ship to a different address?</label>
-                                                        <input id="ship-box" type="checkbox" onClick={handleShipToggle} />
-                                                    </h3>
-                                                </div>
-                                                <div id="ship-box-info" style={{ display: `${isShipToggle ? "block" : "none"}` }}>
-                                                    <div className="row">
-                                                        <div className="col-md-12">
-                                                            <div className="country-select">
-                                                                <label>Country <span className="required">*</span></label>
-                                                                <select>
-                                                                    <option value="volvo">bangladesh</option>
-                                                                    <option value="saab">Algeria</option>
-                                                                    <option value="mercedes">Afghanistan</option>
-                                                                    <option value="audi">Ghana</option>
-                                                                    <option value="audi2">Albania</option>
-                                                                    <option value="audi3">Bahrain</option>
-                                                                    <option value="audi4">Colombia</option>
-                                                                    <option value="audi5">Dominican Republic</option>
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-6">
-                                                            <div className="checkout-form-list">
-                                                                <label>First Name <span className="required">*</span></label>
-                                                                <input type="text" />
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-6">
-                                                            <div className="checkout-form-list">
-                                                                <label>Last Name <span className="required">*</span></label>
-                                                                <input type="text" />
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-12">
-                                                            <div className="checkout-form-list">
-                                                                <label>Company Name</label>
-                                                                <input type="text" />
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-12">
-                                                            <div className="checkout-form-list">
-                                                                <label>Address <span className="required">*</span></label>
-                                                                <input type="text" placeholder="Street address" />
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-12">
-                                                            <div className="checkout-form-list">
-                                                                <input type="text" placeholder="Apartment, suite, unit etc. (optional)" />
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-12">
-                                                            <div className="checkout-form-list">
-                                                                <label>Town / City <span className="required">*</span></label>
-                                                                <input type="text" placeholder="Town / City" />
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-6">
-                                                            <div className="checkout-form-list">
-                                                                <label>State / County <span className="required">*</span></label>
-                                                                <input type="text" />
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-6">
-                                                            <div className="checkout-form-list">
-                                                                <label>Postcode / Zip <span className="required">*</span></label>
-                                                                <input type="text" placeholder="Postcode / Zip" />
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-6">
-                                                            <div className="checkout-form-list">
-                                                                <label>Email Address <span className="required">*</span></label>
-                                                                <input type="email" />
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-6">
-                                                            <div className="checkout-form-list">
-                                                                <label>Phone <span className="required">*</span></label>
-                                                                <input type="text" placeholder="Postcode / Zip" />
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div className="order-notes">
-                                                    <div className="checkout-form-list">
-                                                        <label>Order Notes</label>
-                                                        <textarea id="checkout-mess" cols={30} rows={10} placeholder="Notes about your order, e.g. special notes for delivery." />
-                                                    </div>
-                                                </div>
-                                            </div>
+                                            
                                         </div>
                                     </div>
                                     <div className="col-lg-6 col-md-12">
@@ -294,48 +207,33 @@ export default function Checkout() {
                                                         </tr>
                                                     </thead>
                                                     <tbody>
+                                                        {cartItems && cartItems.map((item) => (
+                                                            
                                                         <tr className="cart_item">
                                                             <td className="product-name">
-                                                                Vestibulum suscipit <strong className="product-quantity"> × 1</strong>
+                                                                {item.productName} <strong className="product-quantity"> × {item.quantity}</strong>
                                                             </td>
+                                                            
                                                             <td className="product-total">
-                                                                <span className="amount">$165.00</span>
+                                                                <span className="amount">₹ {item.productPrice}</span>
                                                             </td>
                                                         </tr>
-                                                        <tr className="cart_item">
-                                                            <td className="product-name">
-                                                                Vestibulum dictum magna <strong className="product-quantity"> × 1</strong>
-                                                            </td>
-                                                            <td className="product-total">
-                                                                <span className="amount">$50.00</span>
-                                                            </td>
-                                                        </tr>
+                                                        ))}
+                                                        
                                                     </tbody>
                                                     <tfoot>
                                                         <tr className="cart-subtotal">
                                                             <th>Cart Subtotal</th>
-                                                            <td><span className="amount">$215.00</span></td>
+                                                            <td><span className="amount">₹ {total}</span></td>
                                                         </tr>
                                                         <tr className="shipping">
                                                             <th>Shipping</th>
-                                                            <td>
-                                                                <ul>
-                                                                    <li>
-                                                                        <input type="radio" name="shipping" />
-                                                                        <label>
-                                                                            Flat Rate: <span className="amount">$7.00</span>
-                                                                        </label>
-                                                                    </li>
-                                                                    <li>
-                                                                        <input type="radio" name="shipping" />
-                                                                        <label>Free Shipping:</label>
-                                                                    </li>
-                                                                </ul>
-                                                            </td>
+                                                            <td><span className="amount">₹ {shipping}</span></td>
+
                                                         </tr>
                                                         <tr className="order-total">
                                                             <th>Order Total</th>
-                                                            <td><strong><span className="amount">$215.00</span></strong>
+                                                            <td><strong><span className="amount">₹ {orderTotal}</span></strong>
                                                             </td>
                                                         </tr>
                                                     </tfoot>

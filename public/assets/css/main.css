@@ -10135,3 +10135,101 @@ only screen and (min-width: 768px) and (max-width: 991px),
     color: white;
 
 }
+
+/* Outer container */
+.custom-color-container {
+    display: flex;
+    width: auto;
+    padding: 0.5rem;
+  
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .custom-color-row {
+    display: flex;
+    flex-direction: row;
+    /* background-color: lightgreen;  */
+    justify-content: space-between; 
+    align-items: center;
+    gap: 1rem; 
+  }
+  
+  .custom-color-link {
+    border: 1px solid grey; 
+    padding: 7px;
+    padding-top: 7px !important;
+    padding-bottom: 0px !important;
+    border-radius: 50%;
+    /* background-color: red; */
+  }
+  .custom-color-link:hover{
+    background-color: #2a2828;
+  }
+  
+  .custom-color-circle {
+    width: 3rem; /* Circle width */
+    height: 3rem; /* Circle height */
+    display: inline-block;
+    border-radius: 50%; /* Makes the span circular */
+  }
+  
+
+  /* Container for the size selection */
+.custom-button-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+    /* background-color: #f9f9f9; Light background */
+    border-radius: 8px; /* Rounded corners */
+    
+  }
+  
+  /* Title for the size selection */
+  .custom-button-title {
+    font-size: 1.25rem;
+    font-weight: bold;
+    margin-bottom: 1rem; /* Space between title and button group */
+  }
+  
+  /* Container for the size buttons */
+  .custom-button-group {
+    display: flex;
+    gap: 1rem; /* Space between buttons */
+    flex-wrap: wrap; /* Allow wrapping if there's not enough space */
+  }
+  
+  /* Custom button styling */
+  .custom-button {
+    background-color: #805046; /* Brown background for the button */
+    color: white; /* Text color */
+    border: none; /* No border */
+    padding: 0.5rem 1rem; /* Vertical and horizontal padding */
+    border-radius: 5px; /* Rounded corners for buttons */
+    font-size: 1rem; /* Font size */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: background-color 0.3s ease; /* Smooth background color change */
+  }
+  
+  /* Button hover effect */
+  .custom-button:hover {
+    background-color: black; /* Darker shade on hover */
+  }
+  .selected {
+    background-color: black;
+    transform: scale(0.98); 
+  }
+  /* Button active (clicked) state */
+  .custom-button:active {
+    transform: scale(0.98); /* Slightly shrink the button when clicked */
+  }
+  
+  /* Responsive: Stack buttons on smaller screens */
+  @media (max-width: 600px) {
+    .custom-button-group {
+      flex-direction: column; /* Stack buttons vertically */
+      align-items: center;
+    }
+  }
+  

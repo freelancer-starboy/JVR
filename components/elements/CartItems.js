@@ -7,7 +7,7 @@ import { set } from "mongoose";
 import { useDeleteCartItemMutation } from "@/features/api/cartApi";
 import { toast } from "react-toastify";
 
-const CartItems = ({ id, name, quantity, price, total, image, onQuantityChange, onDelete, showEmptyMessage }) => {
+const CartItems = ({ id, name, quantity, price, total, image, onQuantityChange, onDelete, showEmptyMessage , color, size}) => {
    const[ quan, setQuan] = useState(quantity)
 const [ showConfirm, setShowConfirm] = useState(false)
 
@@ -35,7 +35,7 @@ const [ showConfirm, setShowConfirm] = useState(false)
       <>
         {showEmptyMessage ? (
           <tr>
-            <td colSpan="6" style={{ textAlign: 'center' }}>
+            <td colSpan="8" style={{ textAlign: 'center' }}>
               Add items to show in Cart!
             </td>
           </tr>
@@ -49,7 +49,10 @@ const [ showConfirm, setShowConfirm] = useState(false)
             <td className="cart-product-name">
               <Link href={`/ShopDetails/${id}`}>{name}</Link>
             </td>
-            <td className="product-price">${price}</td>
+            <td className="product-price">₹{price}</td>
+            <td className="product-color"><div style={{ backgroundColor: color, width: '2rem', height: '2rem', border: "1px solid black" }}>
+              </div></td>
+            <td className="product-size">{size}</td>
             <td className="product-quantity">
               <div className="item-quantity">
                 <input
@@ -70,7 +73,7 @@ const [ showConfirm, setShowConfirm] = useState(false)
               </div>
             </td>
             <td className="product-subtotal">
-              <span className="amount">${(quantity * price).toFixed(2)}</span>
+              <span className="amount">₹{(quantity * price).toFixed(2)}</span>
             </td>
             <td className="product-remove">
               <button className="remove" onClick={handleDelete}>

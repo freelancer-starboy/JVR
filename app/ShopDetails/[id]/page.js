@@ -1,314 +1,474 @@
-'use client'
-import Layout from "@/components/layout/Layout"
-import RelatedProducts from "@/components/relatedProducts/RelatedProducts"
-import { useFetchProductsByIdQuery, useRelatedProductsQuery } from "@/features/api/productApi"
-import { getAuth, onAuthStateChanged } from "firebase/auth"
-import Cookies from "js-cookie"
-import Link from "next/link"
-import { useParams } from "next/navigation"
-import { useState, useEffect } from "react"
-import { Autoplay, Navigation, Pagination } from "swiper/modules"
-import { Swiper, SwiperSlide } from "swiper/react"
-import  { auth} from "@/lib/firebase/firebase"
-import { useAddToCartMutation, useFetchCartQuery } from "@/features/api/cartApi"
-import loading from "@/app/loading"
-import { toast } from "react-toastify"
-import { useAuth } from "@/components/AuthContent/AuthContent"
-import Preloader from "@/components/elements/Preloader"
+"use client";
+import Layout from "@/components/layout/Layout";
+import RelatedProducts from "@/components/relatedProducts/RelatedProducts";
+import {
+  useFetchProductsByIdQuery,
+  useRelatedProductsQuery,
+} from "@/features/api/productApi";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import Cookies from "js-cookie";
+import Link from "next/link";
+import { useParams } from "next/navigation";
+import { useState, useEffect } from "react";
+import { Autoplay, Navigation, Pagination } from "swiper/modules";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { auth } from "@/lib/firebase/firebase";
+import {
+  useAddToCartMutation,
+  useFetchCartQuery,
+} from "@/features/api/cartApi";
+import loading from "@/app/loading";
+import { toast } from "react-toastify";
+import { useAuth } from "@/components/AuthContent/AuthContent";
+import Preloader from "@/components/elements/Preloader";
 export default function ShopDetails2() {
-    
-    const [activeIndex, setActiveIndex] = useState(2)
-    const [value, setValue] = useState(1)
-    const [Loading, setLoading] = useState(false)
-    const { userId} = useAuth()
-    /* see here */
-    const [addToCart, { data: cartItems, error: cartError, loading: cartLoading }] = useAddToCartMutation();
+  const [selectedSize, setSize] = useState("");
+  const [selectedColor, setColor] = useState("")
+  const [activeIndex, setActiveIndex] = useState(2);
+  const [value, setValue] = useState(1);
+  const [Loading, setLoading] = useState(false);
+  const { userId } = useAuth();
+  /* see here */
+  const [
+    addToCart,
+    { data: cartItems, error: cartError, loading: cartLoading },
+  ] = useAddToCartMutation();
 
-    const params = useParams()
-    const id = params.id
-    const { data: product, error, isLoading } = useFetchProductsByIdQuery(id)
-    const { refetch } = useFetchCartQuery(userId)
-  
-      const handleAddToCart = async (e) => {
-        e.preventDefault();
-        setLoading(true);
-        try {
-            if (!userId) {
-                throw new Error('Please login to add items to cart');
-            }
-            
-            if (!product?._id) {
-                throw new Error('Product details not found');
-            }
-    
-            const cartData = {
-                userId,
-                productId: product._id,
-                quantity: value
-            };
-    
-            const response = await addToCart(cartData);
-            
-            // RTK Query returns result in a nested data property
-            if (response.data) {
-                toast.success('Item added to cart successfully');
-                refetch()
-            } else if (response.error) {
-                // Handle RTK Query error
-                const errorMessage = response.error.data?.message || 'Failed to add item to cart';
-                toast.error(errorMessage);
-            }
-        } catch (error) {
-            // Handle any other errors
-            toast.error(error.message || 'An unexpected error occurred');
-            console.error('Cart error:', error);
-        } finally {
-            setLoading(false);
-        }
-    };
-    
-    if (isLoading) return <div><Preloader /></div>
-    if (error) return <div>Error: {error.message}</div>
+  const params = useParams();
+  const id = params.id;
+  const { data: product, error, isLoading } = useFetchProductsByIdQuery(id);
+  const { refetch } = useFetchCartQuery(userId);
 
-    if (cartLoading) return <div><Preloader /></div>
-    if (cartError) return <div>Error: {cartError?.message || "An unknown error occurred."}</div>;
+  const handleAddToCart = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      if (!userId) {
+        throw new Error("Please login to add items to cart");
+      }
 
+      if (!product?._id) {
+        throw new Error("Product details not found");
+      }
 
+      const cartData = {
+        userId,
+        productId: product._id,
+        quantity: value,
+        size : selectedSize,
+        color : selectedColor
+      };
+
+      const response = await addToCart(cartData);
+
+      // RTK Query returns result in a nested data property
+      if (response.data) {
+        toast.success("Item added to cart successfully");
+        refetch();
+      } else if (response.error) {
+        // Handle RTK Query error
+        const errorMessage =
+          response.error.data?.message || "Failed to add item to cart";
+        toast.error(errorMessage);
+      }
+    } catch (error) {
+      // Handle any other errors
+      toast.error(error.message || "An unexpected error occurred");
+      console.error("Cart error:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (isLoading)
     return (
-        <>
-            <Layout headerStyle={3} footerStyle={2} breadcrumbTitle="Shop Details 2">
-                {Loading && <div>Loading...</div>}
-                <section className="product-area pt-80 pb-50">
-                    <div className="container">
-                        <div className="row">
-                            <div className="col-lg-5 col-md-12">
-                                <div className="tpproduct-details__list-img">
-                                    {product.productImage.map((image, index) => (
-                                        
-                                    <div className="tpproduct-details__list-img-item">
-                                        <img src={image} alt="" />
-                                    </div>
-                                    ))}
-                                    {/* <div className="tpproduct-details__list-img-item">
+      <div>
+        <Preloader />
+      </div>
+    );
+  if (error) return <div>Error: {error.message}</div>;
+
+  if (cartLoading)
+    return (
+      <div>
+        <Preloader />
+      </div>
+    );
+  if (cartError)
+    return (
+      <div>Error: {cartError?.message || "An unknown error occurred."}</div>
+    );
+  let stock = false;
+  if (product.productStock && product.productStock > 0) {
+    stock = true;
+  }
+  let discount = 0;
+  if (product.productOldPrice > product.productPrice) {
+    discount = ((product.productOldPrice - product.productPrice) / product.productOldPrice) * 100;
+  }
+
+  return (
+    <>
+      <Layout headerStyle={3} footerStyle={2} breadcrumbTitle="Shop Details 2">
+        {Loading && <div>Loading...</div>}
+        <section className="product-area pt-80 pb-50">
+          <div className="container">
+            <div className="row">
+              <div className="col-lg-5 col-md-12">
+                <div className="tpproduct-details__list-img">
+                  {product.productImage.map((image, index) => (
+                    <div className="tpproduct-details__list-img-item"  style={{ display: "flex",backgroundColor: "#F7F7F7", alignItems: "center", justifyContent: "center", width: "auto", height: "auto"}}>
+                      <img src={image} alt="" />
+                    </div>
+                  ))}
+                  {/* <div className="tpproduct-details__list-img-item">
                                         <img src="/assets/img/product/product-42.jpg" alt="" />
                                     </div>
                                     <div className="tpproduct-details__list-img-item">
                                         <img src="/assets/img/product/product-43.jpg" alt="" />
                                     </div> */}
-                                </div>
-                            </div>
-                            {/* {cartItems && cartItems.map((item) => (
+                </div>
+              </div>
+              {/* {cartItems && cartItems.map((item) => (
                                 <div>
                                     {item.userId}
                                 </div>
                             ))} */}
-                            <div className="col-lg-5 col-md-7">
-                                <div className="tpproduct-details__content tpproduct-details__sticky">
-                                    <div className="tpproduct-details__tag-area d-flex align-items-center mb-5">
-                                        <span className="tpproduct-details__tag">{product.productCategory}</span>
-                                        <div className="tpproduct-details__rating">
-                                            <Link href="#"><i className="fas fa-star" /></Link>
-                                            <Link href="#"><i className="fas fa-star" /></Link>
-                                            <Link href="#"><i className="fas fa-star" /></Link>
-                                        </div>
-                                        <a className="tpproduct-details__reviewers">10 Reviews</a>
-                                    </div>
-                                    <div className="tpproduct-details__title-area d-flex align-items-center flex-wrap mb-5">
-                                        <h3 className="tpproduct-details__title">{product.productName}</h3>
-                                        <span className="tpproduct-details__stock">In Stock</span>
-                                    </div>
-                                    <div className="tpproduct-details__price mb-30">
-                                        <del>$ 9.35</del>
-                                        <span>{product.productPrice}</span>
-                                    </div>
-                                    <div className="tpproduct-details__pera">
-                                        <p>{product.productDescription}</p>
-                                    </div>
-                                    <div className="tpproduct-details__count d-flex align-items-center flex-wrap mb-25">
-                                        {/* <div className="tpproduct-details__quantity">
+              <div className="col-lg-5 col-md-7">
+                <div className="tpproduct-details__content tpproduct-details__sticky">
+                  <div className="tpproduct-details__tag-area d-flex align-items-center mb-5">
+                    <span className="tpproduct-details__tag">
+                      {product.productCategory}
+                    </span>
+                    <div className="tpproduct-details__rating">
+                      <Link href="#">
+                        <i className="fas fa-star" />
+                      </Link>
+                      <Link href="#">
+                        <i className="fas fa-star" />
+                      </Link>
+                      <Link href="#">
+                        <i className="fas fa-star" />
+                      </Link>
+                    </div>
+                    <a className="tpproduct-details__reviewers">10 Reviews</a>
+                  </div>
+                  <div className="tpproduct-details__title-area d-flex align-items-center flex-wrap mb-5">
+                    <h3 className="tpproduct-details__title">
+                      {product.productName}
+                    </h3>
+                    <span className="tpproduct-details__stock">
+                      {stock ? "In Stock" : "Out of Stock"}
+                    </span>
+                  </div>
+                  <div className="tpproduct-details__price mb-30">
+                    <del> ₹{product.productOldPrice}</del>
+                    <span>{product.productPrice}</span>{discount > 0 && (
+                <span
+                  style={{
+                    color: '#866528',
+                    fontSize: '1rem',
+                    marginLeft: '0.5rem',
+                    fontWeight: 'normal',
+                  }}
+                >
+                  ({discount.toFixed(0)}% off)
+                </span>
+              )}
+                  </div>
+                  <div className="tpproduct-details__pera">
+                    <p>
+                      {product.productDetails?.map((detail) => (
+                        <li>{detail}</li>
+                      ))}
+                    </p>
+                  </div>
+                  
+                  <div className="custom-color-container">
+                    <div className="custom-color-row">
+                      {product.productColor?.map((color, index) => (
+                        <span
+                          className={`custom-color-link ${selectedColor === color ? "selected" : ""}`}
+                          //   href={`/ShopDetails/${product._id}`}
+                          key={index}
+                        >
+                          <button onClick={() => setColor(color)}
+                            className="custom-color-circle"
+                            style={{ backgroundColor: `${color}` }}
+                            
+                          ></button>
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Size */}
+
+                  <div className="custom-button-container">
+                    <h5 className="custom-button-title">Select Size</h5>
+                    <div className="custom-button-group">
+                      {product.productSize?.[0].map((size, index) => (
+                        <button className={`custom-button ${selectedSize === size ? "selected" : ""}`} onClick={() => setSize(size)} key={index}>
+                          {size}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="tpproduct-details__count d-flex align-items-center flex-wrap mb-25">
+                    {/* <div className="tpproduct-details__quantity">
                                             <span className="cart-minus"><i className="far fa-minus" /></span>
                                             <input className="tp-cart-input" type="text" defaultValue={1} />
                                             <span className="cart-plus"><i className="far fa-plus" /></span>
                                         </div> */}
-                                        <div className="tpproduct-details__quantity">
-                                            
-                                            <button onClick={() => setValue(value === 1 ? 1 : value - 1)}><i className="fal fa-minus" /></button>
-                                            <span>{value}</span>
-                                            <button onClick={() => setValue(value + 1)}><i className="fal fa-plus" /></button>
-                                        </div>
-                                        <div className="tpproduct-details__cart ml-20">
-                                            <button onClick={handleAddToCart}><i className="fal fa-shopping-cart" /> Add To Cart</button>
-                                        </div>
-                                        <div className="tpproduct-details__wishlist ml-20">
-                                            <button><i className="fal fa-heart" /></button>
-                                        </div>
-                                    </div>
-                                    <div className="tpproductdot mb-30">
-                                        <Link className="tpproductdot__variationitem" href="#">
-                                            <div className="tpproductdot__termshape">
-                                                <span className="tpproductdot__termshape-bg" />
-                                                <span className="tpproductdot__termshape-border" />
-                                            </div>
-                                        </Link>
-                                        <Link className="tpproductdot__variationitem" href="#">
-                                            <div className="tpproductdot__termshape">
-                                                <span className="tpproductdot__termshape-bg red-product-bg" />
-                                                <span className="tpproductdot__termshape-border red-product-border" />
-                                            </div>
-                                        </Link>
-                                        <Link className="tpproductdot__variationitem" href="#">
-                                            <div className="tpproductdot__termshape">
-                                                <span className="tpproductdot__termshape-bg orange-product-bg" />
-                                                <span className="tpproductdot__termshape-border orange-product-border" />
-                                            </div>
-                                        </Link>
-                                        <Link className="tpproductdot__variationitem" href="#">
-                                            <div className="tpproductdot__termshape">
-                                                <span className="tpproductdot__termshape-bg purple-product-bg" />
-                                                <span className="tpproductdot__termshape-border purple-product-border" />
-                                            </div>
-                                        </Link>
-                                    </div>
-                                    <div className="tpproduct-details__information tpproduct-details__code">
-                                        <p>SKU:</p><span>BO1D0MX8SJ</span>
-                                    </div>
-                                    <div className="tpproduct-details__information tpproduct-details__categories">
-                                        <p>Categories:</p>
-                                        <span><Link href="#">{product.productType}</Link></span>
-                                       
-                                    </div>
-                                    {/* <div className="tpproduct-details__information tpproduct-details__tags">
+                    <div className="tpproduct-details__quantity">
+                      <button
+                        onClick={() => setValue(value === 1 ? 1 : value - 1)}
+                      >
+                        <i className="fal fa-minus" />
+                      </button>
+                      <span>{value}</span>
+                      <button onClick={() => setValue(value + 1)}>
+                        <i className="fal fa-plus" />
+                      </button>
+                    </div>
+                    <div className="tpproduct-details__cart ml-20">
+                      <button onClick={handleAddToCart}>
+                        <i className="fal fa-shopping-cart" /> Add To Cart
+                      </button>
+                    </div>
+                    <div className="tpproduct-details__wishlist ml-20">
+                      <button>
+                        <i className="fal fa-heart" />
+                      </button>
+                    </div>
+                  </div>
+                  <div className="tpproduct-details__information tpproduct-details__code">
+                    <p>Stock:</p>
+                    <span>{product.productStock}</span>
+                  </div>
+                  <div className="tpproduct-details__information tpproduct-details__categories">
+                    <p>Categories:</p>
+                    <span>
+                      <Link href="#">{product.productType}</Link>
+                    </span>
+                  </div>
+                  {/* <div className="tpproduct-details__information tpproduct-details__tags">
                                         <p>Tags:</p>
                                         <span><Link href="#">fashion,</Link></span>
                                         <span><Link href="#">t-shirts,</Link></span>
                                         <span><Link href="#">women</Link></span>
                                     </div> */}
-                                    <div className="tpproduct-details__information tpproduct-details__social">
-                                        <p>Share:</p>
-                                        <Link href="#"><i className="fab fa-facebook-f" /></Link>
-                                        <Link href="#"><i className="fab fa-twitter" /></Link>
-                                        <Link href="#"><i className="fab fa-behance" /></Link>
-                                        <Link href="#"><i className="fab fa-youtube" /></Link>
-                                        <Link href="#"><i className="fab fa-linkedin" /></Link>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="col-lg-2 col-md-5">
-                                <div className="tpproduct-details__condation">
-                                    <ul>
-                                        <li>
-                                            <div className="tpproduct-details__condation-item d-flex align-items-center">
-                                                <div className="tpproduct-details__condation-thumb">
-                                                    <img src="/assets/img/icon/product-det-1.png" alt="" className="tpproduct-details__img-hover" />
-                                                </div>
-                                                <div className="tpproduct-details__condation-text">
-                                                    <p>Free Shipping apply to all<br />orders over $100</p>
-                                                </div>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div className="tpproduct-details__condation-item d-flex align-items-center">
-                                                <div className="tpproduct-details__condation-thumb">
-                                                    <img src="/assets/img/icon/product-det-2.png" alt="" className="tpproduct-details__img-hover" />
-                                                </div>
-                                                <div className="tpproduct-details__condation-text">
-                                                    <p>Guranteed 100% Organic<br />from natural farmas</p>
-                                                </div>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div className="tpproduct-details__condation-item d-flex align-items-center">
-                                                <div className="tpproduct-details__condation-thumb">
-                                                    <img src="/assets/img/icon/product-det-3.png" alt="" className="tpproduct-details__img-hover" />
-                                                </div>
-                                                <div className="tpproduct-details__condation-text">
-                                                    <p>1 Day Returns if you change<br />your mind</p>
-                                                </div>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div className="tpproduct-details__condation-item d-flex align-items-center">
-                                                <div className="tpproduct-details__condation-thumb">
-                                                    <img src="/assets/img/icon/product-det-4.png" alt="" className="tpproduct-details__img-hover" />
-                                                </div>
-                                                <div className="tpproduct-details__condation-text">
-                                                    <p>Covid-19 Info: We keep<br />delivering.</p>
-                                                </div>
-                                            </div>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
+                  <div className="tpproduct-details__information tpproduct-details__social">
+                    <p>Share:</p>
+                    <Link href="#">
+                      <i className="fab fa-facebook-f" />
+                    </Link>
+                    <Link href="#">
+                      <i className="fab fa-twitter" />
+                    </Link>
+                    <Link href="#">
+                      <i className="fab fa-behance" />
+                    </Link>
+                    <Link href="#">
+                      <i className="fab fa-youtube" />
+                    </Link>
+                    <Link href="#">
+                      <i className="fab fa-linkedin" />
+                    </Link>
+                  </div>
+                </div>
+              </div>
+              <div className="col-lg-2 col-md-5">
+                <div className="tpproduct-details__condation">
+                  <ul>
+                    <li>
+                      <div className="tpproduct-details__condation-item d-flex align-items-center">
+                        <div className="tpproduct-details__condation-thumb">
+                          <img
+                            src="/assets/img/icon/product-det-1.png"
+                            alt=""
+                            className="tpproduct-details__img-hover"
+                          />
                         </div>
-                    </div>
-                </section>
-                <div className="product-setails-area">
-                    <div className="container">
-                        <div className="row">
-                            <div className="col-lg-12">
-                                <div className="tpproduct-details__navtab mb-60">
-                                    <div className="tpproduct-details__nav mb-30">
-                                        <ul className="nav nav-tabs pro-details-nav-btn" id="myTabs" role="tablist">
-                                            <li className="nav-item" onClick={() => handleOnClick(1)}>
-                                                <button className={activeIndex == 1 ? "nav-links active" : "nav-links"}>Description</button>
-                                            </li>
-                                            <li className="nav-item" onClick={() => handleOnClick(2)}>
-                                                <button className={activeIndex == 2 ? "nav-links active" : "nav-links"}>Additional information</button>
-                                            </li>
-                                            {/* <li className="nav-item" onClick={() => handleOnClick(3)}>
+                        <div className="tpproduct-details__condation-text">
+                          <p>
+                            Free Shipping apply to all
+                            <br />
+                            orders over $100
+                          </p>
+                        </div>
+                      </div>
+                    </li>
+                    <li>
+                      <div className="tpproduct-details__condation-item d-flex align-items-center">
+                        <div className="tpproduct-details__condation-thumb">
+                          <img
+                            src="/assets/img/icon/product-det-2.png"
+                            alt=""
+                            className="tpproduct-details__img-hover"
+                          />
+                        </div>
+                        <div className="tpproduct-details__condation-text">
+                          <p>
+                            Guranteed 100% Organic
+                            <br />
+                            from natural farmas
+                          </p>
+                        </div>
+                      </div>
+                    </li>
+                    <li>
+                      <div className="tpproduct-details__condation-item d-flex align-items-center">
+                        <div className="tpproduct-details__condation-thumb">
+                          <img
+                            src="/assets/img/icon/product-det-3.png"
+                            alt=""
+                            className="tpproduct-details__img-hover"
+                          />
+                        </div>
+                        <div className="tpproduct-details__condation-text">
+                          <p>
+                            1 Day Returns if you change
+                            <br />
+                            your mind
+                          </p>
+                        </div>
+                      </div>
+                    </li>
+                    <li>
+                      <div className="tpproduct-details__condation-item d-flex align-items-center">
+                        <div className="tpproduct-details__condation-thumb">
+                          <img
+                            src="/assets/img/icon/product-det-4.png"
+                            alt=""
+                            className="tpproduct-details__img-hover"
+                          />
+                        </div>
+                        <div className="tpproduct-details__condation-text">
+                          <p>
+                            Covid-19 Info: We keep
+                            <br />
+                            delivering.
+                          </p>
+                        </div>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        <div className="product-setails-area">
+          <div className="container">
+            <div className="row">
+              <div className="col-lg-12">
+                <div className="tpproduct-details__navtab mb-60">
+                  <div className="tpproduct-details__nav mb-30">
+                    <ul
+                      className="nav nav-tabs pro-details-nav-btn"
+                      id="myTabs"
+                      role="tablist"
+                    >
+                      <li className="nav-item" onClick={() => handleOnClick(1)}>
+                        <button
+                          className={
+                            activeIndex == 1 ? "nav-links active" : "nav-links"
+                          }
+                        >
+                          Description
+                        </button>
+                      </li>
+                      <li className="nav-item" onClick={() => handleOnClick(2)}>
+                        <button
+                          className={
+                            activeIndex == 2 ? "nav-links active" : "nav-links"
+                          }
+                        >
+                          Additional information
+                        </button>
+                      </li>
+                      {/* <li className="nav-item" onClick={() => handleOnClick(3)}>
                                                 <button className={activeIndex == 3 ? "nav-links active" : "nav-links"}>Reviews (2)</button>
                                             </li> */}
-                                        </ul>
-                                    </div>
-                                    <div className="tab-content tp-content-tab" id="myTabContent-2">
-                                        <div className={activeIndex == 1 ? "tab-para tab-pane fade show active" : "tab-para tab-pane fade"}>
-                                            <p className="mb-30">{product.productDescription}</p>
-                                        </div>
-                                        <div className={activeIndex == 2 ? "tab-pane fade show active" : "tab-pane fade"}>
-                                            <div className="product__details-info table-responsive">
-                                                <table className="table table-striped">
-                                                    <tbody>
-                                                        <tr>
-                                                            <td className="add-info">Weight</td>
-                                                            <td className="add-info-list"> 2 lbs</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td className="add-info">Dimensions</td>
-                                                            <td className="add-info-list"> 12 × 16 × 19 in</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td className="add-info">Product</td>
-                                                            <td className="add-info-list"> Purchase this product on rag-bone.com</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td className="add-info">Color</td>
-                                                            <td className="add-info-list"> Gray, Black</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td className="add-info">Size</td>
-                                                            <td className="add-info-list"> S, M, L, XL</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td className="add-info">Model</td>
-                                                            <td className="add-info-list"> Model </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td className="add-info">Shipping</td>
-                                                            <td className="add-info-list"> Standard shipping: $5,95L</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td className="add-info">Care Info</td>
-                                                            <td className="add-info-list"> Machine Wash up to 40ºC/86ºF Gentle Cycle</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td className="add-info">Brand</td>
-                                                            <td className="add-info-list">  Kazen</td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </div>
-                                        {/* <div className={activeIndex == 3 ? "tab-pane fade show active" : "tab-pane fade"}>
+                    </ul>
+                  </div>
+                  <div
+                    className="tab-content tp-content-tab"
+                    id="myTabContent-2"
+                  >
+                    <div
+                      className={
+                        activeIndex == 1
+                          ? "tab-para tab-pane fade show active"
+                          : "tab-para tab-pane fade"
+                      }
+                    >
+                      <p className="mb-30">{product.productDescription}</p>
+                    </div>
+                    <div
+                      className={
+                        activeIndex == 2
+                          ? "tab-pane fade show active"
+                          : "tab-pane fade"
+                      }
+                    >
+                      <div className="product__details-info table-responsive">
+                        <table className="table table-striped">
+                          <tbody>
+                            <tr>
+                              <td className="add-info">Weight</td>
+                              <td className="add-info-list"> 2 lbs</td>
+                            </tr>
+                            <tr>
+                              <td className="add-info">Dimensions</td>
+                              <td className="add-info-list">
+                                {" "}
+                                12 × 16 × 19 in
+                              </td>
+                            </tr>
+                            <tr>
+                              <td className="add-info">Product</td>
+                              <td className="add-info-list">
+                                {" "}
+                                Purchase this product on rag-bone.com
+                              </td>
+                            </tr>
+                            <tr>
+                              <td className="add-info">Color</td>
+                              <td className="add-info-list"> Gray, Black</td>
+                            </tr>
+                            <tr>
+                              <td className="add-info">Size</td>
+                              <td className="add-info-list"> S, M, L, XL</td>
+                            </tr>
+                            <tr>
+                              <td className="add-info">Model</td>
+                              <td className="add-info-list"> Model </td>
+                            </tr>
+                            <tr>
+                              <td className="add-info">Shipping</td>
+                              <td className="add-info-list">
+                                {" "}
+                                Standard shipping: $5,95L
+                              </td>
+                            </tr>
+                            <tr>
+                              <td className="add-info">Care Info</td>
+                              <td className="add-info-list">
+                                {" "}
+                                Machine Wash up to 40ºC/86ºF Gentle Cycle
+                              </td>
+                            </tr>
+                            <tr>
+                              <td className="add-info">Brand</td>
+                              <td className="add-info-list"> Kazen</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                    {/* <div className={activeIndex == 3 ? "tab-pane fade show active" : "tab-pane fade"}>
                                             <div className="product-details-review">
                                                 <h3 className="tp-comments-title mb-35">3 reviews for “Wide Cotton Tunic extreme hammer”</h3>
                                                 <div className="latest-comments mb-55">
@@ -440,18 +600,14 @@ export default function ShopDetails2() {
                                                 </div>
                                             </div>
                                         </div> */}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                  </div>
                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
-
-
-
-
-                {/* 
+        {/* 
                 
                 
                 
@@ -467,8 +623,8 @@ export default function ShopDetails2() {
                 
                 
                 */}
-                <RelatedProducts category={product.productCategory} />
-            </Layout>
-        </>
-    )
+        <RelatedProducts category={product.productCategory} />
+      </Layout>
+    </>
+  );
 }

@@ -36,7 +36,7 @@ export default function Shop2() {
               {/* Products page */}
               <div className="custom-main-product">
               {products.map((item) => (
-                <ShopList thumb1={item.productImage[0]} thumb2={item.productImage[1]} id={item._id} name={item.productName} description={item.productDescription} price={item.productPrice} category={item.productCategory} type={item.productType} brand={item.productBrand} />
+                <ShopList thumb1={item.productImage[0]} thumb2={item.productImage[1]} id={item._id} name={item.productName} description={item.productDescription} price={item.productPrice} oldPrice={item.productOldPrice} category={item.productCategory} type={item.productType} brand={item.productBrand} />
                 
               ))}
               </div>

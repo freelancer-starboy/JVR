@@ -74,6 +74,8 @@ const { userId}  = useAuth()
                                                     <th className="product-thumbnail">Images</th>
                                                     <th className="cart-product-name">Product Name</th>
                                                     <th className="product-price">Unit Price</th>
+                                                    <th className="product-color">color</th>
+                                                    <th className="product-size">size</th>
                                                     <th className="product-quantity">Quantity</th>
                                                     <th className="product-subtotal">Total</th>
                                                     <th className="product-remove">Remove</th>
@@ -97,6 +99,8 @@ const { userId}  = useAuth()
         onQuantityChange={handleQuantityChange}
         onDelete={handleDelete}
         showEmptyMessage={false}  
+        color={item.productColor}
+        size={item.productSize}
       />
     ))
   )
@@ -123,8 +127,8 @@ const { userId}  = useAuth()
                                             <div className="cart-page-total">
                                                 <h2>Cart totals</h2>
                                                 <ul className="mb-20">
-                                                    <li>Subtotal <span>${total.toFixed(2)}</span></li>
-                                                    <li>Total <span>${total.toFixed(2)}</span></li>
+                                                    <li>Subtotal <span>₹{total.toFixed(2)}</span></li>
+                                                    <li>Total <span>₹{total.toFixed(2)}</span></li>
                                                 </ul>
                                                 <Link href="/checkout" className="tp-btn tp-color-btn banner-animation">Proceed to Checkout</Link>
                                             </div>
