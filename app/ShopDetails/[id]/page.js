@@ -41,6 +41,13 @@ export default function ShopDetails2() {
 
   const handleAddToCart = async (e) => {
     e.preventDefault();
+    if(!selectedSize){
+      alert("Please select size")
+      return
+    }
+    if(!selectedColor){
+      alert("Please select color")
+    }
     setLoading(true);
     try {
       if (!userId) {
@@ -195,7 +202,7 @@ export default function ShopDetails2() {
                           <button onClick={() => setColor(color)}
                             className="custom-color-circle"
                             style={{ backgroundColor: `${color}` }}
-                            
+                            aria-required
                           ></button>
                         </span>
                       ))}
@@ -208,7 +215,7 @@ export default function ShopDetails2() {
                     <h5 className="custom-button-title">Select Size</h5>
                     <div className="custom-button-group">
                       {product.productSize?.[0].map((size, index) => (
-                        <button className={`custom-button ${selectedSize === size ? "selected" : ""}`} onClick={() => setSize(size)} key={index}>
+                        <button className={`custom-button ${selectedSize === size ? "selected" : ""}`} onClick={() => setSize(size)} key={index} aria-required>
                           {size}
                         </button>
                       ))}
@@ -232,9 +239,17 @@ export default function ShopDetails2() {
                       </button>
                     </div>
                     <div className="tpproduct-details__cart ml-20">
+                      {product.productStock === 0 ? (
+                        <button disabled>
+                          <i className="fal fa-shopping-cart" /> Out Of Stock
+                        </button>
+                      ) : (
+                        
                       <button onClick={handleAddToCart}>
                         <i className="fal fa-shopping-cart" /> Add To Cart
                       </button>
+                      )
+                      }
                     </div>
                     <div className="tpproduct-details__wishlist ml-20">
                       <button>
