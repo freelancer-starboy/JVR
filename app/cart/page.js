@@ -10,6 +10,7 @@ import { useDeleteCartItemMutation, useFetchCartQuery, useUpdateCartMutation } f
 import { useAuth } from "@/components/AuthContent/AuthContent"
 import { toast } from "react-toastify"
 import Preloader from "@/components/elements/Preloader"
+import { useRouter } from "next/navigation"
 
 
 export default function Cart() {
@@ -23,9 +24,7 @@ const { userId}  = useAuth()
             if(isLoading) {
                 return <Preloader />
             }
-            if(isError) {
-                return <p>Error</p>
-            }
+           
             let total = 0;
             cartItems?.forEach((item) => {
                 const price = item.quantity * item.productPrice;

@@ -36,6 +36,7 @@ export async function POST(req) {
     );
   } catch (error) {
     console.error("Error fetching payment details:", error);
+    
     return new Response(
       JSON.stringify({ error: "Failed to fetch payment details" }),
       { status: 500 }
