@@ -10739,7 +10739,7 @@ only screen and (min-width: 768px) and (max-width: 991px),
 
   .custom-filter-main{
     width: auto;
-    background-color: lightblue;
+    /* background-color: lightblue; */
     border-bottom: 1px rgb(234, 225, 225) solid
 
   }
@@ -10761,6 +10761,7 @@ only screen and (min-width: 768px) and (max-width: 991px),
   .custom-select-button-div span{
     margin-left: 0.5rem;
   }
+  
   .active{
     display: flex !important;
     border-top: 1px solid rgb(234, 225, 225);
@@ -10780,3 +10781,101 @@ only screen and (min-width: 768px) and (max-width: 991px),
     width: 20%;
 
   }
+  .custom-shop-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    justify-content: center;
+  }
+  .custom-shop-container button {
+    padding: 0.5rem 1rem;
+    background-color: #F9F9F9;
+    color: #A4A4A4;
+    border: none;
+    cursor: pointer;
+    border : 1px solid #C9B9A1
+  }
+  .custom-shop-container button:hover {
+    background-color: #c4bfb9;
+  }
+  .custom-shop-container span{
+    margin-left: 1rem;
+    color : #C9B9A1
+  }
+  .custom-map-button {
+    display: flex !important;
+    gap: 2rem !important;
+  }
+  .custom-type-button{
+    display: flex !important;
+    justify-content: space-between !important;
+  }
+  .custom-type-button button:last-child{
+    display: flex;
+    color: var(--tp-theme-5);
+    justify-content: flex-end !important;
+    align-items: flex-end !important;
+    margin-left: 1rem !important;
+    font-size: small;
+  }
+  .custom-filter-container {
+    padding: 1rem;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .custom-filter-clear-all {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    align-self: flex-start;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: background-color 0.3s ease;
+  }
+  
+  .custom-filter-clear-all:hover {
+    background-color: #c0392b;
+  }
+  
+  .custom-filter-selected {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  
+  .custom-filter-item {
+    background-color: #dfe6e9;
+    border-radius: 20px;
+    padding: 0.5rem 1rem;
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+  }
+  
+  .custom-filter-button {
+    background: none;
+    border: none;
+    font-size: 14px;
+    color: #2d3436;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    transition: color 0.3s ease;
+  }
+  
+  .custom-filter-button:hover {
+    color: #e74c3c;
+  }
+  
