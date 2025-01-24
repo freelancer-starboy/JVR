@@ -10008,9 +10008,11 @@ only screen and (min-width: 768px) and (max-width: 991px),
 /* Main container for product grid */
 .custom-main-product {
     display: grid;
-    grid-template-columns: repeat(4, 1fr); /* 4 products in a row */
+    grid-template-columns: repeat(3, 1fr); /* Adjusts the grid to fit items */
     gap: 30px; /* Spacing between cards */
     padding: 20px;
+    width: 100%;
+    
   }
   
   /* Individual product card */
@@ -10459,6 +10461,7 @@ only screen and (min-width: 768px) and (max-width: 991px),
       transform: rotate(360deg);
     }
   }
+
   .custom-login-main {
     display: flex;
     font-family: 'Times New Roman', serif; /* Set font to Times New Roman */
@@ -10611,4 +10614,169 @@ only screen and (min-width: 768px) and (max-width: 991px),
     text-align: center;
     font-size: 1.2rem;
     margin-top: 30px;
+}
+  
+
+  @media screen and (max-width: 768px) {
+    .custom-select {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5rem;
+        background-color: #fff;
+        color: #333;
+        width: 100% !important;
+        height: auto;
+        cursor: pointer;
+        transition: border-color 0.3s ease-in-out;
+        margin-top: 3rem;
+      }
+      
+      
+      .custom-select:hover {
+        border-color: #888; 
+      }
+      
+      .custom-select:focus {
+        border-color: #007bff; 
+        outline: none;
+        box-shadow: 0 0 4px rgba(0, 123, 255, 0.5);
+      }
+      .custom-container-select{
+        display: block !important;
+      }
+      .container-c1{
+        display: flex;
+        flex-direction: column !important;
+        margin: 0rem !important
+      }
+      .job-main-container{
+        max-width: 90% !important;
+        margin: 1rem !important;
+        padding: 1rem !important;
+        flex-direction: row !important;
+        margin-right: 1rem !important;
+      }
+      .custom-select {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5rem;
+        background-color: #fff;
+        color: #333;
+        width: 100% !important;
+        height: auto;
+        cursor: pointer;
+        transition: border-color 0.3s ease-in-out;
+        margin-top: 3rem;
+      }
+      
+      
+      .custom-select:hover {
+        border-color: #888; 
+      }
+      
+      .custom-select:focus {
+        border-color: #007bff; 
+        outline: none;
+        box-shadow: 0 0 4px rgba(0, 123, 255, 0.5);
+      }
+      .custom-container-select{
+        display: block !important;
+      }
+      .container-c1{
+        display: flex;
+        flex-direction: column !important;
+        margin: 0rem !important
+      }
+  }
+
+ 
+.custom-select-div{
+    display: flex !important;
+    flex-direction: column !important;
+    background-color: #333;
+    padding: 2rem;
+    /* margin: 2rem; */
+    /* margin : 0 2rem 2rem 2rem; */
+    overflow-x: hidden;
+    border: 1px solid #ccc;
+    border-radius: 1rem;
+    background-color: #fff;
+    color: #333;
+    height: auto !important;
+    width: auto;
+    cursor: pointer;
+    transition: border-color 0.3s ease-in-out;
+    
+  }
+  .custom-select-div p{
+    font-weight: 100 !important;
+    color: #C81214 !important;
+  }
+  .custom-select-div select{
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5rem;
+    background-color: #fff;
+    color: #333;
+    width: 100% !important;
+    height: auto;
+    cursor: pointer;
+    transition: border-color 0.3s ease-in-out;
+    margin-top: 0.5rem;
+  }
+  
+  
+  .container-c1 {
+    display: flex;
+    flex-direction: row;
+    padding-top: 2rem;
+    margin-right: 2rem;
+  }
+  
+  .custom-product-div{
+    display: flex !important;
+  }
+
+  .custom-filter-main{
+    width: auto;
+    background-color: lightblue;
+    border-bottom: 1px rgb(234, 225, 225) solid
+
+  }
+  .custom-select-button{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .custom-select-button button{
+    padding-bottom: 1rem;
+  }
+  .custom-select-button-div{
+    display: none;
+    flex-direction: column;
+    margin-left: 1rem;
+    padding: 0.5rem 0px;
+   
+  }
+  .custom-select-button-div span{
+    margin-left: 0.5rem;
+  }
+  .active{
+    display: flex !important;
+    border-top: 1px solid rgb(234, 225, 225);
+  }
+  .custom-filter-button-div{
+    display: flex;
+    flex-direction: column;
+  }
+  .custom-container{
+    padding: 0 2rem 0 2rem;
+  }
+  .custom-filter-main-parent{
+    display: flex;
+    flex-direction: row;
+  }
+  .custom-filter-inside-parent{
+    width: 20%;
+
   }

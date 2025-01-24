@@ -7,7 +7,7 @@ export async function POST(req) {
     const { userId, cartItems, shippingAddress, paymentDetails, orderTotal, orderStatus } = body;
 
     // Validate required fields
-    if (!userId || !cartItems?.length || !shippingAddress || !paymentDetails || !orderTotal || !orderStatus) {
+    if (!userId || !cartItems?.length || !shippingAddress || !paymentDetails || !orderTotal) {
       return new Response(
         JSON.stringify({ message: "Invalid input: Ensure all required fields are provided." }),
         { status: 400 }
@@ -34,7 +34,7 @@ export async function POST(req) {
       shippingAddress,
       paymentDetails,
       orderTotal,
-      orderStatus,
+      orderStatus : orderStatus || 'Processing',
     });
 
     const savedCheckout = await newCheckout.save();

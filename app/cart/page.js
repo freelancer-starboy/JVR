@@ -10,6 +10,7 @@ import { useDeleteCartItemMutation, useFetchCartQuery, useUpdateCartMutation } f
 import { useAuth } from "@/components/AuthContent/AuthContent"
 import { toast } from "react-toastify"
 import Preloader from "@/components/elements/Preloader"
+import { useRouter } from "next/navigation"
 
 
 export default function Cart() {
@@ -23,9 +24,6 @@ const { userId}  = useAuth()
             if(isLoading) {
                 return <Preloader />
             }
-            if(isError) {
-                return <p>Error</p>
-            }
             let total = 0;
             cartItems?.forEach((item) => {
                 const price = item.quantity * item.productPrice;
@@ -33,12 +31,16 @@ const { userId}  = useAuth()
             });
 
             const handleQuantityChange = async(id, quantity) => {
+                console.log("Update Request:", { id, quantity }); 
                 const response = await updateQuantity({ id, quantity });
 
+                console.log("Update Response:", response); // Log full response
                 if (response.error) {
+                    console.error("Detailed Error:", response.error);
                     toast.error("Failed to update quantity");
                 } else {
                     toast.success("Quantity updated successfully");
+                    console.log("Refetching cart data"); // Confirm refetch
                     refetch()
                     }
                 

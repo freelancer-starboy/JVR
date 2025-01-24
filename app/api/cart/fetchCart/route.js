@@ -22,32 +22,50 @@ export async function GET(req){
 
 export async function PUT(req){
     const { id, quantity } = await req.json()
+    console.log("Received Update Request:", { id, quantity });
+
     try {
         const quan = Number(quantity)
         await connectDb()
-        const data = await Cart.findOneAndUpdate({ "items.productId": id }, { $set: { "items.$.quantity": quan } }, { new : true})
+        
+        console.log("Attempting Database Update");
+        const data = await Cart.findOneAndUpdate(
+            { "items.productId": id }, 
+            { $set: { "items.$.quantity": quan, updatedAt: new Date()  } }, 
+            { 
+                new: true,
+            }
+        )
+
+        console.log("Update Result:", data);
+
         if (!data) {
+            console.error("No Item Found");
             return new Response(JSON.stringify({ message: "Item not found" }), { status: 404 });
         }
         return new Response(JSON.stringify(data), { status: 200 });
     } catch (error) {
-        return new Response({ message : error.message}, {status : 500})
+        console.error("Update Error:", error);
+        return new Response(JSON.stringify({ message: error.message }), {status: 500})
     }
 }
 
 export async function DELETE(req){
     try {
         const  {id}  = await req.json()
+        await connectDb()
         const data = await Cart.findOneAndUpdate(
             { "items.productId": id },
             { $pull: { items: { productId: id } } },
             { new: true }
         );
         if (!data) {
+            console.error("No item found to delete");
             return new Response(JSON.stringify({ message: "Item not found" }), { status: 404 });
         }
         return new Response(JSON.stringify(data), { status: 200 });
     } catch (error) {
-        return new Response({ message : error.message}, {status : 500})
+        console.error("Delete Error:", error);
+        return new Response(JSON.stringify({ message: error.message }), { status: 500 });
     }
 }

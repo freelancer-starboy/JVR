@@ -22,6 +22,7 @@ export default function HeaderCart({ isCartSidebar, handleCartSidebar }) {
   
     
     const {data: cartItems, isLoading, isError, refetch} = useFetchCartQuery(userId)
+   
     useEffect(() => {
         if(userId){
 
@@ -44,7 +45,8 @@ export default function HeaderCart({ isCartSidebar, handleCartSidebar }) {
                     <div className="tpcart__product" style={{ overflow : "scroll"}}>
                         <div className="tpcart__product-list">
                             <ul>
-                                {cartItems?.length === 0 ? <p className="text-center">Add products to show in cart!</p>
+                                {isError && <p className="text-center"><span className="text-danger"><a href='/sign-in'>Login</a></span> to add to cart!</p> }
+                                {cartItems && cartItems?.length === 0  ? <p className="text-center">Add products to show in cart!</p>
                                 :
                                 cartItems?.map((item,i) => (
                                     <li key={i}>
@@ -76,8 +78,14 @@ export default function HeaderCart({ isCartSidebar, handleCartSidebar }) {
                                 <span className="heilight-price"> ${total.toFixed(2)}</span>
                             </div>
                             <div className="tpcart__checkout-btn">
-                                <Link className="tpcart-btn mb-10" href="/cart">View Cart</Link>
-                                <Link className="tpcheck-btn" href="/checkout">Checkout</Link>
+                                {isError ?
+                                <></>
+                                : <>
+                                    <Link className="tpcart-btn mb-10" href="/cart">View Cart</Link> 
+                                    <Link className="tpcheck-btn" href="/checkout">Checkout</Link>
+                                </>
+                            }
+                                
                             </div>
                         </div>
                     </div>

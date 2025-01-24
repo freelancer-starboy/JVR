@@ -4,7 +4,7 @@ import { set } from "mongoose";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
-export default function PaymentPage({ amount, onPaymentSuccess, transactionId, setTransactionId }) {
+export default function PaymentPage({ amount, onPaymentSuccess, transactionId, setTransactionId, setStatus, setMethod }) {
   const router = useRouter()
   useEffect(() => {
     // Ensure Razorpay script is loaded
@@ -14,7 +14,8 @@ export default function PaymentPage({ amount, onPaymentSuccess, transactionId, s
     document.body.appendChild(script);
   }, []);
 
-  async function handlePayment() {
+  async function handlePayment(e) {
+    e.preventDefault();
     const response = await fetch("/api/payments/createPayment", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -52,12 +53,15 @@ export default function PaymentPage({ amount, onPaymentSuccess, transactionId, s
           if (ini.ok) {
             console.log("Transaction Details:", data);
             setTransactionId(data.transaction_id)
-            onPaymentSuccess()
+            setStatus(data.status)
+            setMethod(data.method)
+            onPaymentSuccess(true)
             // Redirect to success page with transaction ID
             // router.push(`/success?transactionId=${data.transaction_id}`);
           } else {
+            onPaymentSuccess(false)
             console.error("Error:", data.error);
-            alert("Failed to fetch transaction details.");
+            alert("Failed to fetch transaction details.", data.error);
           }
         } catch (error) {
           console.error("Error verifying payment:", error);
@@ -81,12 +85,13 @@ export default function PaymentPage({ amount, onPaymentSuccess, transactionId, s
     rzp.on("payment.failed", function (response) {
       console.error("Payment Failed:", response.error);
       alert("Payment failed. Please try again.");
+      onPaymentSuccess(false)
     });
   }
 
   return (
-    <div>
-      <button className="button-razorpay" onClick={handlePayment}>Pay with RazorPay</button>
-    </div>
+    
+      <button className="button-razorpay"  onClick={handlePayment}>Pay with RazorPay</button>
+    
   );
 }
