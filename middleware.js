@@ -12,5 +12,5 @@ export function middleware(request) {
 }
 
 export const config = {
-  matcher: ['/shop-2/:path*'], // Protect these pages
+  matcher: ['/cart, /checkout'], // Protect these pages
 };

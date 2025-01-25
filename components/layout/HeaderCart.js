@@ -45,9 +45,9 @@ export default function HeaderCart({ isCartSidebar, handleCartSidebar }) {
                     <div className="tpcart__product" style={{ overflow : "scroll"}}>
                         <div className="tpcart__product-list">
                             <ul>
-                                {isError && <p className="text-center"><span className="text-danger"><a href='/sign-in'>Login</a></span> to add to cart!</p> }
-                                {cartItems && cartItems?.length === 0  ? <p className="text-center">Add products to show in cart!</p>
-                                :
+                                {isError && !userId && <p className="text-center"><span className="text-danger"><a href='/sign-in'>Login</a></span> to add to cart!</p> }
+                                {userId && cartItems && cartItems?.length === 0  ? <p className="text-center"><span className="text-danger"><a href='/shop-2'>Add</a></span> items to add to cart!</p> : 
+
                                 cartItems?.map((item,i) => (
                                     <li key={i}>
                                         <div className="tpcart__item">
