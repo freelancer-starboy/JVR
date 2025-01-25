@@ -2,13 +2,16 @@
 import { useRelatedProductsQuery } from "@/features/api/productApi";
 import { useEffect, useState } from "react";
 
-const ShopFilter = ({ onCategorySelect, onTypeSelect, onPriceSelect }) => {
+const ShopFilter = ({ onCategorySelect, onTypeSelect, onPriceSelect, onSizeSelect }) => {
   const [categoryActive, setCategoryActive] = useState(false);
   const [typeActive, setTypeActive] = useState(false);
   const [priceActive, setPriceActive] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState([]);
+  const [selectedSize, setSelectedSize] = useState([]);
+
   const [selectedTypes, setSelectedTypes] = useState([]);
   const [price, setPrice] = useState(0);
+  const [sizeActive, setSizeActive] = useState(false);
   const latestCategory = selectedCategory[selectedCategory.length - 1] || null;
   const {
     data: types,
@@ -48,6 +51,16 @@ const ShopFilter = ({ onCategorySelect, onTypeSelect, onPriceSelect }) => {
       return updatedCategory;
     });
   };
+
+  const handleSizeSelect = (size) => {
+    setSelectedSize((prev) => {
+      const updatedSize = prev.includes(size)
+      ? prev.filter((s) => s !== size)
+      : [...prev, size];
+      onSizeSelect(updatedSize);
+      return updatedSize
+    })
+  }
   const handlePriceSelect = (value) => {
     setPrice(value);
     onPriceSelect(value);
@@ -69,6 +82,10 @@ const ShopFilter = ({ onCategorySelect, onTypeSelect, onPriceSelect }) => {
     setSelectedCategory((prev) => prev.filter((c) => c !== category));
     onCategorySelect((prev) => prev.filter((c) => c !== category));
   };
+  const removeSize = (size) => () => {
+    setSelectedSize((prev) => prev.filter((s) => s !== size));
+    onSizeSelect((prev) => prev.filter((s) => s !== size));
+  }
   const renderedTypes = [...new Set(storedTypes)];
   const handleClearAll = () => {
     setSelectedCategory([]);
@@ -112,6 +129,19 @@ const ShopFilter = ({ onCategorySelect, onTypeSelect, onPriceSelect }) => {
                     onClick={removeType(type)}
                   >
                     {type}
+                    <span className="custom-filter-close">x</span>
+                  </button>
+                </div>
+              ))}
+
+{Array.isArray(selectedSize) &&
+              selectedSize.map((size, index) => (
+                <div key={index} className="custom-filter-item">
+                  <button
+                    className="custom-filter-button"
+                    onClick={removeSize(size)}
+                  >
+                    {size}
                     <span className="custom-filter-close">x</span>
                   </button>
                 </div>
@@ -223,18 +253,41 @@ const ShopFilter = ({ onCategorySelect, onTypeSelect, onPriceSelect }) => {
                 </label>
               </div>
             ))}
-            {/* <div>
-            <input 
-            type="range" 
-            name='price' 
-            min={0} 
-            max={2000} 
-            id='price' 
-            value={price}
-            onChange={(e) => handlePriceSelect(e.target.value)}
-            />
-          </div> */}
+           
           </div>
+
+          {/* Size Filter */}
+
+          <div className="custom-select-button">
+          <button onClick={() => setSizeActive(!sizeActive)}>
+            <span>{sizeActive ? "--" : "+"}</span> Size
+          </button>
+          <div
+            className={`custom-select-button-div ${
+              sizeActive ? "active" : ""
+            }`}
+          >
+            {["S", "M", "L", "XL", "XXL", "XXXL"].map((size) => (
+              <div key={size}>
+                <input
+                  type="checkbox"
+                  name="size"
+                  value={size}
+                  id={size}
+                  checked={selectedSize.includes(size)}
+                  onChange={() => handleSizeSelect(size)}
+                />
+                <label htmlFor={size}>
+                  <span>
+                    {size.charAt(0).toUpperCase() + size.slice(1)}
+                  </span>
+                </label>
+              </div>
+            ))}
+          </div>
+        </div>
+
+          {/* End of size filter */}
         </div>
       </div>
     </>
