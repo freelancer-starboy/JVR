@@ -6,6 +6,7 @@ import ShopList from "@/components/JVR/shopList/ShopList";
 import { useFetchProductsQuery } from "@/features/api/productApi";
 import ShopFilter from "@/components/shopFilter/ShopFilter";
 import { IoMdArrowRoundBack } from "react-icons/io";
+import ShopFilterMobile from "@/components/shopFilter/ShopFilterMobile";
 
 export default function ShopPage() {
   const { data: products, error, isLoading } = useFetchProductsQuery();
@@ -72,33 +73,26 @@ export default function ShopPage() {
       {/* Mobile Filter */}
 
       <div className="mobile-filter-container">
-        <button className="mobile-filter-button">
+        <button className="mobile-filter-button" onClick={toggleFilterPopup}>
           FILTERS
         </button>
-        {/* <div className="mobile-filter-content">
-        <ShopFilter
-                  onCategorySelect={setSelectedCategory}
-                  onTypeSelect={setSelectedType}
-                  onPriceSelect={setSelectedPrice}
-                  onSizeSelect={setSelectedSize}
-                />
-        </div> */}
       </div>
-      <div className="mobile-filter-page">
-        <button>
-        <IoMdArrowRoundBack style={{fontSize: "1.5rem"}} />
-        <span>Filters</span>
-        </button>
-      </div>
+      {isMobile && isFilterPopup && (
+        <ShopFilterMobile closeFilterPopup={toggleFilterPopup} onCategorySelect={setSelectedCategory}
+        onTypeSelect={setSelectedType}
+        onPriceSelect={setSelectedPrice}
+        onSizeSelect={setSelectedSize} />
+      )}
+      
+      
       {/* End of mobile filter */}
-      <div className={`${isMobile ? "" : "product-area pt-70 pb-20"}`}>
+      <div className="product-area pt-70 pb-20">
         <div className="custom-container">
           <div className="row">
             <div className="custom-filter-main-parent">
 
-              <div className="custom-filter-inside-parent mob">
+              <div className="custom-filter-inside-parent">
                 <ShopFilter
-                  ifMobile={isMobile}
                   onCategorySelect={setSelectedCategory}
                   onTypeSelect={setSelectedType}
                   onPriceSelect={setSelectedPrice}
