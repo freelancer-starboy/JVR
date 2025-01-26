@@ -345,10 +345,10 @@ const Login = () => {
           </div>
           <div className="custom-login-center-buttons">
               <button type="button" onClick={handleGoogleSignIn}>
-                {user ? `Welcome, ${user.displayName}` : (
+                
                   <div style={{display:"flex", flexDirection: "row", justifyContent: "center", alignItems: "center", gap: "1rem"}}>
                     <img src="/assets/css/images/g-logo.png" />
-                  </div>)}
+                  </div>
               </button>
             </div>
         </div>

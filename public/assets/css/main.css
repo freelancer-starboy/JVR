@@ -10646,14 +10646,14 @@ only screen and (min-width: 768px) and (max-width: 991px),
   }
   
   .custom-login-center-buttons button:nth-child(1) {
-    /* background: linear-gradient(90deg, #DEC48C, white); */
-    display: none;
+    background: linear-gradient(90deg, #ffffff, white);
+    /* display: none; */
     color: white;
     border: 1px solid black;
   }
   
   .custom-login-center-buttons button:nth-child(1):hover {
-    /* background: linear-gradient(90deg, #ff4500, #ff7a18); */
+    background: linear-gradient(90deg, #ffffff, #ffffff);
     transform: translateY(-2px);
   }
   
@@ -11009,6 +11009,57 @@ only screen and (min-width: 768px) and (max-width: 991px),
     }
    
 }
+.account-main{
+    height: 100vh;
+}
+.account-container{
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px;
+    padding: 20px;
+    width: 100%;
+
+}
+
+.account-inside-container{
+    display: flex !important;
+    flex-direction: row !important;
+    border: 1px solid rgb(185, 166, 166);
+    padding: 2rem;
+    border-radius: 2rem;
+    gap: 1rem;
+    transition: all 0.3s ease-in-out;
+}
+.account-inside-container:hover{
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
+.account-inside-container img{
+    width: 4rem;
+    height: 4rem;
+}
 
 
-
+.myOrders-content-main{
+    display: flex !important;
+    flex-direction: column !important;
+    border: 1px solid black;
+    border-radius: 2rem;
+}
+.myOrders-content-first{
+    background-color: #F0F2F2;
+    display: flex;
+    flex-direction: row;
+    padding: 1rem !important;
+    border-top-left-radius: 2rem;
+    border-top-right-radius: 2rem;
+    justify-content: flex-start;
+    gap: 5rem;
+}
+.myOrders-content-first > div:nth-child(4) {
+    display: flex;
+    margin-left: 33rem !important;
+}
+.myOrders-content-second{
+    display: flex;
+    flex-direction: column;
+}

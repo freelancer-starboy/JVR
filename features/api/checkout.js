@@ -19,8 +19,13 @@ export const checkoutApi = createApi({
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ userId })
             })
+        }),
+        fetchCheckOut : builder.query({
+            query : (userId) => `checkout?id=${userId}`,
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
         })
     })
 })
 
-export const { useUpdateStockMutation, useDeleteCartMutation } = checkoutApi
+export const { useUpdateStockMutation, useDeleteCartMutation, useFetchCheckOutQuery } = checkoutApi

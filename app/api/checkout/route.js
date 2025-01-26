@@ -51,3 +51,24 @@ export async function POST(req) {
     );
   }
 }
+
+
+export async function GET(req){
+  const {searchParams } = new URL(req.url)
+  const id = searchParams.get('id')
+  if(!id){
+    return new Response(JSON.stringify({message : "User Id not found"}), {status : 500})
+  }
+  try {
+    await connectDb()
+      const response = await Checkout.find({
+        userId : id
+      })
+      if(!response){
+        return new Response(JSON.stringify({message : "Checkout not found"}), {status : 404})
+      }
+      return new Response(JSON.stringify(response), {status : 200})
+  } catch (error) {
+    return new Response(JSON.stringify({message : error.message}), {status : 500})
+  }
+}
