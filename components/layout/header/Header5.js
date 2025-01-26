@@ -1,11 +1,15 @@
+'use client'
 import CartShow from "@/components/elements/CartShow"
 import WishListShow from "@/components/elements/WishListShow"
 import Link from "next/link"
 import HeaderMobSticky from "../HeaderMobSticky"
 import HeaderSticky from "../HeaderSticky"
 import HeaderTabSticky from "../HeaderTabSticky"
+import { useAuth } from "@/components/AuthContent/AuthContent"
+import { useEffect } from "react"
 
 export default function Header5({ scroll, isMobileMenu, handleMobileMenu, isCartSidebar, handleCartSidebar }) {
+    const { userId } = useAuth()
     return (
         <>
             <header>
@@ -121,7 +125,8 @@ export default function Header5({ scroll, isMobileMenu, handleMobileMenu, isCart
                                             <i className="fal fa-shopping-cart" />
                                             <CartShow />
                                         </button>
-                                        <Link href="/sign-in"><i className="fal fa-user" /></Link>
+                                        {userId? <Link href="/user"><i className="fal fa-user" /></Link> : <Link href="/sign-in"><i className="fal fa-user" /></Link>}
+                                        {/* <Link href="/user"><i className="fal fa-user" /></Link> */}
                                         <Link href="/wishlist" className="header-cart p-relative tp-cart-toggle">
                                             <i className="fal fa-heart" />
                                             <WishListShow />

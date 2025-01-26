@@ -1,79 +1,125 @@
-'use client'
-import { useAuth } from '@/components/AuthContent/AuthContent'
-import Preloader from '@/components/elements/Preloader'
-import Layout from '@/components/layout/Layout'
-import { useFetchCheckOutQuery } from '@/features/api/checkout'
-import React, { useEffect } from 'react'
+"use client";
+import { useAuth } from "@/components/AuthContent/AuthContent";
+import Preloader from "@/components/elements/Preloader";
+import Layout from "@/components/layout/Layout";
+import { useFetchCheckOutQuery } from "@/features/api/checkout";
+import { useSearchParams } from "next/navigation";
+import React, { useEffect } from "react";
+import OrderSuccess from "../orderSuccess/page";
 
-const page = () => {
-    const { userId } = useAuth()
-    const {data, isLoading, refetch} = useFetchCheckOutQuery(userId, {
-        skip: !userId
-    })
-    useEffect(() => {
-        if (userId) {
-          console.log("User ID:", userId);
-          refetch();
-        }
-      }, [userId, refetch]);
-      if (isLoading || !userId) {
-        return <Preloader />;
-      }
+const OrdersPage = () => {
+  const { userId } = useAuth();
 
-      if(isLoading){
-        return <Preloader />
-      }
+  const { data, isLoading, refetch } = useFetchCheckOutQuery(userId, {
+    skip: !userId,
+  });
+
+  useEffect(() => {
+    if (userId) {
+      refetch();
+    }
+  }, [userId, refetch]);
+
+  if (isLoading || !userId) {
+    return <Preloader />;
+  }
+
   return (
-    <>
-        <Layout headerStyle={5} footerStyle={2}>
-            <div className='container account-main'>
-                <div>
-                    <h1>Your Orders</h1>
-                </div>
-                {data && data.length > 0 ? data.map((item, index) => (
-                    <div className='myOrders-content-main'>
-                    <div className='myOrders-content-first'>
-                        <div>
-                            <h3>Order Placed</h3>
-                            <p>{item.createdAt.slice(0, 10)}</p>
-                        </div>
-                        <div>
-                            <h3>Total</h3>
-                            <p>{item.orderTotal}</p>
-                        </div>
-                        <div>
-                            <h3>Ship To</h3>
-                            <p>{item.shippingAddress?.city}</p>
-                        </div>
-                        <div>
-                            <p>Order ID - #-JVR-{item._id}</p>
-                        </div>
-                    </div>
+    <Layout headerStyle={5} footerStyle={2}>
+      <div className="container p-4 mb-10">
+        <h1 className="mb-4">Your Orders</h1>
+        {data && data.length > 0 ? (
+          <div className="row row-cols-1 g-4">
+            {data.map((order) => (
+              <div key={order._id} className="col">
+                <div className="card">
+                  <div className="card-header bg-light d-flex justify-content-between align-items-center">
                     <div>
-                        <div className='myOrders-content-second'>
-                            <div>
-                                <h3>Product</h3>
-                                <p>Product Name</p>
-                            </div>
-                            <div>
-                                <h3>Quantity</h3>
-                                <p>2</p>
-                            </div>
-                            <div>
-                                <h3>Address</h3>
-                                <p>Full Address</p>
-                            </div>
-                        </div>
+                      <span className="me-2">
+                        <span className="fw-bold">Order Placed: </span>
+                        {new Date(order.createdAt).toLocaleDateString('en-GB', {
+                            day : '2-digit',
+                            month : 'short',
+                            year: 'numeric'
+                        })}
+                      </span>
+                      <span className="text-muted">
+                        Order ID #-JVR-{order._id.slice(-6)}
+                      </span>
                     </div>
+                    <div className="fw-bold">
+                      <span className="me-2 text-danger">Total: </span>₹
+                      {order.orderTotal}
+                    </div>
+                  </div>
+                  <div className="card-body">
+                    <div className="row mb-3">
+                      <div className="col-md-3">
+                        <h6 className="text-muted">Shipping Address</h6>
+                        <p>
+                          {order.shippingAddress?.addressLine1},{" "}
+                          {order.shippingAddress?.addressLine2}
+                        </p>
+                      </div>
+                      <div className="col-md-3">
+                        <h6 className="text-muted">Payment</h6>
+                        <p>
+                          {order.paymentDetails?.method?.toUpperCase()} -{" "}
+                          {order.paymentDetails?.status}
+                        </p>
+                      </div>
+                      <div className="col-md-3">
+                        <h6 className="text-muted">Delivery Status</h6>
+                        <p className="fw-bold text-success">
+                          {order.orderStatus}
+                        </p>
+                      </div>
+                      <div className="col-md-3">
+                        <h6 className="text-muted">Expected Delivery</h6>
+                        <p className="fw-bold text-success">
+                          {new Date(
+                            new Date(order.createdAt).getTime() +
+                              10 * 24 * 60 * 60 * 1000
+                          ).toLocaleDateString("en-GB", {
+                            day: "2-digit",
+                            month: "short",
+                            year: "numeric",
+                          })}
+                        </p>
+                      </div>
+                    </div>
+
+                    <table className="table table-striped">
+                      <thead>
+                        <tr>
+                          <th>Product</th>
+                          <th>Quantity</th>
+                          <th>Price</th>
+                          <th>Subtotal</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {order.cartItems?.map((product) => (
+                          <tr key={product._id}>
+                            <td>{product.productName}</td>
+                            <td>{product.quantity}</td>
+                            <td>₹{product.price}</td>
+                            <td>₹{product.price * product.quantity}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
-                )) : <>No Orders Found</> }
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="alert alert-info text-center">No Orders Found</div>
+        )}
+      </div>
+    </Layout>
+  );
+};
 
-
-                
-            </div>
-        </Layout>
-    </>
-  )
-}
-
-export default page
+export default OrdersPage;

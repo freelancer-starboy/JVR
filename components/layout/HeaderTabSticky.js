@@ -31,7 +31,7 @@ export default function HeaderTabSticky({ scroll, isMobileMenu, handleMobileMenu
                                         <i className="fal fa-shopping-cart" />
                                         <CartShow />
                                     </button>
-                                    <Link href="/sign-in"><i className="fal fa-user" /></Link>
+                                    <Link href="/user"><i className="fal fa-user" /></Link>
                                     <Link href="/wishlist" className="header-cart p-relative tp-cart-toggle">
                                         <i className="fal fa-heart" />
                                         <WishListShow />

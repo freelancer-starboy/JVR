@@ -1,5 +1,6 @@
 "use client";
 import { useAuth } from "@/components/AuthContent/AuthContent";
+import Layout from "@/components/layout/Layout";
 import { useCreateTokenMutation, useDeleteTokenMutation } from "@/features/api/authApi";
 import { useFetchCartQuery } from "@/features/api/cartApi";
 import { deleteCart } from "@/features/shopSlice";
@@ -208,7 +209,7 @@ const Login = () => {
   return (
     <>
    
-
+<Layout headerStyle={5 } footerStyle={2}>
   <div className="custom-login-main">
       <div className="custom-login-left">
         <img src={`/assets/img/logo/logo.png`} alt="Logo" />
@@ -356,7 +357,7 @@ const Login = () => {
     </div>
 
   
-    
+    </Layout>
     </>
   );
 };

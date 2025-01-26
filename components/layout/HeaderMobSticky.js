@@ -25,7 +25,7 @@ export default function HeaderMobSticky({ scroll, isMobileMenu, handleMobileMenu
                                             <i className="fal fa-shopping-cart" />
                                             <CartShow />
                                         </button>
-                                        <Link href="/sign-in"><i className="fal fa-user" /></Link>
+                                        <Link href="/user"><i className="fal fa-user" /></Link>
                                     </div>
                                 </div>
                             </div>

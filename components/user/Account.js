@@ -19,6 +19,8 @@ const Account = () => {
                 </div>
             </div>
             </Link>
+            <Link href="/security">
+            
             <div className='account-inside-container'>
                 <img src='/assets/img/account/security.png' />
                 <div>
@@ -26,6 +28,7 @@ const Account = () => {
                     <p>Change your password, and authentication settings</p>
                 </div>
             </div>
+            </Link>
             <div className='account-inside-container'>
                 <img src='/assets/img/account/contact.png' />
                 <div>
