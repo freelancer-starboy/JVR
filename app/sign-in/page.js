@@ -3,11 +3,13 @@ import { useAuth } from "@/components/AuthContent/AuthContent";
 import { useCreateTokenMutation, useDeleteTokenMutation } from "@/features/api/authApi";
 import { useFetchCartQuery } from "@/features/api/cartApi";
 import { deleteCart } from "@/features/shopSlice";
+import { current } from "@reduxjs/toolkit";
 import {
   createUserWithEmailAndPassword,
   getAuth,
   GoogleAuthProvider,
   onAuthStateChanged,
+  sendEmailVerification,
   signInWithEmailAndPassword,
   signInWithPopup,
   signOut,
@@ -25,7 +27,8 @@ const Login = () => {
   const [isSignUp, setIsSignUp] = useState(false);
   const [addCookies] = useCreateTokenMutation();
   const [error, setError] = useState("")
-  const [currentUser, setCurrentUser] = useState(null);
+  const [verifiedEmail, setEmailVerified] = useState(null)
+  const [cookieAdded, setCookieAdded] = useState(false);
   const [logInData, setLogInData] = useState({
     email : "",
     password : ""
@@ -42,73 +45,139 @@ const Login = () => {
   /* Signup using email and password */
   const auth = getAuth();
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    // Listen for authentication state changes
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
+
       if (currentUser) {
         console.log("User signed in:", currentUser.uid);
+        setEmailVerified(currentUser.emailVerified);
+
+        // If email is verified, call addCookies()
+        if (currentUser.emailVerified) {
+          try {
+            const token = await currentUser.getIdToken(); // Get the token from the user
+            const response = await addCookies(token).unwrap(); // Make the API call to save the token as a cookie
+            if (response) {
+              console.log("Token saved successfully:", response);
+            }
+          } catch (error) {
+            console.error("Error saving token as cookie:", error);
+            toast.error("Failed to initialize session.");
+          }
+        } else {
+          toast.warning("Please verify your email to proceed.");
+        }
+      } else {
+        setEmailVerified(false);
+        console.log("No user signed in.");
       }
     });
+
+    // Cleanup the listener
     return () => unsubscribe();
   }, []);
-   useEffect(() => {
-    const currentUser = auth.currentUser
-    if(currentUser){
-      const uid = currentUser.uid
-      const displayName = currentUser.displayName
-      setCurrentUser(displayName)
-      console.log("User signed in:", currentUser.displayName);
-    }
-  }, [])
+
     const { refetch} = useFetchCartQuery(userId)
   const googleProvider = new GoogleAuthProvider();
-  const handleSignUp = async (email, password) => {
-    try {
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-      const user = userCredential.user;
-      await updateProfile(user, { displayName : signInData.userName})
-      console.log("user signed up by email and password", user);
-      toast.success("User signed up successfully");
-      setError("")
-      refetch()
-      router.back()
-    } catch (error) {
-      console.log("User signin failed by email and password", error.message);
-      toast.error(error.message);
-      setError(error.message)
+  const handleSignUp = async (e, email, password) => {
+    e.preventDefault();
+  
+    // Validate fields
+    if (
+      !signInData.userName.trim() || 
+      !signInData.email.trim() || 
+      !signInData.password || 
+      !signInData.confirmPassword
+    ) {
+      setError("Please enter all the fields");
+      return;
     }
-  };
-
-  const handleLogin = async (email, password) => {
+  
+    if (signInData.password !== signInData.confirmPassword) {
+      setError("Password and Confirm Password don't match");
+      return;
+    }
+  
     try {
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
+      // Create user
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
-      const token = await user.getIdToken()
-      const response = await addCookies(token).unwrap()
-      if (response) {
-        toast.success('Login Successful')
-        refetch()
-        router.back()
-      }else{
-        toast.error('Cookie failed')
+      console.log(signInData.userName)
+      // Update user profile
+      await updateProfile(user, { displayName: signInData.userName });
+  
+      // Send verification email
+      await sendEmailVerification(user);
+      toast.success("A verification email has been sent to your email address. Please verify your email before logging in.");
+      setError("A verification email has been sent to your email address. Please verify your email before logging in.");
+      refetch();
+      router.push('/sign-in');
+    } catch (error) {
+      console.error("Sign-up failed:", error.message);
+      toast.error("Sign-up failed. Please try again.");
+  
+      // Specific error handling
+      if (error.code === "auth/email-already-in-use") {
+        setError("This email is already in use. Please use a different email.");
+      } else if (error.code === "auth/weak-password") {
+        setError("Password is too weak. Please choose a stronger password.");
+      } else {
+        setError("Failed to create user. Please try again.");
       }
-      console.log("User logged in by email and password", user);
-      toast.success("User logged in successfully");
-      setError("")
-    } catch (error) {
-      console.log("User signin failed by email and password", error.message);
-      toast.error(error.message);
-      setError(error.message)
     }
   };
-
+  
+  const handleLogin = async (e, email, password) => {
+    e.preventDefault();
+  
+    // Validate fields
+    if (!email.trim() || !password) {
+      setError("Please enter email and password");
+      return;
+    }
+  
+    try {
+      // Sign in user
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      // Retrieve token and set cookies
+      if(!user.emailVerified){
+        toast.warning("Your email is not verified. Please verify your email to log in.");
+        return
+      }
+      setEmailVerified(true)
+      const token = await user.getIdToken();
+      const response = await addCookies(token).unwrap();
+      if (response) {
+        toast.success("Login successful");
+        refetch();
+        router.push("/cart");
+      } else {
+        toast.error("Failed to set cookies.");
+      }
+  
+      console.log("User logged in successfully:", user);
+      setError(""); // Clear errors
+      
+    } catch (error) {
+      console.error("Login failed:", error.message);
+  
+      // Specific error handling
+      if (error.code === "auth/invalid-email") {
+        setError("Invalid email address. Please check and try again.");
+      } else if (error.code === "auth/wrong-password") {
+        setError("Incorrect password. Please check and try again.");
+      } else if (error.code === "auth/user-not-found") {
+        setError("No user found with this email. Please sign up.");
+      } else {
+        setError("Login failed. Please try again.");
+      }
+  
+      toast.error("Login failed.");
+    }
+  };
+  
   /* End of signup using email and password */
 
   /* Handle google login */
@@ -116,14 +185,15 @@ const Login = () => {
     try {
       const result = await signInWithPopup(auth, googleProvider);
       const user = result.user;
+      
       const token = await user.getIdToken();
       const response = await addCookies(token).unwrap();
       if (response) {
-      
         toast.success("Login Successful");
         refetch()
         router.push("/");
         setError("")
+
       } else {
         toast.error("Login Failed");
         setError("Login Failed")
@@ -140,8 +210,8 @@ const Login = () => {
       const response = await deleteCookies().unwrap()
       if (response.success) {
         toast.success('Logout Successful')
-        setCurrentUser(null)
         refetch()
+
       }else{
         toast.error('Logout Failed')
       }
@@ -152,6 +222,7 @@ const Login = () => {
   }
   /* End of google login */
   const toggleForm = () => {
+    setError(null)
     setIsSignUp(!isSignUp);
   };
 
@@ -159,11 +230,15 @@ const Login = () => {
     <>
     {userId ? (
       <div>
-        <h1>Hello {currentUser}</h1>
+        <h1>Hello {user?.displayName}</h1>
         <button onClick={handleLogout}>Log out</button>
+        {verifiedEmail ? <h1>Verified</h1> : <h1>Not Verified</h1>}
+        <a href="/">Home</a>
       </div>
+
     )
-  :
+    : (
+
   <div className="custom-login-main">
       <div className="custom-login-left">
         <img src={`/assets/img/logo/logo.png`} alt="Logo" />
@@ -185,7 +260,7 @@ const Login = () => {
             { !isSignUp &&
               
               <form>
-              <input type="email" placeholder="Email" name="email" onChange={(e) => setLogInData({...logInData, email : e.target.value})} required />
+              <input type="email" placeholder="Email" name="email" required onChange={(e) => setLogInData({...logInData, email : e.target.value})} />
               <div className="custom-login-pass-input-div">
                 <input
                   type={showPassword ? "text" : "password"}
@@ -211,13 +286,18 @@ const Login = () => {
                     Forgot password?
                   </a>
               </div>
-              <div className="custom-login-center-buttons">
+              <div className="custom-login-center-buttons-y">
 
-                  <button type="button" onClick={() => handleLogin(logInData.email, logInData.password)}>Log In</button>
+                  <button type="submit" onClick={(e) => handleLogin(e, logInData.email, logInData.password)}>{user ? `${user.displayName}` : "Log In" } </button>
                   </div>
             </form>
             }
 
+            <div style={{ marginTop : '1rem'}}>
+
+              {error && <p><spam style={{color : 'red'}}>{error}</spam></p>}
+            </div>
+          
             {/* End of sign in form */}
 
             {isSignUp && (
@@ -229,15 +309,21 @@ const Login = () => {
                     type={showPassword ? "text" : "password"}
                     placeholder="Password"
                     name="password"
-                    onChange={(e) => setSignInData({...signInData, password : e.target.value})}
+                    onChange={(e) => setSignInData({...signInData, password : e.target.value})
+                  }
                   />
                   <input
                     type={showPassword ? "text" : "password"}
                     placeholder="Confirm Password"
                     name="confirmPassword"
-                    onChange={(e) => setSignInData({...signInData, confirmPassword : e.target.value})}
+                    onChange={(e) => {setSignInData({...signInData, confirmPassword : e.target.value})
+                  if(e.target.value !== signInData.password){
+                    e.target.style.border = "1px solid red"
+                  }else{
+                    e.target.style.border = "1px solid green";
+                  }
+                  }}
                   />
-                  
                   <div className="custom-login-pass-input-div">
                     {showPassword ? (
                       <FaEyeSlash
@@ -251,24 +337,17 @@ const Login = () => {
                       />
                     )}
                   </div>
-                  <div className="custom-login-center-buttons">
+                  <div className="custom-login-center-buttons-y">
 
-                  <button onClick={() => handleSignUp(signInData.email, signInData.password)} type="button">Sign Up</button>
+                  <button onClick={(e) => handleSignUp(e, signInData.email, signInData.password)} type="submit">Sign Up</button>
                   </div>
                 </form>
+                
               </>
             )}
-            {error && <p>{error}</p>}
+          
 
             
-
-            <div className="custom-login-center-buttons">
-              
-              <button type="button" onClick={handleGoogleSignIn}>
-                <img src={`/assets/img/logo/logo.png`} alt="" />
-                {user ? `Welcome, ${user.displayName}` : "Log In with Google"}
-              </button>
-            </div>
           </div>
 
           <p className="custom-login-bottom-p">
@@ -276,22 +355,35 @@ const Login = () => {
               <>
                 Already have an account?{" "}
                 <a href="#" onClick={toggleForm}>
-                  Log In
+                  <span style={{ color: "red"}}>Log In</span>
                 </a>
               </>
             ) : (
               <>
                 Don't have an account?{" "}
                 <a href="#" onClick={toggleForm}>
-                  Sign Up
+                  <span style={{ color: "red"}}>Sign Up</span>
                 </a>
               </>
             )}
           </p>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center"}}>
+
+           ( or ) 
+          </div>
+          <div className="custom-login-center-buttons">
+              <button type="button" onClick={handleGoogleSignIn}>
+                {user ? `Welcome, ${user.displayName}` : (
+                  <div style={{display:"flex", flexDirection: "row", justifyContent: "center", alignItems: "center", gap: "1rem"}}>
+                    <img src="/assets/css/images/g-logo.png" />
+                  </div>)}
+              </button>
+            </div>
         </div>
       </div>
     </div>
-  }
+    )}
+  
     
     </>
   );

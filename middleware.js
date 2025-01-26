@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
+import { useAuth } from './components/AuthContent/AuthContent';
 
 export function middleware(request) {
+ 
   // Get cookies from the request headers
   const token = request.cookies.get('firebaseToken')?.value;
 
@@ -12,5 +14,5 @@ export function middleware(request) {
 }
 
 export const config = {
-  matcher: ['/cart, /checkout'], // Protect these pages
+  matcher: ["/checkout"], // Protect these pages
 };

@@ -10563,19 +10563,82 @@ only screen and (min-width: 768px) and (max-width: 991px),
     font-size: 1.1rem;
     text-decoration: none;
   }
+  .custom-login-center-buttons-y {
+    display: flex;
+    flex-direction: column;
+    row-gap: 15px;
+    margin-top: 20px;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .custom-login-center-buttons-y button {
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 14px;
+    font-size: 1 rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
   
+  .custom-login-center-buttons-y button:nth-child(1) {
+    background: linear-gradient(90deg, #ef4406, #e06d1b);
+    color: white;
+  }
+  
+  .custom-login-center-buttons-y button:nth-child(1):hover {
+    background: linear-gradient(90deg, #ff4500, #ff7a18);
+    transform: translateY(-2px);
+  }
+
+@media screen and (max-width : 768px) {
+    .custom-login-left{
+        display: none;
+    }
+    .custom-login-right {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .custom-login-right-container {
+        width: 90%;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 40px 0;
+      }
+      .custom-login-logo {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .custom-login-logo img {
+        width: 100PX;
+        margin-bottom: 30px;
+      }
+}
   .custom-login-center-buttons {
     display: flex;
     flex-direction: column;
     row-gap: 15px;
     margin-top: 20px;
+    justify-content: center;
+    align-items: center;
   }
   
   .custom-login-center-buttons button {
-    width: 100%;
+    align-items: center;
+    justify-content: center;
+    width: fit-content;
     padding: 14px;
     border: none;
-    border-radius: 30px;
+    border-radius: 50%;
     font-size: 1 rem;
     font-weight: bold;
     cursor: pointer;
@@ -10583,12 +10646,13 @@ only screen and (min-width: 768px) and (max-width: 991px),
   }
   
   .custom-login-center-buttons button:nth-child(1) {
-    background: linear-gradient(90deg, #ff7a18, #ff4500);
+    /* background: linear-gradient(90deg, #DEC48C, white); */
     color: white;
+    border: 1px solid black;
   }
   
   .custom-login-center-buttons button:nth-child(1):hover {
-    background: linear-gradient(90deg, #ff4500, #ff7a18);
+    /* background: linear-gradient(90deg, #ff4500, #ff7a18); */
     transform: translateY(-2px);
   }
   
