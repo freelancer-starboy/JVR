@@ -10647,6 +10647,7 @@ only screen and (min-width: 768px) and (max-width: 991px),
   
   .custom-login-center-buttons button:nth-child(1) {
     /* background: linear-gradient(90deg, #DEC48C, white); */
+    display: none;
     color: white;
     border: 1px solid black;
   }

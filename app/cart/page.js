@@ -16,6 +16,7 @@ import { useRouter } from "next/navigation"
 export default function Cart() {
     const { cart } = useSelector((state) => state.shop) || {}
 const { userId}  = useAuth()
+const router = useRouter()
     const [updateQuantity, {loading : quanLoading,  error}] = useUpdateCartMutation()
 
     const [deleteCartItem, { error: deleteCartError}] = useDeleteCartItemMutation()
@@ -31,19 +32,23 @@ const { userId}  = useAuth()
             });
 
             const handleQuantityChange = async(id, quantity) => {
-                console.log("Update Request:", { id, quantity }); 
-                const response = await updateQuantity({ id, quantity });
-
-                console.log("Update Response:", response); // Log full response
-                if (response.error) {
-                    console.error("Detailed Error:", response.error);
-                    toast.error("Failed to update quantity");
-                } else {
-                    toast.success("Quantity updated successfully");
-                    console.log("Refetching cart data"); // Confirm refetch
-                    refetch()
+                try {
+                    console.log("Update Request:", { id, quantity }); 
+                    const response = await updateQuantity({ id, quantity });
+            
+                    console.log("Update Response:", response);
+                    
+                    if (response.error) {
+                        console.error("Detailed Error:", response.error);
+                        toast.error(response.error.data?.message || "Failed to update quantity");
+                    } else {
+                        toast.success("Quantity updated successfully");
+                        refetch()
                     }
-                
+                } catch (error) {
+                    console.error("Unexpected Error:", error);
+                    toast.error("An unexpected error occurred");
+                }
             }
 
             const handleDelete = async (id) => {

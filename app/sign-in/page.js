@@ -15,6 +15,7 @@ import {
   signOut,
   updateProfile,
 } from "firebase/auth";
+import { set } from "mongoose";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa6";
@@ -27,6 +28,7 @@ const Login = () => {
   const [isSignUp, setIsSignUp] = useState(false);
   const [addCookies] = useCreateTokenMutation();
   const [error, setError] = useState("")
+  const [message, setMessage] = useState("")
   const [verifiedEmail, setEmailVerified] = useState(null)
   const [cookieAdded, setCookieAdded] = useState(false);
   const [logInData, setLogInData] = useState({
@@ -48,33 +50,13 @@ const Login = () => {
     // Listen for authentication state changes
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
-
       if (currentUser) {
         console.log("User signed in:", currentUser.uid);
-        setEmailVerified(currentUser.emailVerified);
-
-        // If email is verified, call addCookies()
-        if (currentUser.emailVerified) {
-          try {
-            const token = await currentUser.getIdToken(); // Get the token from the user
-            const response = await addCookies(token).unwrap(); // Make the API call to save the token as a cookie
-            if (response) {
-              console.log("Token saved successfully:", response);
-            }
-          } catch (error) {
-            console.error("Error saving token as cookie:", error);
-            toast.error("Failed to initialize session.");
-          }
-        } else {
-          toast.warning("Please verify your email to proceed.");
-        }
       } else {
-        setEmailVerified(false);
         console.log("No user signed in.");
       }
     });
 
-    // Cleanup the listener
     return () => unsubscribe();
   }, []);
 
@@ -100,19 +82,13 @@ const Login = () => {
     }
   
     try {
-      // Create user
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
       console.log(signInData.userName)
-      // Update user profile
       await updateProfile(user, { displayName: signInData.userName });
-  
-      // Send verification email
       await sendEmailVerification(user);
       toast.success("A verification email has been sent to your email address. Please verify your email before logging in.");
-      setError("A verification email has been sent to your email address. Please verify your email before logging in.");
-      refetch();
-      router.push('/sign-in');
+      setMessage("A verification email has been sent to your email address. Please verify your email before logging in.");
     } catch (error) {
       console.error("Sign-up failed:", error.message);
       toast.error("Sign-up failed. Please try again.");
@@ -144,9 +120,10 @@ const Login = () => {
       // Retrieve token and set cookies
       if(!user.emailVerified){
         toast.warning("Your email is not verified. Please verify your email to log in.");
+        setError("Your email is not verified. Please verify your email to log in.");
         return
       }
-      setEmailVerified(true)
+      
       const token = await user.getIdToken();
       const response = await addCookies(token).unwrap();
       if (response) {
@@ -159,6 +136,7 @@ const Login = () => {
   
       console.log("User logged in successfully:", user);
       setError(""); // Clear errors
+      setMessage("");
       
     } catch (error) {
       console.error("Login failed:", error.message);
@@ -193,6 +171,7 @@ const Login = () => {
         refetch()
         router.push("/");
         setError("")
+        setMessage("")
 
       } else {
         toast.error("Login Failed");
@@ -228,16 +207,7 @@ const Login = () => {
 
   return (
     <>
-    {userId ? (
-      <div>
-        <h1>Hello {user?.displayName}</h1>
-        <button onClick={handleLogout}>Log out</button>
-        {verifiedEmail ? <h1>Verified</h1> : <h1>Not Verified</h1>}
-        <a href="/">Home</a>
-      </div>
-
-    )
-    : (
+   
 
   <div className="custom-login-main">
       <div className="custom-login-left">
@@ -288,14 +258,16 @@ const Login = () => {
               </div>
               <div className="custom-login-center-buttons-y">
 
-                  <button type="submit" onClick={(e) => handleLogin(e, logInData.email, logInData.password)}>{user ? `${user.displayName}` : "Log In" } </button>
+                  <button type="submit" onClick={(e) => handleLogin(e, logInData.email, logInData.password)}>Log In </button>
                   </div>
             </form>
             }
+            <button onClick={handleLogout}>logout</button>
 
             <div style={{ marginTop : '1rem'}}>
 
               {error && <p><spam style={{color : 'red'}}>{error}</spam></p>}
+              {message && <p><spam style={{color : 'green'}}>{message}</spam></p>}
             </div>
           
             {/* End of sign in form */}
@@ -382,7 +354,7 @@ const Login = () => {
         </div>
       </div>
     </div>
-    )}
+
   
     
     </>
