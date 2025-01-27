@@ -46,13 +46,18 @@ const EmailVerified = () => {
         </p>
         
         <div className="custom-email-buttons">
+            <a href='/shop-2'>
+
           <button className="custom-email-button-primary">
             Start Exploring
           </button>
-          
+            </a>
+          <a href='/'>
+
           <button className="custom-email-button-secondary">
             Return to Home
           </button>
+          </a>
         </div>
 
         {/* Bottom Rainbow Border */}
