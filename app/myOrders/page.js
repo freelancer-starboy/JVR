@@ -3,24 +3,24 @@ import { useAuth } from "@/components/AuthContent/AuthContent";
 import Preloader from "@/components/elements/Preloader";
 import Layout from "@/components/layout/Layout";
 import { useFetchCheckOutQuery } from "@/features/api/checkout";
-import { useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import React, { useEffect } from "react";
 import OrderSuccess from "../orderSuccess/page";
 
 const OrdersPage = () => {
-  const { userId } = useAuth();
-
+  const { userId, isAuthLoading } = useAuth();
+  const router = useRouter()
   const { data, isLoading, refetch } = useFetchCheckOutQuery(userId, {
     skip: !userId,
   });
 
   useEffect(() => {
-    if (userId) {
-      refetch();
+    if (!userId && isAuthLoading) {
+      router.push('/');
     }
-  }, [userId, refetch]);
+  }, [userId, isAuthLoading, router]);
 
-  if (isLoading || !userId) {
+  if (isLoading) {
     return <Preloader />;
   }
 

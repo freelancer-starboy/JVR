@@ -7,12 +7,14 @@ const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
   const [userId, setUserId] = useState(null);
+  const [isAuthLoading, setIsAuthLoading] = useState(true);
 
   useEffect(() => {
     const auth = getAuth();
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         setUserId(user.uid);
+        setIsAuthLoading(false);
         console.log('User signed in:', user.uid);
       } else {
         setUserId(null);
@@ -24,7 +26,7 @@ export function AuthProvider({ children }) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ userId }}>
+    <AuthContext.Provider value={{ userId, isAuthLoading }}>
       {children}
     </AuthContext.Provider>
   );

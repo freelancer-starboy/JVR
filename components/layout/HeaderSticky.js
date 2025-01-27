@@ -1,8 +1,23 @@
+'use client'
 import Link from "next/link"
 import CartShow from "../elements/CartShow"
 import WishListShow from "../elements/WishListShow"
-
+import { useAuth } from "@/components/AuthContent/AuthContent"
+import { useEffect, useState } from "react"
+import { getAuth, onAuthStateChanged } from "firebase/auth"
 export default function HeaderSticky({ scroll, isCartSidebar, handleCartSidebar }) {
+    const { userId } = useAuth()
+        const [userName, setUserName] = useState(null)
+        const auth = getAuth()
+        useEffect(() => {
+            const unsubscribe = onAuthStateChanged(auth, async (user) => {
+                if(user){
+                    setUserName(user.displayName)
+                    console.log(user.displayName)
+                }
+            })
+            return() => unsubscribe()
+        }, [userId])
     return (
         <>
             <div id="header-sticky" className={`logo-area tp-sticky-one mainmenu-5 ${scroll ? "header-sticky" : ""}`}>
@@ -95,7 +110,7 @@ export default function HeaderSticky({ scroll, isCartSidebar, handleCartSidebar 
                                         <i className="fal fa-shopping-cart" />
                                         <CartShow />
                                     </button>
-                                    <Link href="/sign-in"><i className="fal fa-user" /></Link>
+                                    {userId && userName? <Link href="/user"><i className="fal fa-user text-success fw-bolder" /></Link> : <Link href="/sign-in"><i className="fal fa-user" /></Link>}
                                     <Link href="/wishlist" className="header-cart p-relative tp-cart-toggle">
                                         <i className="fal fa-heart" />
                                         <WishListShow />
