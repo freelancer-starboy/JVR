@@ -69,9 +69,9 @@ export default function ShopPage() {
 
   
   return (
-    <Layout headerStyle={3} footerStyle={1} breadcrumbTitle="Shop">
+    <Layout headerStyle={3} footerStyle={1}>
       {/* Mobile Filter */}
-
+    
       <div className="mobile-filter-container">
         <button className="mobile-filter-button" onClick={toggleFilterPopup}>
           FILTERS
@@ -87,6 +87,9 @@ export default function ShopPage() {
       
       {/* End of mobile filter */}
       <div className="product-area pt-70 pb-20">
+        {selectedCategory.length !== 0 || selectedType.length !== 0 || selectedPrice !== 0 || selectedSize.length !== 0 ? (
+          <h5 className="" style={{fontSize: "30px", marginLeft: "20%"}}>Products - {filteredProducts.length}</h5>
+        ) : null}
         <div className="custom-container">
           <div className="row">
             <div className="custom-filter-main-parent">
@@ -100,7 +103,7 @@ export default function ShopPage() {
                 />
               </div>
 
-              <div className="custom-main-product">
+              <div className="custom-main-product flex flex-wrap -mx-2">
                 {filteredProducts.length > 0 ? (
                   filteredProducts.map(item => (
                     <ShopList
@@ -114,6 +117,7 @@ export default function ShopPage() {
                       category={item.productCategory}
                       type={item.productType}
                       brand={item.productBrand}
+                      color={item.productColor}
                     />
                   ))
                 ) : (

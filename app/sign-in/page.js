@@ -11,6 +11,7 @@ import {
   GoogleAuthProvider,
   onAuthStateChanged,
   sendEmailVerification,
+  sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signInWithPopup,
   signOut,
@@ -18,7 +19,7 @@ import {
 } from "firebase/auth";
 import { set } from "mongoose";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa6";
 import { toast } from "react-toastify";
 
@@ -32,6 +33,8 @@ const Login = () => {
   const [message, setMessage] = useState("")
   const [verifiedEmail, setEmailVerified] = useState(null)
   const [cookieAdded, setCookieAdded] = useState(false);
+  const [forgotPassword, setForgotPassword] = useState(false);
+  const emailInputRef = useRef()
   const [logInData, setLogInData] = useState({
     email : "",
     password : ""
@@ -107,6 +110,7 @@ const Login = () => {
   
   const handleLogin = async (e, email, password) => {
     e.preventDefault();
+    
   
     // Validate fields
     if (!email.trim() || !password) {
@@ -145,14 +149,13 @@ const Login = () => {
       // Specific error handling
       if (error.code === "auth/invalid-email") {
         setError("Invalid email address. Please check and try again.");
-      } else if (error.code === "auth/wrong-password") {
-        setError("Incorrect password. Please check and try again.");
+      } else if (error.code === "auth/invalid-credential") {
+        setError("Incorrect credentials. Please check and try again.");
       } else if (error.code === "auth/user-not-found") {
         setError("No user found with this email. Please sign up.");
       } else {
         setError("Login failed. Please try again.");
       }
-  
       toast.error("Login failed.");
     }
   };
@@ -206,6 +209,33 @@ const Login = () => {
     setIsSignUp(!isSignUp);
   };
 
+
+  const sendEmailVerification = async(e) => {
+    e.preventDefault()
+    try {
+      const email = emailInputRef.current.value;
+      console.log("Email", email)
+      if(!email){
+        setMessage("Enter email address")
+        return
+      }
+      await sendPasswordResetEmail(auth, email)
+      setMessage("Email verification link has been sent to your email address. Please check your inbox and follow the instructions to verify your email address.")
+      toast.success("Email verification link has been sent to your email address.")
+    } catch (error) {
+      if (error.code === "auth/user-not-found") {
+      setMessage("User not found. Please sign up.")
+      toast.error("User not found. Please sign up.")
+    } else if (error.code === "auth/invalid-email") {
+      setMessage("Invalid email address. Please check and try again.")
+      toast.error("Invalid email address. Please check and try again.")
+    } else {
+      setMessage("Failed to send verification email. Please try again.")
+      toast.error("Failed to send verification email. Please try again.")
+    }
+    }
+  }
+
   return (
     <>
    
@@ -228,7 +258,7 @@ const Login = () => {
             </p>
 
             {/* Sign in form */}
-            { !isSignUp &&
+            { !isSignUp && !forgotPassword &&
               
               <form>
               <input type="email" placeholder="Email" name="email" required onChange={(e) => setLogInData({...logInData, email : e.target.value})} />
@@ -253,16 +283,27 @@ const Login = () => {
                 )}
               </div>
               <div className="custom-login-center-options">
-                  <a href="#" className="custom-login-forgot-pass-link">
+                  <button onClick={() => setForgotPassword(!forgotPassword)} className="custom-login-forgot-pass-link">
                     Forgot password?
-                  </a>
+                  </button>
               </div>
+
               <div className="custom-login-center-buttons-y">
 
                   <button type="submit" onClick={(e) => handleLogin(e, logInData.email, logInData.password)}>Log In </button>
                   </div>
             </form>
             }
+
+            {forgotPassword && !isSignUp &&(
+              <form>
+                <input type="email" placeholder="Email" name="email" ref={emailInputRef}  />
+                <div className="custom-login-center-buttons-y">
+
+                <button onClick={(e) => sendEmailVerification(e)}>Submit</button>
+                </div>
+              </form>
+            )}
             <button onClick={handleLogout}>logout</button>
 
             <div style={{ marginTop : '1rem'}}>
@@ -273,7 +314,7 @@ const Login = () => {
           
             {/* End of sign in form */}
 
-            {isSignUp && (
+            {isSignUp &&(
               <>
                 <form>
                 <input type="text" placeholder="User Name" name="userName" onChange={(e) => setSignInData({...signInData, userName : e.target.value})} />

@@ -12,6 +12,7 @@ import { getAuth, onAuthStateChanged } from "firebase/auth"
 export default function Header5({ scroll, isMobileMenu, handleMobileMenu, isCartSidebar, handleCartSidebar }) {
     const { userId } = useAuth()
     const [userName, setUserName] = useState(null)
+    const [isOpen, setIsOpen] = useState(false);
     const auth = getAuth()
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -137,8 +138,8 @@ export default function Header5({ scroll, isMobileMenu, handleMobileMenu, isCart
                                             <i className="fal fa-shopping-cart" />
                                             <CartShow />
                                         </button>
-                                        {userId && userName? <Link href="/user"><i className="fal fa-user text-success fw-bolder" /></Link> : <Link href="/sign-in"><i className="fal fa-user" /></Link>}
-                                        {/* <Link href="/user"><i className="fal fa-user" /></Link> */}
+                                        {userId && userName?<div className="custom-menu"><Link href="/user"><i className="fal fa-user text-success fw-bolder" /></Link></div> : <Link href="/sign-in"><i className="fal fa-user" /></Link>}
+                                       
                                         <Link href="/wishlist" className="header-cart p-relative tp-cart-toggle">
                                             <i className="fal fa-heart" />
                                             <WishListShow />

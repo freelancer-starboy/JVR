@@ -10183,7 +10183,6 @@ only screen and (min-width: 768px) and (max-width: 991px),
     flex-direction: column;
     align-items: center;
     padding: 1rem;
-    /* background-color: #f9f9f9; Light background */
     border-radius: 8px; /* Rounded corners */
     
   }
@@ -10204,8 +10203,8 @@ only screen and (min-width: 768px) and (max-width: 991px),
   
   /* Custom button styling */
   .custom-button {
-    background-color: #805046; /* Brown background for the button */
-    color: white; /* Text color */
+    background-color: #d2c9c9; /* Brown background for the button */
+    color: black; /* Text color */
     border: none; /* No border */
     padding: 0.5rem 1rem; /* Vertical and horizontal padding */
     border-radius: 5px; /* Rounded corners for buttons */
@@ -10216,10 +10215,10 @@ only screen and (min-width: 768px) and (max-width: 991px),
   
   /* Button hover effect */
   .custom-button:hover {
-    background-color: black; /* Darker shade on hover */
+    background-color: rgb(149, 143, 143); /* Darker shade on hover */
   }
   .selected {
-    background-color: black;
+    background-color: rgb(147, 133, 133);
     transform: scale(0.98); 
   }
   /* Button active (clicked) state */
@@ -10709,6 +10708,10 @@ only screen and (min-width: 768px) and (max-width: 991px),
       .custom-container-select{
         display: block !important;
       }
+      .custom-container{
+        padding: 0px !important;
+        overflow: hidden
+      }
       .container-c1{
         display: flex;
         flex-direction: column !important;
@@ -10838,6 +10841,8 @@ only screen and (min-width: 768px) and (max-width: 991px),
   .custom-container{
     padding: 0 2rem 0 2rem;
   }
+  
+
   .custom-filter-main-parent{
     display: flex;
     flex-direction: row;
@@ -11315,5 +11320,5 @@ only screen and (min-width: 768px) and (max-width: 991px),
     100% { transform: scale(1); }
   }
 
-
+  
   
