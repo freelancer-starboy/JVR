@@ -1,6 +1,6 @@
 'use client';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const ShopList = ({
   id,
@@ -13,7 +13,8 @@ const ShopList = ({
   type,
   brand,
   oldPrice,
-  color
+  color,
+  variants
 }) => {
   const [hoveredColor, setHoveredColor] = useState(null);
   const [isHovered, setIsHovered] = useState(false);
@@ -34,27 +35,21 @@ const ShopList = ({
 
       <Link href={`/ShopDetails/${id}`} className="text-decoration-none">
         <div className="position-relative overflow-hidden" style={{ maxHeight: '350px'}}>
-          <img 
-            src={thumb1} 
-            alt={name} 
-            className="card-img-top"
-            style={{ 
-              objectFit: 'fill',
-              transition: 'transform 0.3s ease',
-            }}
-          />
-          {isHovered && thumb2 && (
-            <img 
-              src={thumb2}
-              alt={`${name} - alternate view`}
-              className="position-absolute top-0 start-0 w-100 h-100"
+        {variants && variants.length > 0 && variants[0].images.length > 0 && (
+
+            <img
+              src={variants[0].images[0]}
+              alt={name}
+              className="card-img-top"
               style={{ 
                 objectFit: 'cover',
-                opacity: 0.9,
-                transition: 'opacity 0.3s ease'
+                transition: 'transform 0.3s ease',
               }}
             />
-          )}
+          ) 
+          }
+          
+       
           {discount > 0 && (
             <div className="position-absolute top-0 start-0 m-2">
               <span className="badge bg-danger py-2 px-2 rounded-pill fw-normal" 

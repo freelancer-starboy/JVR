@@ -107,17 +107,18 @@ export default function ShopPage() {
                 {filteredProducts.length > 0 ? (
                   filteredProducts.map(item => (
                     <ShopList
-                      key={item._id}
-                      thumb1={item.productImage[0]}
-                      thumb2={item.productImage[1]}
+                      // key={item._id}
+                      // thumb1={item.productImage[0]}
+                      // thumb2={item.productImage[1]}
                       id={item._id}
-                      name={item.productName}
-                      price={item.productPrice}
-                      oldPrice={item.productOldPrice}
-                      category={item.productCategory}
-                      type={item.productType}
-                      brand={item.productBrand}
-                      color={item.productColor}
+                      name={item.productName} /* done */
+                      price={item.productPrice} /* done */
+                      oldPrice={item.productOldPrice} /* done */
+                      category={item.productCategory} /* done */
+                      type={item.productType} /* done */
+                      brand={item.productBrand} /* done */
+                      // color={item.productColor}
+                      variants={item.productVariants}
                     />
                   ))
                 ) : (

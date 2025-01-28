@@ -5,7 +5,7 @@ import connectDb from "@/lib/database/db";
 export async function POST(req) {
   try {
     const body = await req.json();
-    const { userId, productId, quantity, size, color } = body;
+    const { userId, productId, quantity, size, color, variantId } = body;
     const parsedQuantity = parseInt(quantity, 10);
     // Validate the input
     if (!userId || !productId || isNaN(parsedQuantity)) {
@@ -32,12 +32,12 @@ export async function POST(req) {
           productId: product._id,
           productName: product.productName,
           productPrice: product.productPrice,
-          productImage: product.productImage[0],
+          productImage: product.productVariants[0].images[0],
           productColor: color,
           productSize: size,
           quantity: parsedQuantity,
-
         }],
+        variantId: variantId
       });
     } else {
       // Ensure that cart.items is initialized as an array if it's undefined
@@ -57,12 +57,12 @@ export async function POST(req) {
           productId: product._id,
           productName: product.productName,
           productPrice: product.productPrice,
-          productImage: product.productImage[0],
+          productImage: product.productVariants[0].images[0],
           productColor: color,
           productSize: size,
           quantity: parsedQuantity
-
         });
+        variantId
       }
     }
 

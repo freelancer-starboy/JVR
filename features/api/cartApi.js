@@ -5,7 +5,7 @@ export const cartApi = createApi({
   baseQuery: fetchBaseQuery({ baseUrl: '/api/' }),
   endpoints: (builder) => ({
     addToCart: builder.mutation({
-      query: (cartData) => ({ 
+      query: (cartData) => ({
         url: 'cart/addToCart',
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
