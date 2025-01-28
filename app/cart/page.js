@@ -2,14 +2,70 @@
 import CartItems from "@/components/elements/CartItems"
 import Layout from "@/components/layout/Layout"
 import Link from "next/link"
+import { useEffect, useState } from "react"
 import { useSelector } from "react-redux"
+import  { auth} from "@/lib/firebase/firebase"
+import { getAuth, onAuthStateChanged } from "firebase/auth"
+import { useDeleteCartItemMutation, useFetchCartQuery, useUpdateCartMutation } from "@/features/api/cartApi"
+import { useAuth } from "@/components/AuthContent/AuthContent"
+import { toast } from "react-toastify"
+import Preloader from "@/components/elements/Preloader"
+import { useRouter } from "next/navigation"
+
+
 export default function Cart() {
     const { cart } = useSelector((state) => state.shop) || {}
-    let total = 0
-    cart?.forEach((item) => {
-        const price = item.qty * item.price?.max
-        total = total + price
-    })
+const { userId}  = useAuth()
+const router = useRouter()
+    const [updateQuantity, {loading : quanLoading,  error}] = useUpdateCartMutation()
+
+    const [deleteCartItem, { error: deleteCartError}] = useDeleteCartItemMutation()
+
+        const {data: cartItems, isLoading, isError, refetch} = useFetchCartQuery(userId)
+            if(isLoading) {
+                return <Preloader />
+            }
+            let total = 0;
+            cartItems?.forEach((item) => {
+                const price = item.quantity * item.productPrice;
+                total = total + price;
+            });
+
+            const handleQuantityChange = async(id, quantity) => {
+                try {
+                    console.log("Update Request:", { id, quantity }); 
+                    const response = await updateQuantity({ id, quantity });
+            
+                    console.log("Update Response:", response);
+                    
+                    if (response.error) {
+                        console.error("Detailed Error:", response.error);
+                        toast.error(response.error.data?.message || "Failed to update quantity");
+                    } else {
+                        toast.success("Quantity updated successfully");
+                        refetch()
+                    }
+                } catch (error) {
+                    console.error("Unexpected Error:", error);
+                    toast.error("An unexpected error occurred");
+                }
+            }
+
+            const handleDelete = async (id) => {
+                try {
+                  const response = await deleteCartItem(id).unwrap();
+              
+                  if (response) {
+                    toast.success('Item removed successfully');
+                    refetch(); 
+                  } else {
+                    toast.error('Failed to remove item');
+                  }
+                } catch (error) {
+                  console.error("Error deleting item:", error); 
+                  toast.error('Failed to remove item');
+                }
+              };
     return (
         <>
             <Layout headerStyle={3} footerStyle={1} breadcrumbTitle="Cart">
@@ -23,15 +79,39 @@ export default function Cart() {
                                             <thead>
                                                 <tr>
                                                     <th className="product-thumbnail">Images</th>
-                                                    <th className="cart-product-name">Courses</th>
+                                                    <th className="cart-product-name">Product Name</th>
                                                     <th className="product-price">Unit Price</th>
+                                                    <th className="product-color">color</th>
+                                                    <th className="product-size">size</th>
                                                     <th className="product-quantity">Quantity</th>
                                                     <th className="product-subtotal">Total</th>
                                                     <th className="product-remove">Remove</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <CartItems />
+                                            {
+  cartItems && cartItems.length === 0 ? (
+    <CartItems showEmptyMessage={true} /> 
+  ) : (
+    cartItems?.map((item) => (
+      <CartItems
+        key={item.productId}
+        id={item.productId}
+        name={item.productName}
+        quanLoading={quanLoading}
+        price={item.productPrice}
+        quantity={item.quantity}
+        image={item.productImage}
+        total={total}
+        onQuantityChange={handleQuantityChange}
+        onDelete={handleDelete}
+        showEmptyMessage={false}  
+        color={item.productColor}
+        size={item.productSize}
+      />
+    ))
+  )
+}
                                             </tbody>
                                         </table>
                                     </div>
@@ -43,9 +123,9 @@ export default function Cart() {
                                                     <button className="tp-btn tp-color-btn banner-animation" name="apply_coupon" type="submit">Apply
                                                         Coupon</button>
                                                 </div>
-                                                <div className="coupon2">
+                                                {/* <div className="coupon2">
                                                     <button className="tp-btn tp-color-btn banner-animation" name="update_cart" type="submit">Update cart</button>
-                                                </div>
+                                                </div> */}
                                             </div>
                                         </div>
                                     </div>
@@ -54,8 +134,8 @@ export default function Cart() {
                                             <div className="cart-page-total">
                                                 <h2>Cart totals</h2>
                                                 <ul className="mb-20">
-                                                    <li>Subtotal <span>${total.toFixed(2)}</span></li>
-                                                    <li>Total <span>${total.toFixed(2)}</span></li>
+                                                    <li>Subtotal <span>₹{total.toFixed(2)}</span></li>
+                                                    <li>Total <span>₹{total.toFixed(2)}</span></li>
                                                 </ul>
                                                 <Link href="/checkout" className="tp-btn tp-color-btn banner-animation">Proceed to Checkout</Link>
                                             </div>

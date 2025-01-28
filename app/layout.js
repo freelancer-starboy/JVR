@@ -14,6 +14,7 @@ import "/public/assets/css/magnific-popup.css"
 import "/public/assets/css/meanmenu.css"
 import "/public/assets/css/spacing.css"
 import "/public/assets/css/main.css"
+import { AuthProvider } from "@/components/AuthContent/AuthContent";
 const jost = Jost({
     weight: ['300', '400', '500', '600', '700'],
     subsets: ['latin'],
@@ -23,6 +24,7 @@ export default function RootLayout({ children }) {
     return (
         <html lang="en">
             <body className={`${jost.variable}`}>
+                <AuthProvider>
                 <Provider store={store}>
                     {children}
                     <ToastContainer
@@ -38,6 +40,7 @@ export default function RootLayout({ children }) {
                         theme="colored"
                     />
                 </Provider>
+                    </AuthProvider>
             </body>
         </html>
     )

@@ -1,181 +1,397 @@
-'use client'
-import Layout from "@/components/layout/Layout"
-import Link from "next/link"
-import { useState } from "react"
+"use client";
+import { useAuth } from "@/components/AuthContent/AuthContent";
+import Preloader from "@/components/elements/Preloader";
+import Layout from "@/components/layout/Layout";
+import Loader from "@/components/Loader/page";
+import PaymentPage from "@/components/paymentSample/PaymentPage";
+import { useFetchCartQuery } from "@/features/api/cartApi";
+import { useUpdateStockMutation } from "@/features/api/checkout";
+import { set } from "mongoose";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 export default function Checkout() {
-    const [isLoginToggle, setLoginToggle] = useState(false)
-    const handleLoginToggle = () => setLoginToggle(!isLoginToggle)
+  const [successOrder, setSuccessOrder] = useState(false);
+  const [isLoginToggle, setLoginToggle] = useState(false);
+  const [showContent, setShowContent] = useState(false);
+  const [transactionId, setTransactionId] = useState(null);
+  const [status, setStatus] = useState(null);
+  const [method, setMethod] = useState(null);
+  const [loadingScreen, setLoadingScreen] = useState(false);
+  const handleLoginToggle = () => setLoginToggle(!isLoginToggle);
+  const [details, setDetails] = useState({
+    fullName: "",
+    phone: "",
+    addressLine1: "",
+    addressLine2: "",
+    city: "",
+    state: "",
+    country: "India",
+    postalCode: "",
+  });
 
-    const [isCuponToggle, setCuponToggle] = useState(false)
-    const handleCuponToggle = () => setCuponToggle(!isCuponToggle)
+  const [isCuponToggle, setCuponToggle] = useState(false);
+  const handleCuponToggle = () => setCuponToggle(!isCuponToggle);
 
-    const [isCboxToggle, setCboxToggle] = useState(false)
-    const handleCboxToggle = () => setCboxToggle(!isCboxToggle)
+  const [isCboxToggle, setCboxToggle] = useState(false);
+  const handleCboxToggle = () => setCboxToggle(!isCboxToggle);
 
-    const [isShipToggle, setShipToggle] = useState(false)
-    const handleShipToggle = () => setShipToggle(!isShipToggle)
+  const [isShipToggle, setShipToggle] = useState(false);
+  const handleShipToggle = () => setShipToggle(!isShipToggle);
 
-    const [isActive, setIsActive] = useState({
-        status: false,
-        key: 1,
-    })
+  const [isActive, setIsActive] = useState({
+    status: false,
+    key: 1,
+  });
 
-    const handleClick = (key) => {
-        if (isActive.key === key) {
-            setIsActive({
-                status: false,
-            })
-        } else {
-            setIsActive({
-                status: true,
-                key,
-            })
+  const router = useRouter();
+  const { userId } = useAuth();
+  const {
+    data: cartItems,
+    isLoading,
+    isError,
+    refetch,
+  } = useFetchCartQuery(userId);
+  const [updateStockValue, { loading, error }] = useUpdateStockMutation();
+  useEffect(() => {
+    if (successOrder) {
+      setLoadingScreen(true);
+      const updateStock = async () => {
+        try {
+          const response = await updateStockValue(cartItems).unwrap();
+          const data = response.updatedProducts;
+          // Log the success response for debugging
+          console.log("Success from frontend:", data);
+        await updateCheckout()
+          // Show success toast and navigate to the success page
+          toast.success("Order Placed Successfully");
+          router.push(`/orderSuccess?transactionId=${transactionId}`);
+        } catch (error) {
+          // Handle error case and show appropriate error message
+          console.error("Error updating stock:", error); // Log full error for debugging
+          toast.error(error?.data?.message || "Error updating stock");
+        } finally {
+          // Reset the successOrder flag in both success and failure cases
+          setSuccessOrder(false);
+          setLoadingScreen(false);
         }
+      };
+
+      updateStock();
     }
-    return (
-        <>
-            <Layout headerStyle={3} footerStyle={1} breadcrumbTitle="Chaeckout">
-                <div>
-                    <section className="coupon-area pt-80 pb-30 wow fadeInUp" data-wow-duration=".8s" data-wow-delay=".2s">
-                        <div className="container">
-                            <div className="row">
-                                <div className="col-md-6">
-                                    <div className="coupon-accordion">
-                                        {/* ACCORDION START */}
-                                        <h3>Returning customer? <span id="showlogin" onClick={handleLoginToggle}>Click here to login</span></h3>
-                                        <div id="checkout-login" className="coupon-content" style={{ display: `${isLoginToggle ? "block" : "none"}` }}>
-                                            <div className="coupon-info">
-                                                <p className="coupon-text">Quisque gravida turpis sit amet nulla posuere lacinia. Cras sed est
-                                                    sit amet ipsum luctus.</p>
-                                                <form action="#">
-                                                    <p className="form-row-first">
-                                                        <label>Username or email <span className="required">*</span></label>
-                                                        <input type="text" />
-                                                    </p>
-                                                    <p className="form-row-last">
-                                                        <label>Password <span className="required">*</span></label>
-                                                        <input type="text" />
-                                                    </p>
-                                                    <p className="form-row">
-                                                        <button className="tp-btn tp-color-btn" type="submit">Login</button>
-                                                        <label>
-                                                            <input type="checkbox" />
-                                                            Remember me
-                                                        </label>
-                                                    </p>
-                                                    <p className="lost-password">
-                                                        <Link href="#">Lost your password?</Link>
-                                                    </p>
-                                                </form>
-                                            </div>
-                                        </div>
-                                        {/* ACCORDION END */}
-                                    </div>
-                                </div>
-                                <div className="col-md-6">
-                                    <div className="coupon-accordion">
-                                        {/* ACCORDION START */}
-                                        <h3>Have a coupon? <span id="showcoupon" onClick={handleCuponToggle}>Click here to enter your code</span></h3>
-                                        <div id="checkout_coupon" className="coupon-checkout-content" style={{ display: `${isCuponToggle ? "block" : "none"}` }}>
-                                            <div className="coupon-info">
-                                                <form action="#">
-                                                    <p className="checkout-coupon">
-                                                        <input type="text" placeholder="Coupon Code" />
-                                                        <button className="tp-btn tp-color-btn" type="submit">Apply Coupon</button>
-                                                    </p>
-                                                </form>
-                                            </div>
-                                        </div>
-                                        {/* ACCORDION END */}
-                                    </div>
-                                </div>
-                            </div>
+
+  }, [successOrder, cartItems]);
+
+   
+        const updateCheckout = async () => {
+            try {
+            const response = await fetch('/api/checkout/', {
+                method : 'POST',
+                headers : {
+                    'Content-Type' : 'application/json'
+                },
+                body : JSON.stringify({
+                    userId,
+                    cartItems : cartItems.map((item) => ({
+                        productId : item.productId,
+                        productName : item.productName,
+                        quantity : item.quantity,
+                        price : item.productPrice,
+                        color : item.productColor,
+                        size : item.productSize
+                    })),
+                    shippingAddress : details,
+                    paymentDetails : {
+                        method : method,
+                        transactionId : transactionId,
+                        status : status,
+
+                    },
+                    orderTotal : orderTotal,
+                    orderStatus : "Processing"
+                })
+            })
+            const data = await response.json()
+            if(response.ok){
+                console.log("Checkout saved successfully", response)
+                toast.success("order checkout saved successfully")
+            }else{
+                console.error("Error saving checkout:", data.message);
+                toast.error(data.message || 'Failed to save order checkout');
+            }
+        } catch (error) {
+            console.error("Error during checkout update:", error);
+            toast.error('An unexpected error occurred. Please try again.');
+        }
+        }
+  if (isLoading) {
+    return <Preloader />;
+  }
+  if (isError) {
+    return <p>Error</p>;
+  }
+  let total = 0;
+  cartItems?.forEach((item) => {
+    const price = item.quantity * item.productPrice;
+    total = total + price;
+  });
+  let shipping = 50;
+  if (total >= 1000) {
+    shipping = 0;
+  }
+  let orderTotal = 0;
+  if (total > 0) {
+    orderTotal = total + shipping;
+  }
+  const handleChange = (e) => {
+    e.preventDefault();
+    const { name, value } = e.target;
+    setDetails({
+      ...details,
+      [name]: value,
+    });
+  };
+
+  const isDetailsEmpty = Object.values(details).every(
+    (value) => value.trim() !== ""
+  );
+
+  return (
+    <>
+      <Layout headerStyle={3} footerStyle={1} breadcrumbTitle="Checkout">
+        {loadingScreen && <Loader />}
+        <div>
+          <section
+            className="coupon-area pt-80 pb-30 wow fadeInUp"
+            data-wow-duration=".8s"
+            data-wow-delay=".2s"
+          >
+            <div className="container">
+              <div className="row">
+                <div className="col-md-6">
+                  <div className="coupon-accordion">
+                    {/* ACCORDION START */}
+                    <h3>
+                      Returning customer?{" "}
+                      <span id="showlogin" onClick={handleLoginToggle}>
+                        Click here to login
+                      </span>
+                    </h3>
+                    <div
+                      id="checkout-login"
+                      className="coupon-content"
+                      style={{ display: `${isLoginToggle ? "block" : "none"}` }}
+                    >
+                      <div className="coupon-info">
+                        <p className="coupon-text">
+                          Quisque gravida turpis sit amet nulla posuere lacinia.
+                          Cras sed est sit amet ipsum luctus.
+                        </p>
+                        <form action="#">
+                          <p className="form-row-first">
+                            <label>
+                              Username or email{" "}
+                              <span className="required">*</span>
+                            </label>
+                            <input type="text" />
+                          </p>
+                          <p className="form-row-last">
+                            <label>
+                              Password <span className="required">*</span>
+                            </label>
+                            <input type="text" />
+                          </p>
+                          <p className="form-row">
+                            <button
+                              className="tp-btn tp-color-btn"
+                              type="submit"
+                            >
+                              Login
+                            </button>
+                            <label>
+                              <input type="checkbox" />
+                              Remember me
+                            </label>
+                          </p>
+                          <p className="lost-password">
+                            <Link href="#">Lost your password?</Link>
+                          </p>
+                        </form>
+                      </div>
+                    </div>
+                    {/* ACCORDION END */}
+                  </div>
+                </div>
+                <div className="col-md-6">
+                  <div className="coupon-accordion">
+                    {/* ACCORDION START */}
+                    <h3>
+                      Have a coupon?{" "}
+                      <span id="showcoupon" onClick={handleCuponToggle}>
+                        Click here to enter your code
+                      </span>
+                    </h3>
+                    <div
+                      id="checkout_coupon"
+                      className="coupon-checkout-content"
+                      style={{ display: `${isCuponToggle ? "block" : "none"}` }}
+                    >
+                      <div className="coupon-info">
+                        <form action="#">
+                          <p className="checkout-coupon">
+                            <input type="text" placeholder="Coupon Code" />
+                            <button
+                              className="tp-btn tp-color-btn"
+                              type="submit"
+                            >
+                              Apply Coupon
+                            </button>
+                          </p>
+                        </form>
+                      </div>
+                    </div>
+                    {/* ACCORDION END */}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+          {/* coupon-area end */}
+          {/* checkout-area start */}
+          <section
+            className="checkout-area pb-50 wow fadeInUp"
+            data-wow-duration=".8s"
+            data-wow-delay=".2s"
+          >
+            <div className="container">
+              <form action="#">
+                <div className="row">
+                  <div className="col-lg-6 col-md-12">
+                    <div className="checkbox-form">
+                      <h3>Billing Details</h3>
+                      <div className="row">
+                        <div className="col-md-12">
+                          <div className="checkout-form-list">
+                            <label>
+                              Full Name <span className="required">*</span>
+                            </label>
+                            <input
+                              type="text"
+                              name="fullName"
+                              placeholder="John Doe"
+                              required
+                              value={details.fullName}
+                              onChange={handleChange}
+                            />
+                          </div>
                         </div>
-                    </section>
-                    {/* coupon-area end */}
-                    {/* checkout-area start */}
-                    <section className="checkout-area pb-50 wow fadeInUp" data-wow-duration=".8s" data-wow-delay=".2s">
-                        <div className="container">
-                            <form action="#">
-                                <div className="row">
-                                    <div className="col-lg-6 col-md-12">
-                                        <div className="checkbox-form">
-                                            <h3>Billing Details</h3>
-                                            <div className="row">
-                                                <div className="col-md-12">
-                                                    <div className="country-select">
-                                                        <label>Country <span className="required">*</span></label>
-                                                        <select>
-                                                            <option value="volvo">United States</option>
-                                                            <option value="saab">Algeria</option>
-                                                            <option value="mercedes">Canada</option>
-                                                            <option value="audi">Givenchyy</option>
-                                                            <option value="audi2">England</option>
-                                                            <option value="audi3">Qatar</option>
-                                                            <option value="audi5">Dominican Republic</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                <div className="col-md-6">
-                                                    <div className="checkout-form-list">
-                                                        <label>First Name <span className="required">*</span></label>
-                                                        <input type="text" />
-                                                    </div>
-                                                </div>
-                                                <div className="col-md-6">
-                                                    <div className="checkout-form-list">
-                                                        <label>Last Name <span className="required">*</span></label>
-                                                        <input type="text" />
-                                                    </div>
-                                                </div>
-                                                <div className="col-md-12">
-                                                    <div className="checkout-form-list">
-                                                        <label>Company Name</label>
-                                                        <input type="text" />
-                                                    </div>
-                                                </div>
-                                                <div className="col-md-12">
-                                                    <div className="checkout-form-list">
-                                                        <label>Address <span className="required">*</span></label>
-                                                        <input type="text" placeholder="Street address" />
-                                                    </div>
-                                                </div>
-                                                <div className="col-md-12">
-                                                    <div className="checkout-form-list">
-                                                        <input type="text" placeholder="Apartment, suite, unit etc. (optional)" />
-                                                    </div>
-                                                </div>
-                                                <div className="col-md-12">
-                                                    <div className="checkout-form-list">
-                                                        <label>Town / City <span className="required">*</span></label>
-                                                        <input type="text" placeholder="Town / City" />
-                                                    </div>
-                                                </div>
-                                                <div className="col-md-6">
-                                                    <div className="checkout-form-list">
-                                                        <label>State / County <span className="required">*</span></label>
-                                                        <input type="text" />
-                                                    </div>
-                                                </div>
-                                                <div className="col-md-6">
-                                                    <div className="checkout-form-list">
-                                                        <label>Postcode / Zip <span className="required">*</span></label>
-                                                        <input type="text" placeholder="Postcode / Zip" />
-                                                    </div>
-                                                </div>
-                                                <div className="col-md-6">
-                                                    <div className="checkout-form-list">
-                                                        <label>Email Address <span className="required">*</span></label>
-                                                        <input type="email" />
-                                                    </div>
-                                                </div>
-                                                <div className="col-md-6">
-                                                    <div className="checkout-form-list">
-                                                        <label>Phone <span className="required">*</span></label>
-                                                        <input type="text" placeholder="Postcode / Zip" />
-                                                    </div>
-                                                </div>
-                                                <div className="col-md-12">
+
+                        <div className="col-md-12">
+                          <div className="checkout-form-list">
+                            <label>
+                              Phone<span className="required">*</span>
+                            </label>
+                            <input
+                              type="text"
+                              name="phone"
+                              value={details.phone}
+                              placeholder="98989 98989"
+                              required
+                              onChange={handleChange}
+                            />
+                          </div>
+                        </div>
+                        <div className="col-md-12">
+                          <div className="checkout-form-list">
+                            <label>
+                              Address Line 1 <span className="required">*</span>
+                            </label>
+                            <input
+                              type="text"
+                              name="addressLine1"
+                              placeholder="Street address"
+                              required
+                              value={details.addressLine1}
+                              onChange={handleChange}
+                            />
+                          </div>
+                        </div>
+                        <div className="col-md-12">
+                          <div className="checkout-form-list">
+                            <label>Address Line 2 </label>
+                            <input
+                              type="text"
+                              placeholder="Street address"
+                              name="addressLine2"
+                              value={details.addressLine2}
+                              onChange={handleChange}
+                            />
+                          </div>
+                        </div>
+
+                        <div className="col-md-12">
+                          <div className="checkout-form-list">
+                            <label>
+                              Town / City <span className="required">*</span>
+                            </label>
+                            <input
+                              type="text"
+                              placeholder="Town / City"
+                              name="city"
+                              required
+                              value={details.city}
+                              onChange={handleChange}
+                            />
+                          </div>
+                        </div>
+                        <div className="col-md-6">
+                          <div className="checkout-form-list">
+                            <label>
+                              State <span className="required">*</span>
+                            </label>
+                            <input
+                              type="text"
+                              name="state"
+                              placeholder="State"
+                              required
+                              value={details.state}
+                              onChange={handleChange}
+                            />
+                          </div>
+                        </div>
+                        <div className="col-md-6">
+                          <div className="checkout-form-list">
+                            <label>
+                              Postcode / Zip <span className="required">*</span>
+                            </label>
+                            <input
+                              type="text"
+                              placeholder="Postcode / Zip"
+                              name="postalCode"
+                              required
+                              value={details.postalCode}
+                              onChange={handleChange}
+                            />
+                          </div>
+                        </div>
+
+                        <div className="col-md-12">
+                          <div className="checkout-form-list">
+                            <label>
+                              Country <span className="required">*</span>
+                            </label>
+                            <input
+                              type="text"
+                              value="India"
+                              disabled
+                              name="country"
+                              required
+                            //   onChange={handleChange}
+                            />
+                          </div>
+                        </div>
+                        {/* <div className="col-md-12">
                                                     <div className="checkout-form-list create-acc">
                                                         <input id="cbox" type="checkbox" onClick={handleCboxToggle} />
                                                         <label>Create an account?</label>
@@ -186,216 +402,101 @@ export default function Checkout() {
                                                         <label>Account password <span className="required">*</span></label>
                                                         <input type="password" placeholder="password" />
                                                     </div>
-                                                </div>
-                                            </div>
-                                            <div className="different-address">
-                                                <div className="ship-different-title">
-                                                    <h3>
-                                                        <label>Ship to a different address?</label>
-                                                        <input id="ship-box" type="checkbox" onClick={handleShipToggle} />
-                                                    </h3>
-                                                </div>
-                                                <div id="ship-box-info" style={{ display: `${isShipToggle ? "block" : "none"}` }}>
-                                                    <div className="row">
-                                                        <div className="col-md-12">
-                                                            <div className="country-select">
-                                                                <label>Country <span className="required">*</span></label>
-                                                                <select>
-                                                                    <option value="volvo">bangladesh</option>
-                                                                    <option value="saab">Algeria</option>
-                                                                    <option value="mercedes">Afghanistan</option>
-                                                                    <option value="audi">Ghana</option>
-                                                                    <option value="audi2">Albania</option>
-                                                                    <option value="audi3">Bahrain</option>
-                                                                    <option value="audi4">Colombia</option>
-                                                                    <option value="audi5">Dominican Republic</option>
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-6">
-                                                            <div className="checkout-form-list">
-                                                                <label>First Name <span className="required">*</span></label>
-                                                                <input type="text" />
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-6">
-                                                            <div className="checkout-form-list">
-                                                                <label>Last Name <span className="required">*</span></label>
-                                                                <input type="text" />
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-12">
-                                                            <div className="checkout-form-list">
-                                                                <label>Company Name</label>
-                                                                <input type="text" />
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-12">
-                                                            <div className="checkout-form-list">
-                                                                <label>Address <span className="required">*</span></label>
-                                                                <input type="text" placeholder="Street address" />
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-12">
-                                                            <div className="checkout-form-list">
-                                                                <input type="text" placeholder="Apartment, suite, unit etc. (optional)" />
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-12">
-                                                            <div className="checkout-form-list">
-                                                                <label>Town / City <span className="required">*</span></label>
-                                                                <input type="text" placeholder="Town / City" />
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-6">
-                                                            <div className="checkout-form-list">
-                                                                <label>State / County <span className="required">*</span></label>
-                                                                <input type="text" />
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-6">
-                                                            <div className="checkout-form-list">
-                                                                <label>Postcode / Zip <span className="required">*</span></label>
-                                                                <input type="text" placeholder="Postcode / Zip" />
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-6">
-                                                            <div className="checkout-form-list">
-                                                                <label>Email Address <span className="required">*</span></label>
-                                                                <input type="email" />
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-6">
-                                                            <div className="checkout-form-list">
-                                                                <label>Phone <span className="required">*</span></label>
-                                                                <input type="text" placeholder="Postcode / Zip" />
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div className="order-notes">
-                                                    <div className="checkout-form-list">
-                                                        <label>Order Notes</label>
-                                                        <textarea id="checkout-mess" cols={30} rows={10} placeholder="Notes about your order, e.g. special notes for delivery." />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="col-lg-6 col-md-12">
-                                        <div className="your-order mb-30 ">
-                                            <h3>Your order</h3>
-                                            <div className="your-order-table table-responsive">
-                                                <table>
-                                                    <thead>
-                                                        <tr>
-                                                            <th className="product-name">Product</th>
-                                                            <th className="product-total">Total</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        <tr className="cart_item">
-                                                            <td className="product-name">
-                                                                Vestibulum suscipit <strong className="product-quantity"> × 1</strong>
-                                                            </td>
-                                                            <td className="product-total">
-                                                                <span className="amount">$165.00</span>
-                                                            </td>
-                                                        </tr>
-                                                        <tr className="cart_item">
-                                                            <td className="product-name">
-                                                                Vestibulum dictum magna <strong className="product-quantity"> × 1</strong>
-                                                            </td>
-                                                            <td className="product-total">
-                                                                <span className="amount">$50.00</span>
-                                                            </td>
-                                                        </tr>
-                                                    </tbody>
-                                                    <tfoot>
-                                                        <tr className="cart-subtotal">
-                                                            <th>Cart Subtotal</th>
-                                                            <td><span className="amount">$215.00</span></td>
-                                                        </tr>
-                                                        <tr className="shipping">
-                                                            <th>Shipping</th>
-                                                            <td>
-                                                                <ul>
-                                                                    <li>
-                                                                        <input type="radio" name="shipping" />
-                                                                        <label>
-                                                                            Flat Rate: <span className="amount">$7.00</span>
-                                                                        </label>
-                                                                    </li>
-                                                                    <li>
-                                                                        <input type="radio" name="shipping" />
-                                                                        <label>Free Shipping:</label>
-                                                                    </li>
-                                                                </ul>
-                                                            </td>
-                                                        </tr>
-                                                        <tr className="order-total">
-                                                            <th>Order Total</th>
-                                                            <td><strong><span className="amount">$215.00</span></strong>
-                                                            </td>
-                                                        </tr>
-                                                    </tfoot>
-                                                </table>
-                                            </div>
-                                            <div className="payment-method">
-                                                <div className="accordion" id="checkoutAccordion">
-                                                    <div className="accordion-item">
-                                                        <h2 className="accordion-header" id="checkoutOne" onClick={() => handleClick(1)}>
-                                                            <button className={isActive.key == 1 ? "accordion-button" : "accordion-button collapsed"}>
-                                                                Direct Bank Transfer
-                                                            </button>
-                                                        </h2>
-                                                        <div id="bankOne" className={isActive.key == 1 ? "accordion-collapse collapse show" : "accordion-collapse collapse"}>
-                                                            <div className="accordion-body">
-                                                                Make your payment directly into our bank account. Please use your Order ID as the payment reference. Your order won’t be shipped until the funds have cleared in our account.
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div className="accordion-item">
-                                                        <h2 className="accordion-header" id="paymentTwo" onClick={() => handleClick(2)}>
-                                                            <button className={isActive.key == 2 ? "accordion-button" : "accordion-button collapsed"} type="button">
-                                                                Cheque Payment
-                                                            </button>
-                                                        </h2>
-                                                        <div id="payment" className={isActive.key == 2 ? "accordion-collapse collapse show" : "accordion-collapse collapse"}>
-                                                            <div className="accordion-body">
-                                                                Please send your cheque to Store Name, Store Street, Store Town, Store
-                                                                State / County, Store
-                                                                Postcode.
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div className="accordion-item">
-                                                        <h2 className="accordion-header" id="paypalThree" onClick={() => handleClick(3)}>
-                                                            <button className={isActive.key == 3 ? "accordion-button" : "accordion-button collapsed"} type="button">
-                                                                PayPal
-                                                            </button>
-                                                        </h2>
-                                                        <div id="paypal" className={isActive.key == 3 ? "accordion-collapse collapse show" : "accordion-collapse collapse"} aria-labelledby="paypalThree" data-bs-parent="#checkoutAccordion">
-                                                            <div className="accordion-body">
-                                                                Pay via PayPal; you can pay with your credit card if you don’t have a
-                                                                PayPal account.
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div className="order-button-payment mt-20">
-                                                    <button type="submit" className="tp-btn tp-color-btn w-100 banner-animation">Place order</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                    </section>
-                </div>
+                                                </div> */}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="col-lg-6 col-md-12">
+                    <div className="your-order mb-30 ">
+                      <h3>Your order</h3>
+                      <div className="your-order-table table-responsive">
+                        <table>
+                          <thead>
+                            <tr>
+                              <th className="product-name">Product</th>
+                              <th className="product-total">Total</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {cartItems &&
+                              cartItems.map((item) => (
+                                <tr className="cart_item">
+                                  <td className="product-name">
+                                    {item.productName}{" "}
+                                    <strong className="product-quantity">
+                                      {" "}
+                                      × {item.quantity}
+                                    </strong>
+                                  </td>
 
-            </Layout>
-        </>
-    )
+                                  <td className="product-total">
+                                    <span className="amount">
+                                      ₹ {item.productPrice}
+                                    </span>
+                                  </td>
+                                </tr>
+                              ))}
+                          </tbody>
+                          <tfoot>
+                            <tr className="cart-subtotal">
+                              <th>Cart Subtotal</th>
+                              <td>
+                                <span className="amount">₹ {total}</span>
+                              </td>
+                            </tr>
+                            <tr className="shipping">
+                              <th>Shipping</th>
+                              <td>
+                                <span className="amount">₹ {shipping}</span>
+                              </td>
+                            </tr>
+                            <tr className="order-total">
+                              <th>Order Total</th>
+                              <td>
+                                <strong>
+                                  <span className="amount">₹ {orderTotal}</span>
+                                </strong>
+                              </td>
+                            </tr>
+                          </tfoot>
+                        </table>
+                      </div>
+                      <div className="payment-method">
+                        <div className="accordion" id="checkoutAccordion">
+                          <div className="accordion-item"></div>
+                        </div>
+                        {isDetailsEmpty ? (
+                           <div className="accordion-item">
+                          <PaymentPage
+                            amount={orderTotal}
+                            onPaymentSuccess={setSuccessOrder}
+                            transactionId={transactionId}
+                            setTransactionId={setTransactionId}
+                            setStatus={setStatus}
+                            setMethod={setMethod}
+                            />
+                            </div>
+                        ) : (
+                          <>
+                            <div className="order-button-payment mt-20">
+                              <button
+                                type="submit"
+                                className="tp-btn tp-color-btn w-100 banner-animation"
+                              >
+                                Fill all details
+                              </button>
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </section>
+        </div>
+      </Layout>
+    </>
+  );
 }
