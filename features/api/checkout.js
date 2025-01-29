@@ -24,8 +24,16 @@ export const checkoutApi = createApi({
             query : (userId) => `checkout?id=${userId}`,
             method: 'GET',
             headers: { 'Content-Type': 'application/json' },
+        }),
+        stockValidation : builder.mutation({
+            query : (cartItems) => ({
+                url : 'cart/stockValidation',
+                method : 'POST',
+                headers : { 'Content-Type' : 'application/json' },
+                body : { cartItems}
+            })
         })
     })
 })
 
-export const { useUpdateStockMutation, useDeleteCartMutation, useFetchCheckOutQuery } = checkoutApi
+export const { useUpdateStockMutation, useDeleteCartMutation, useFetchCheckOutQuery, useStockValidationMutation } = checkoutApi

@@ -4,8 +4,14 @@ import Preloader from "@/components/elements/Preloader";
 import Layout from "@/components/layout/Layout";
 import Loader from "@/components/Loader/page";
 import PaymentPage from "@/components/paymentSample/PaymentPage";
-import { useFetchCartQuery, useFetchStockMutation } from "@/features/api/cartApi";
-import { useUpdateStockMutation } from "@/features/api/checkout";
+import {
+  useFetchCartQuery,
+  useFetchStockMutation,
+} from "@/features/api/cartApi";
+import {
+  useStockValidationMutation,
+  useUpdateStockMutation,
+} from "@/features/api/checkout";
 import { set } from "mongoose";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -19,6 +25,9 @@ export default function Checkout() {
   const [status, setStatus] = useState(null);
   const [method, setMethod] = useState(null);
   const [loadingScreen, setLoadingScreen] = useState(false);
+  const [isStock, setIsStock] = useState(false);
+  const [stockValue, setStockValue] = useState(null);
+
   const handleLoginToggle = () => setLoginToggle(!isLoginToggle);
   const [details, setDetails] = useState({
     fullName: "",
@@ -55,21 +64,38 @@ export default function Checkout() {
   } = useFetchCartQuery(userId);
   const [updateStockValue, { loading, error }] = useFetchStockMutation();
 
+  const [validStock] = useStockValidationMutation();
 
+  useEffect(() => {
+    if (cartItems) {
+      const validateStock = async () => {
+        setLoadingScreen(true);
+        try {
+          const response = await validStock(cartItems).unwrap();
+          setStockValue(response);
+        } catch (error) {
+          console.error("Error validating stock:", error);
+        } finally {
+          setLoadingScreen(false);
+        }
+      };
+      validateStock();
+    }
+  }, [cartItems, validStock]);
   useEffect(() => {
     if (successOrder) {
       setLoadingScreen(true);
       const updateStock = async () => {
         try {
-          const stockUpdateData = cartItems.map(item => ({
+          const stockUpdateData = cartItems.map((item) => ({
             variantId: item.variantId,
             size: item.productSize,
-            quantity: item.quantity
+            quantity: item.quantity,
           }));
           const response = await updateStockValue(stockUpdateData).unwrap();
-         console.log("Stock update success:", response);
+          console.log("Stock update success:", response);
           // Log the success response for debugging
-        await updateCheckout()
+          await updateCheckout();
           // Show success toast and navigate to the success page
           toast.success("Order Placed Successfully");
           router.push(`/orderSuccess?transactionId=${transactionId}`);
@@ -86,51 +112,48 @@ export default function Checkout() {
 
       updateStock();
     }
-
   }, [successOrder, cartItems]);
 
-   
-        const updateCheckout = async () => {
-            try {
-            const response = await fetch('/api/checkout/', {
-                method : 'POST',
-                headers : {
-                    'Content-Type' : 'application/json'
-                },
-                body : JSON.stringify({
-                    userId,
-                    cartItems : cartItems.map((item) => ({
-                        productId : item.productId,
-                        productName : item.productName,
-                        quantity : item.quantity,
-                        price : item.productPrice,
-                        color : item.productColor,
-                        size : item.productSize
-                    })),
-                    shippingAddress : details,
-                    paymentDetails : {
-                        method : method,
-                        transactionId : transactionId,
-                        status : status,
-
-                    },
-                    orderTotal : orderTotal,
-                    orderStatus : "Processing"
-                })
-            })
-            const data = await response.json()
-            if(response.ok){
-                console.log("Checkout saved successfully", response)
-                toast.success("order checkout saved successfully")
-            }else{
-                console.error("Error saving checkout:", data.message);
-                toast.error(data.message || 'Failed to save order checkout');
-            }
-        } catch (error) {
-            console.error("Error during checkout update:", error);
-            toast.error('An unexpected error occurred. Please try again.');
-        }
-        }
+  const updateCheckout = async () => {
+    try {
+      const response = await fetch("/api/checkout/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId,
+          cartItems: cartItems.map((item) => ({
+            productId: item.productId,
+            productName: item.productName,
+            quantity: item.quantity,
+            price: item.productPrice,
+            color: item.productColor,
+            size: item.productSize,
+          })),
+          shippingAddress: details,
+          paymentDetails: {
+            method: method,
+            transactionId: transactionId,
+            status: status,
+          },
+          orderTotal: orderTotal,
+          orderStatus: "Processing",
+        }),
+      });
+      const data = await response.json();
+      if (response.ok) {
+        console.log("Checkout saved successfully", response);
+        toast.success("order checkout saved successfully");
+      } else {
+        console.error("Error saving checkout:", data.message);
+        toast.error(data.message || "Failed to save order checkout");
+      }
+    } catch (error) {
+      console.error("Error during checkout update:", error);
+      toast.error("An unexpected error occurred. Please try again.");
+    }
+  };
   if (isLoading) {
     return <Preloader />;
   }
@@ -162,6 +185,45 @@ export default function Checkout() {
   const isDetailsEmpty = Object.values(details).every(
     (value) => value.trim() !== ""
   );
+
+  const getStockStatus = (item) => {
+    if (!stockValue) return null;
+
+    const itemId = item.variantId || item.productId;
+    const itemSize = item.size || item.productSize;
+
+    // Check in stock array
+    const inStockItem = stockValue.stock.find(
+      (stock) => stock.variantId === itemId && stock.productSize === itemSize
+    );
+
+    if (inStockItem) {
+      const value = inStockItem.stock;
+      return `${inStockItem.stock} in Stock`;
+    }
+
+    // Check in outOfStockItems array
+    const outOfStockItem = stockValue.outOfStockItems.find(
+      (outOfStock) =>
+        outOfStock.variantId === itemId && outOfStock.productSize === itemSize
+    );
+
+    if (outOfStockItem) {
+      const message = outOfStockItem.message;
+      orderTotal = orderTotal - item.productPrice * item.quantity;
+      return outOfStockItem.message;
+    }
+
+    return `No stock info available for size ${itemSize}`;
+  };
+
+  if (isLoading) {
+    return <div>Loading stock information...</div>;
+  }
+
+  // if (!stockValue) {
+  //   return <div>Error loading stock information</div>;
+  // }
 
   return (
     <>
@@ -393,7 +455,7 @@ export default function Checkout() {
                               disabled
                               name="country"
                               required
-                            //   onChange={handleChange}
+                              //   onChange={handleChange}
                             />
                           </div>
                         </div>
@@ -424,24 +486,29 @@ export default function Checkout() {
                             </tr>
                           </thead>
                           <tbody>
-                            {cartItems &&
-                              cartItems.map((item) => (
-                                <tr className="cart_item">
-                                  <td className="product-name">
-                                    {item.productName}{" "}
-                                    <strong className="product-quantity">
-                                      {" "}
-                                      × {item.quantity}
-                                    </strong>
-                                  </td>
-
-                                  <td className="product-total">
-                                    <span className="amount">
-                                      ₹ {item.productPrice}
-                                    </span>
-                                  </td>
-                                </tr>
-                              ))}
+                            {cartItems?.map((item) => (
+                              <tr
+                                key={`${item.productId || item.variantId}-${
+                                  item.size || item.productSize
+                                }`}
+                              >
+                                <td>
+                                  {item.productName}{" "}
+                                  <strong className="product-quantity">
+                                    × {item.quantity}
+                                  </strong>
+                                  <br />
+                                  <small className="stock-status">
+                                    {getStockStatus(item)}
+                                  </small>
+                                </td>
+                                <td>
+                                  <span className="amount">
+                                    ₹ {item.productPrice}
+                                  </span>
+                                </td>
+                              </tr>
+                            ))}
                           </tbody>
                           <tfoot>
                             <tr className="cart-subtotal">
@@ -472,16 +539,16 @@ export default function Checkout() {
                           <div className="accordion-item"></div>
                         </div>
                         {isDetailsEmpty ? (
-                           <div className="accordion-item">
-                          <PaymentPage
-                            amount={orderTotal}
-                            onPaymentSuccess={setSuccessOrder}
-                            transactionId={transactionId}
-                            setTransactionId={setTransactionId}
-                            setStatus={setStatus}
-                            setMethod={setMethod}
+                          <div className="order-button-payment mt-20">
+                            <PaymentPage
+                              amount={orderTotal}
+                              onPaymentSuccess={setSuccessOrder}
+                              transactionId={transactionId}
+                              setTransactionId={setTransactionId}
+                              setStatus={setStatus}
+                              setMethod={setMethod}
                             />
-                            </div>
+                          </div>
                         ) : (
                           <>
                             <div className="order-button-payment mt-20">
