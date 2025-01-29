@@ -4,7 +4,7 @@ import Preloader from "@/components/elements/Preloader";
 import Layout from "@/components/layout/Layout";
 import Loader from "@/components/Loader/page";
 import PaymentPage from "@/components/paymentSample/PaymentPage";
-import { useFetchCartQuery } from "@/features/api/cartApi";
+import { useFetchCartQuery, useFetchStockMutation } from "@/features/api/cartApi";
 import { useUpdateStockMutation } from "@/features/api/checkout";
 import { set } from "mongoose";
 import Link from "next/link";
@@ -53,16 +53,22 @@ export default function Checkout() {
     isError,
     refetch,
   } = useFetchCartQuery(userId);
-  const [updateStockValue, { loading, error }] = useUpdateStockMutation();
+  const [updateStockValue, { loading, error }] = useFetchStockMutation();
+
+
   useEffect(() => {
     if (successOrder) {
       setLoadingScreen(true);
       const updateStock = async () => {
         try {
-          const response = await updateStockValue(cartItems).unwrap();
-          const data = response.updatedProducts;
+          const stockUpdateData = cartItems.map(item => ({
+            variantId: item.variantId,
+            size: item.productSize,
+            quantity: item.quantity
+          }));
+          const response = await updateStockValue(stockUpdateData).unwrap();
+         console.log("Stock update success:", response);
           // Log the success response for debugging
-          console.log("Success from frontend:", data);
         await updateCheckout()
           // Show success toast and navigate to the success page
           toast.success("Order Placed Successfully");

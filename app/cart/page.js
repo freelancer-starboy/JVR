@@ -6,7 +6,7 @@ import { useEffect, useState } from "react"
 import { useSelector } from "react-redux"
 import  { auth} from "@/lib/firebase/firebase"
 import { getAuth, onAuthStateChanged } from "firebase/auth"
-import { useDeleteCartItemMutation, useFetchCartQuery, useUpdateCartMutation } from "@/features/api/cartApi"
+import { useDeleteCartItemMutation, useFetchCartQuery, useFetchStockMutation, useUpdateCartMutation } from "@/features/api/cartApi"
 import { useAuth } from "@/components/AuthContent/AuthContent"
 import { toast } from "react-toastify"
 import Preloader from "@/components/elements/Preloader"
@@ -16,6 +16,8 @@ import { useRouter } from "next/navigation"
 export default function Cart() {
     const { cart } = useSelector((state) => state.shop) || {}
 const { userId}  = useAuth()
+const [stockValue ] = useFetchStockMutation()
+const [stock, setStock] = useState(null) 
 const router = useRouter()
     const [updateQuantity, {loading : quanLoading,  error}] = useUpdateCartMutation()
 
@@ -30,8 +32,18 @@ const router = useRouter()
                 const price = item.quantity * item.productPrice;
                 total = total + price;
             });
-
+// useEffect(() => {
+//     const  Stock = async () => {
+//         try {
+//             await stockValue(cartItems.variantId, cartItems.items.productSize).unwrap()
+//         } catch (error) {
+            
+//         }
+//         Stock()
+//     }
+// }, [quantity])
             const handleQuantityChange = async(id, quantity) => {
+                
                 try {
                     console.log("Update Request:", { id, quantity }); 
                     const response = await updateQuantity({ id, quantity });

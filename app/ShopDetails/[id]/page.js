@@ -1,13 +1,14 @@
 'use client';
 import Layout from "@/components/layout/Layout"
 import Link from "next/link"
-import { useState, useEffect } from "react"
+import { useState, useEffect, createContext } from "react"
 import { useParams } from "next/navigation"
 import { useFetchProductsByIdQuery, useRelatedProductsQuery } from "@/features/api/productApi"
 import { useAddToCartMutation, useFetchCartQuery } from "@/features/api/cartApi"
 import { useAuth } from "@/components/AuthContent/AuthContent"
 import { toast } from "react-toastify"
 import Preloader from "@/components/elements/Preloader"
+// import { createContext } from "react/cjs/react.production.min";
 
 export default function ShopDetails() {
     const [selectedVariant, setSelectedVariant] = useState(null);
@@ -18,6 +19,8 @@ export default function ShopDetails() {
     const [Loading, setLoading] = useState(false);
     const { userId } = useAuth();
     const [activeIndex, setActiveIndex] = useState(1);
+    const [stock, setStock] = useState(0);
+    const stockData = createContext()
 
     const params = useParams();
     const id = params.id;
@@ -39,11 +42,21 @@ export default function ShopDetails() {
         if (product && selectedColor) {
             const variant = product.productVariants.find(v => v.color === selectedColor);
             setSelectedVariant(variant);
-            console.log("VariantId : ", variant?._id);
             setSize(""); // Reset size when color changes
             setActiveIndex2(0); // Reset image index
         }
     }, [selectedColor, product]);
+
+    // Get stock for selected size
+    useEffect(() => {
+        const getSelectedStock = () => {
+            if (!selectedVariant || !selectedSize) return 0;
+            const sizeObj = selectedVariant.sizes.find(s => s.size.trim() === selectedSize.trim());
+            return sizeObj ? parseInt(sizeObj.stock) : 0;
+        };
+    
+        setStock(getSelectedStock());  // Only update stock when dependencies change
+    }, [selectedVariant, selectedSize]); 
 
     const handleAddToCart = async (e) => {
         e.preventDefault();
@@ -59,6 +72,13 @@ export default function ShopDetails() {
             alert("Please select a valid variant");
             return;
         }
+
+        const currentStock = stock;
+        if (currentStock < value) {
+            toast.error("Selected quantity exceeds available stock");
+            return;
+        }
+
         setLoading(true);
         try {
             if (!userId) {
@@ -140,7 +160,9 @@ export default function ShopDetails() {
                                     <div className="tpproduct-details__title-area d-flex align-items-center flex-wrap mb-5">
                                         <h3 className="tpproduct-details__title">{product.productName}</h3>
                                         <span className="tpproduct-details__stock">
-                                            {selectedVariant ? `${selectedVariant.stock} in stock` : 'Select a variant'}
+                                            {selectedVariant && selectedSize 
+                                                ? `${stock} in stock` 
+                                                : 'Select variant and size'}
                                         </span>
                                     </div>
                                     <div className="tpproduct-details__price mb-30">
@@ -162,13 +184,11 @@ export default function ShopDetails() {
                                     <div className="mb-4">
                                         <label className="form-label h6 mb-3">Color</label>
                                         <div className="d-flex flex-wrap gap-3">
-                                            {product.productVariants.map((variant, index) => (
+                                            {product.productVariants.map((variant) => (
                                                 <button
-                                                    key={index}
+                                                    key={variant._id.$oid}
                                                     onClick={() => setColor(variant.color)}
-                                                    className={`color-selector rounded-circle p-0 border-2 position-relative ${
-                                                        selectedColor === variant.color ? 'selected' : ''
-                                                    }`}
+                                                    className={`color-selector rounded-circle p-0 border-2 position-relative`}
                                                     style={{
                                                         backgroundColor: variant.color,
                                                         width: '32px',
@@ -191,24 +211,24 @@ export default function ShopDetails() {
                                         <div className="mb-4">
                                             <label className="form-label h6 mb-3">Size</label>
                                             <div className="d-flex flex-wrap gap-2">
-                                                {selectedVariant.size.map((size, index) => (
+                                                {selectedVariant.sizes.map((sizeObj) => (
                                                     <button
-                                                        key={index}
-                                                        onClick={() => setSize(size)}
-                                                        className={`size-selector px-3 py-2 rounded-1 ${
-                                                            selectedSize === size
+                                                        key={sizeObj._id.$oid}
+                                                        onClick={() => setSize(sizeObj.size)}
+                                                        className={`size-selector px-3 py-2 rounded-1 ${stock === 0 ? 'bg-gray disabled' : ''}  ${
+                                                            selectedSize === sizeObj.size
                                                                 ? 'bg-dark text-white'
                                                                 : 'bg-light text-dark'
-                                                        }`}
+                                                        } `}
                                                         style={{
                                                             border: '1px solid #dee2e6',
                                                             minWidth: '45px',
                                                             transition: 'all 0.2s ease',
                                                             cursor: 'pointer',
-                                                            fontWeight: selectedSize === size ? '600' : '400'
+                                                            fontWeight: selectedSize === sizeObj.size ? '600' : '400'
                                                         }}
                                                     >
-                                                        {size}
+                                                        {sizeObj.size}
                                                     </button>
                                                 ))}
                                             </div>
@@ -226,7 +246,7 @@ export default function ShopDetails() {
                                             </span>
                                         </div>
                                         <div className="tpproduct-details__cart ml-20">
-                                            {!selectedVariant || selectedVariant.stock === 0 ? (
+                                            {!selectedVariant || !selectedSize || stock === 0 ? (
                                                 <button disabled>
                                                     <i className="fal fa-shopping-cart" /> Out Of Stock
                                                 </button>

@@ -34,10 +34,11 @@ export async function POST(req) {
           productPrice: product.productPrice,
           productImage: product.productVariants[0].images[0],
           productColor: color,
+          variantId: variantId,
           productSize: size,
           quantity: parsedQuantity,
         }],
-        variantId: variantId
+        
       });
     } else {
       // Ensure that cart.items is initialized as an array if it's undefined
@@ -59,10 +60,11 @@ export async function POST(req) {
           productPrice: product.productPrice,
           productImage: product.productVariants[0].images[0],
           productColor: color,
+        variantId,
+
           productSize: size,
           quantity: parsedQuantity
         });
-        variantId
       }
     }
 

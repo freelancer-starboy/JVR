@@ -6,24 +6,27 @@ const AddProduct = () => {
   const [formData, setFormData] = useState({
     productName: "",
     productPrice: "",
+    productOldPrice: "",
     productCategory: "",
     productType: "",
     productBrand: "",
-    productOldPrice: "",
     productDetails: [""],
   });
 
   const [variants, setVariants] = useState([
-    { color: "", size: [""], images: [], stock: "" },
+    { color: "", sizes: [{ size: "", stock: "" }], images: [] },
   ]);
 
-  const [addProduct, { isLoading, isSuccess, isError, error }] =
-    useAddProductsMutation();
+  const [addProduct, { isLoading }] = useAddProductsMutation();
 
   const handleChange = (e) => {
+    const value = e.target.type === "number" ? 
+      Number(e.target.value) || "" : 
+      e.target.value;
+    
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [e.target.name]: value,
     });
   };
 
@@ -33,32 +36,37 @@ const AddProduct = () => {
     setVariants(updatedVariants);
   };
 
-  const handleSizeChange = (variantIndex, sizeIndex, value) => {
+  const handleSizeChange = (variantIndex, sizeIndex, field, value) => {
     const updatedVariants = [...variants];
-    updatedVariants[variantIndex].size[sizeIndex] = value;
+    const parsedValue = field === "stock" ? Number(value) || 0 : value;
+    updatedVariants[variantIndex].sizes[sizeIndex][field] = parsedValue;
     setVariants(updatedVariants);
   };
 
   const addSize = (variantIndex) => {
     const updatedVariants = [...variants];
-    updatedVariants[variantIndex].size.push("");
+    updatedVariants[variantIndex].sizes.push({ size: "", stock: 0 });
     setVariants(updatedVariants);
   };
 
   const removeSize = (variantIndex, sizeIndex) => {
     const updatedVariants = [...variants];
-    updatedVariants[variantIndex].size.splice(sizeIndex, 1);
+    updatedVariants[variantIndex].sizes.splice(sizeIndex, 1);
     setVariants(updatedVariants);
   };
 
-  const handleImageChange = (variantIndex, files) => {
+  const handleImageChange = async (variantIndex, files) => {
     const updatedVariants = [...variants];
+    // Store the file objects for upload
     updatedVariants[variantIndex].images = Array.from(files);
     setVariants(updatedVariants);
   };
 
   const addVariant = () => {
-    setVariants([...variants, { color: "", size: [""], images: [], stock: "" }]);
+    setVariants([
+      ...variants,
+      { color: "", sizes: [{ size: "", stock: 0 }], images: [] },
+    ]);
   };
 
   const removeVariant = (index) => {
@@ -70,40 +78,67 @@ const AddProduct = () => {
 
     const formDataToSend = new FormData();
 
-    Object.entries(formData).forEach(([key, value]) => {
-      formDataToSend.append(key, Array.isArray(value) ? JSON.stringify(value) : value);
-    });
+    // Add basic product information
+    for (const [key, value] of Object.entries(formData)) {
+      if (key === "productDetails") {
+        // Filter out empty strings and join with commas
+        const details = value.filter(detail => detail.trim());
+        formDataToSend.append(key, JSON.stringify(details));
+      } else if (key.includes("Price")) {
+        // Ensure prices are numbers
+        formDataToSend.append(key, Number(value) || 0);
+      } else {
+        formDataToSend.append(key, value);
+      }
+    }
 
-    variants.forEach((variant, i) => {
-      const { color, size, stock, images } = variant;
-      formDataToSend.append(`productVariants[${i}][color]`, color);
-      formDataToSend.append(`productVariants[${i}][stock]`, stock);
-      formDataToSend.append(`productVariants[${i}][size]`, JSON.stringify(size));
-      images.forEach((image, j) =>
-        formDataToSend.append(`productVariants[${i}][images][${j}]`, image)
-      );
+    // Process variants
+    const processedVariants = variants.map(variant => ({
+      color: variant.color,
+      sizes: variant.sizes.map(size => ({
+        size: size.size,
+        stock: Number(size.stock) || 0
+      })),
+      images: [] // Will be populated with uploaded image URLs
+    }));
+
+    // Add variants data
+    formDataToSend.append("productVariants", JSON.stringify(processedVariants));
+
+    // Add images separately for each variant
+    variants.forEach((variant, variantIndex) => {
+      variant.images.forEach((image, imageIndex) => {
+        formDataToSend.append(
+          `variantImages_${variantIndex}`,
+          image,
+          `variant${variantIndex}_image${imageIndex}`
+        );
+      });
     });
 
     try {
-      await addProduct(formDataToSend).unwrap();
+      const response = await addProduct(formDataToSend).unwrap();
       alert("Product added successfully!");
 
+      // Reset form
       setFormData({
         productName: "",
         productPrice: "",
+        productOldPrice: "",
         productCategory: "",
         productType: "",
         productBrand: "",
-        productOldPrice: "",
         productDetails: [""],
       });
-      setVariants([{ color: "", size: [""], images: [], stock: "" }]);
+
+      setVariants([{ color: "", sizes: [{ size: "", stock: 0 }], images: [] }]);
     } catch (err) {
       console.error("Error:", err);
-      alert("Error while adding product!");
+      alert("Error adding product: " + (err.data?.message || "Unknown error"));
     }
   };
 
+  // JSX remains the same as your original code
   return (
     <div className="container mt-5">
       <h1 className="text-center mb-4">Add Product</h1>
@@ -114,14 +149,28 @@ const AddProduct = () => {
               <label htmlFor={key} className="form-label">
                 {key.charAt(0).toUpperCase() + key.slice(1)}:
               </label>
-              <input
-                type={key.includes("Price") ? "number" : "text"}
-                name={key}
-                value={formData[key]}
-                onChange={handleChange}
-                placeholder={`Enter ${key}`}
-                className="form-control"
-              />
+              {key === "productDetails" ? (
+                <textarea
+                  name={key}
+                  value={formData[key].join("\n")}
+                  onChange={(e) =>
+                    setFormData({ ...formData, [key]: e.target.value.split("\n") })
+                  }
+                  placeholder={`Enter ${key} (one per line)`}
+                  className="form-control"
+                  rows={3}
+                />
+              ) : (
+                <input
+                  type={key.includes("Price") ? "number" : "text"}
+                  name={key}
+                  value={formData[key]}
+                  onChange={handleChange}
+                  placeholder={`Enter ${key}`}
+                  className="form-control"
+                  required={key !== "productOldPrice"}
+                />
+              )}
             </div>
           ))}
         </div>
@@ -137,34 +186,40 @@ const AddProduct = () => {
                 type="text"
                 className="form-control"
                 value={variant.color}
-                onChange={(e) => handleVariantChange(index, "color", e.target.value)}
+                onChange={(e) =>
+                  handleVariantChange(index, "color", e.target.value)
+                }
                 placeholder="Enter color"
+                required
               />
             </div>
 
             <div className="mb-3">
-              <label>Stock:</label>
-              <input
-                type="number"
-                className="form-control"
-                value={variant.stock}
-                onChange={(e) => handleVariantChange(index, "stock", e.target.value)}
-                placeholder="Enter stock"
-              />
-            </div>
-
-            <div className="mb-3">
-              <label>Sizes:</label>
-              {variant.size.map((s, i) => (
+              <label>Sizes & Stock:</label>
+              {variant.sizes.map((s, i) => (
                 <div className="input-group mb-2" key={i}>
                   <input
                     type="text"
                     className="form-control"
-                    value={s}
-                    onChange={(e) => handleSizeChange(index, i, e.target.value)}
+                    value={s.size}
+                    onChange={(e) =>
+                      handleSizeChange(index, i, "size", e.target.value)
+                    }
                     placeholder="Enter size"
+                    required
                   />
-                  {variant.size.length > 1 && (
+                  <input
+                    type="number"
+                    className="form-control"
+                    value={s.stock}
+                    onChange={(e) =>
+                      handleSizeChange(index, i, "stock", e.target.value)
+                    }
+                    placeholder="Enter stock"
+                    min="0"
+                    required
+                  />
+                  {variant.sizes.length > 1 && (
                     <button
                       type="button"
                       className="btn btn-danger"
@@ -190,7 +245,9 @@ const AddProduct = () => {
                 type="file"
                 className="form-control"
                 multiple
+                accept="image/*"
                 onChange={(e) => handleImageChange(index, e.target.files)}
+                required={variant.images.length === 0}
               />
             </div>
 
@@ -205,6 +262,7 @@ const AddProduct = () => {
             )}
           </div>
         ))}
+
         <button type="button" className="btn btn-primary" onClick={addVariant}>
           Add Variant
         </button>
@@ -213,19 +271,12 @@ const AddProduct = () => {
           <button
             type="submit"
             className="btn btn-success"
-            disabled={isLoading}
+            disabled={isLoading || variants.length === 0}
           >
             {isLoading ? "Adding..." : "Add Product"}
           </button>
         </div>
       </form>
-
-      {isSuccess && <p className="alert alert-success mt-4">Product added successfully!</p>}
-      {isError && (
-        <p className="alert alert-danger mt-4">
-          Error: {error?.data?.message || "Failed to add product."}
-        </p>
-      )}
     </div>
   );
 };
