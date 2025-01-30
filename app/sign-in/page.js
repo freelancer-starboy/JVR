@@ -135,7 +135,7 @@ const Login = () => {
         toast.success("Login successful");
         refetch();
         router.push("/cart");
-        window.location.reload();
+        router.refresh()
       } else {
         toast.error("Failed to set cookies.");
       }
@@ -189,22 +189,6 @@ const Login = () => {
       setError(error.message)
     }
   };
-  const handleLogout = async() => {
-    try {
-      await signOut(auth)
-      const response = await deleteCookies().unwrap()
-      if (response.success) {
-        toast.success('Logout Successful')
-        refetch()
-
-      }else{
-        toast.error('Logout Failed')
-      }
-    } catch (error) {
-      console.error('Error during sign-out:', error);
-      
-    }
-  }
   /* End of google login */
   const toggleForm = () => {
     setError(null)
@@ -306,7 +290,7 @@ const Login = () => {
                 </div>
               </form>
             )}
-            <button onClick={handleLogout}>logout</button>
+            
 
             <div style={{ marginTop : '1rem'}}>
 
