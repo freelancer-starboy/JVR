@@ -2,12 +2,27 @@
 import CartShow from "@/components/elements/CartShow"
 import WishListShow from "@/components/elements/WishListShow"
 import Link from "next/link"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import HeaderMobSticky from "../HeaderMobSticky"
 import HeaderSticky from "../HeaderSticky"
 import HeaderTabSticky from "../HeaderTabSticky"
+import { useAuth } from "@/components/AuthContent/AuthContent"
+import { getAuth, onAuthStateChanged } from "firebase/auth"
 
 export default function Header3({ scroll, isMobileMenu, handleMobileMenu, isCartSidebar, handleCartSidebar }) {
+     const { userId } = useAuth()
+        const [userName, setUserName] = useState(null)
+        const [isOpen, setIsOpen] = useState(false);
+        const auth = getAuth()
+        useEffect(() => {
+            const unsubscribe = onAuthStateChanged(auth, async (user) => {
+                if(user){
+                    setUserName(user.displayName)
+                    console.log(user.displayName)
+                }
+            })
+            return() => unsubscribe()
+        }, [userId])
     const [isToggled, setToggled] = useState(false)
     const handleToggle = () => setToggled(!isToggled)
     return (
@@ -97,7 +112,8 @@ export default function Header3({ scroll, isMobileMenu, handleMobileMenu, isCart
                                                 <i className="fal fa-shopping-cart" />
                                                 <CartShow />
                                             </button>
-                                            <Link href="/sign-in"><i className="fal fa-user" /></Link>
+                                            {userId && userName?<div className="custom-menu"><Link href="/user"><i className="fal fa-user text-success fw-bolder" /></Link></div> : <Link href="/sign-in"><i className="fal fa-user" /></Link>}
+
                                             <Link href="/wishlist" className="header-cart p-relative tp-cart-toggle">
                                                 <i className="fal fa-heart" />
                                                 <WishListShow />

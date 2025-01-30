@@ -28,17 +28,21 @@ export default function RootLayout({ children }) {
                 <Provider store={store}>
                     {children}
                     <ToastContainer
-                        position="bottom-right"
-                        autoClose={500}
-                        hideProgressBar={false}
-                        newestOnTop={false}
-                        closeOnClick
-                        rtl={false}
-                        pauseOnFocusLoss
-                        draggable
-                        pauseOnHover
-                        theme="colored"
-                    />
+      position="top-right"
+      autoClose={3000}
+      hideProgressBar={false}
+      newestOnTop={false}
+      closeOnClick
+      rtl={false}
+      pauseOnFocusLoss
+      draggable
+      pauseOnHover
+      theme="dark"
+      toastClassName="bg-gray-900 text-white rounded-lg shadow-lg"
+      bodyClassName="text-sm font-medium"
+      progressClassName="bg-blue-500"
+    />
+
                 </Provider>
                     </AuthProvider>
             </body>

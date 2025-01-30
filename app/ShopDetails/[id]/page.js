@@ -8,6 +8,7 @@ import { useAddToCartMutation, useFetchCartQuery } from "@/features/api/cartApi"
 import { useAuth } from "@/components/AuthContent/AuthContent"
 import { toast } from "react-toastify"
 import Preloader from "@/components/elements/Preloader"
+import Loader from "@/components/Loader/page";
 // import { createContext } from "react/cjs/react.production.min";
 
 export default function ShopDetails() {
@@ -124,6 +125,7 @@ export default function ShopDetails() {
 
     return (
         <Layout headerStyle={3} footerStyle={1}>
+            {Loading && <Loader />}
             <div>
                 <section className="product-area pt-80 pb-25">
                     <div className="container">
@@ -252,7 +254,7 @@ export default function ShopDetails() {
                                                 </button>
                                             ) : (
                                                 <button onClick={handleAddToCart}>
-                                                    <i className="fal fa-shopping-cart" /> Add To Cart
+                                                    <i className="fal fa-shopping-bag" />{" "} Add To Bag
                                                 </button>
                                             )}
                                         </div>

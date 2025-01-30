@@ -5,8 +5,10 @@ import Layout from "@/components/layout/Layout";
 import Loader from "@/components/Loader/page";
 import PaymentPage from "@/components/paymentSample/PaymentPage";
 import {
+  useDeleteCartItemMutation,
   useFetchCartQuery,
   useFetchStockMutation,
+  useUpdateCartMutation,
 } from "@/features/api/cartApi";
 import {
   useStockValidationMutation,
@@ -27,8 +29,11 @@ export default function Checkout() {
   const [loadingScreen, setLoadingScreen] = useState(false);
   const [isStock, setIsStock] = useState(false);
   const [stockValue, setStockValue] = useState(null);
-
+  const [deleteCartItems] = useDeleteCartItemMutation();
+  const [updateCart] = useUpdateCartMutation();
   const handleLoginToggle = () => setLoginToggle(!isLoginToggle);
+  const [quantity, setQuantity] = useState(1);
+  const [couponCode, setCouponCode] = useState("");
   const [details, setDetails] = useState({
     fullName: "",
     phone: "",
@@ -158,7 +163,7 @@ export default function Checkout() {
     return <Preloader />;
   }
   if (isError) {
-    return <p>Error</p>;
+    return <Preloader />;
   }
   let total = 0;
   cartItems?.forEach((item) => {
@@ -166,13 +171,19 @@ export default function Checkout() {
     total = total + price;
   });
   let shipping = 50;
-  if (total >= 1000) {
-    shipping = 0;
-  }
+  // if (total >= 1000) {
+  //   shipping = 0;
+  // }
   let orderTotal = 0;
   if (total > 0) {
     orderTotal = total + shipping;
   }
+
+  const handleApplyCoupon = (e) => {
+    e.preventDefault()
+   
+}
+
   const handleChange = (e) => {
     e.preventDefault();
     const { name, value } = e.target;
@@ -187,7 +198,9 @@ export default function Checkout() {
   );
 
   const getStockStatus = (item) => {
-    if (!stockValue) return null;
+    if (!stockValue) {
+      return { stock: null, message: "Stock info unavailable" };
+    }
 
     const itemId = item.variantId || item.productId;
     const itemSize = item.size || item.productSize;
@@ -198,8 +211,10 @@ export default function Checkout() {
     );
 
     if (inStockItem) {
-      const value = inStockItem.stock;
-      return `${inStockItem.stock} in Stock`;
+      return {
+        stock: inStockItem.stock,
+        message: `${inStockItem.stock} left!`,
+      };
     }
 
     // Check in outOfStockItems array
@@ -209,12 +224,13 @@ export default function Checkout() {
     );
 
     if (outOfStockItem) {
-      const message = outOfStockItem.message;
-      orderTotal = orderTotal - item.productPrice * item.quantity;
-      return outOfStockItem.message;
+      return { stock: 0, message: outOfStockItem.message }; // Returning 0 stock for out-of-stock items
     }
 
-    return `No stock info available for size ${itemSize}`;
+    return {
+      stock: null,
+      message: `No stock info available for size ${itemSize}`,
+    };
   };
 
   if (isLoading) {
@@ -225,351 +241,325 @@ export default function Checkout() {
   //   return <div>Error loading stock information</div>;
   // }
 
+  const handleRemoveCart = async (id) => {
+    try {
+      const response = await deleteCartItems(id).unwrap();
+      if (response) {
+        toast.success("Item removed successfully");
+        window.location.reload();
+      } else {
+        toast.error("Failed to remove item");
+      }
+    } catch (error) {
+      console.error("Error deleting item:", error);
+      toast.error("Failed to remove item");
+    }
+  };
+  const handleUpdateCart = async (e, id, quantity) => {
+    e.preventDefault();
+    try {
+      const response = await updateCart({ id, quantity });
+      if (response.error) {
+        toast.error(
+          response.error.data?.message || "Failed to update quantity"
+        );
+      } else {
+        toast.success("Quantity updated successfully");
+        window.location.reload();
+      }
+    } catch {
+      console.error("Unexpected Error:", error);
+      toast.error("An unexpected error occurred");
+    }
+  };
+
+  const allItemsInStock = cartItems.every((item) => {
+    const { stock } = getStockStatus(item);
+    return stock !== null && stock >= item.quantity;
+  });
   return (
     <>
-      <Layout headerStyle={3} footerStyle={1} breadcrumbTitle="Checkout">
-        {loadingScreen && <Loader />}
-        <div>
-          <section
-            className="coupon-area pt-80 pb-30 wow fadeInUp"
-            data-wow-duration=".8s"
-            data-wow-delay=".2s"
-          >
-            <div className="container">
-              <div className="row">
-                <div className="col-md-6">
-                  <div className="coupon-accordion">
-                    {/* ACCORDION START */}
-                    <h3>
-                      Returning customer?{" "}
-                      <span id="showlogin" onClick={handleLoginToggle}>
-                        Click here to login
-                      </span>
-                    </h3>
-                    <div
-                      id="checkout-login"
-                      className="coupon-content"
-                      style={{ display: `${isLoginToggle ? "block" : "none"}` }}
-                    >
-                      <div className="coupon-info">
-                        <p className="coupon-text">
-                          Quisque gravida turpis sit amet nulla posuere lacinia.
-                          Cras sed est sit amet ipsum luctus.
-                        </p>
-                        <form action="#">
-                          <p className="form-row-first">
-                            <label>
-                              Username or email{" "}
-                              <span className="required">*</span>
-                            </label>
-                            <input type="text" />
-                          </p>
-                          <p className="form-row-last">
-                            <label>
-                              Password <span className="required">*</span>
-                            </label>
-                            <input type="text" />
-                          </p>
-                          <p className="form-row">
-                            <button
-                              className="tp-btn tp-color-btn"
-                              type="submit"
-                            >
-                              Login
-                            </button>
-                            <label>
-                              <input type="checkbox" />
-                              Remember me
-                            </label>
-                          </p>
-                          <p className="lost-password">
-                            <Link href="#">Lost your password?</Link>
-                          </p>
-                        </form>
-                      </div>
-                    </div>
-                    {/* ACCORDION END */}
+      <Layout headerStyle={3} footerStyle={2}>
+      {loadingScreen && <Loader />}
+      <div className="custom-checkout-container">
+        
+
+        <section className="custom-checkout-main">
+          <form className="custom-checkout-form">
+            <div className="custom-checkout-grid">
+              <div className="custom-checkout-billing">
+                <h3 className="custom-checkout-section-title">Billing Details</h3>
+                <div className="custom-checkout-form-grid">
+                  <div className="custom-checkout-form-row">
+                    <label className="custom-checkout-label">
+                      Full Name <span className="custom-checkout-required">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="fullName"
+                      className="custom-checkout-input"
+                      placeholder="John Doe"
+                      required
+                      value={details.fullName}
+                      onChange={handleChange}
+                    />
                   </div>
-                </div>
-                <div className="col-md-6">
-                  <div className="coupon-accordion">
-                    {/* ACCORDION START */}
-                    <h3>
-                      Have a coupon?{" "}
-                      <span id="showcoupon" onClick={handleCuponToggle}>
-                        Click here to enter your code
-                      </span>
-                    </h3>
-                    <div
-                      id="checkout_coupon"
-                      className="coupon-checkout-content"
-                      style={{ display: `${isCuponToggle ? "block" : "none"}` }}
-                    >
-                      <div className="coupon-info">
-                        <form action="#">
-                          <p className="checkout-coupon">
-                            <input type="text" placeholder="Coupon Code" />
-                            <button
-                              className="tp-btn tp-color-btn"
-                              type="submit"
-                            >
-                              Apply Coupon
-                            </button>
-                          </p>
-                        </form>
-                      </div>
-                    </div>
-                    {/* ACCORDION END */}
+                  
+                  <div className="custom-checkout-form-row">
+                    <label className="custom-checkout-label">
+                      Phone <span className="custom-checkout-required">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="phone"
+                      className="custom-checkout-input"
+                      placeholder="98989 98989"
+                      required
+                      value={details.phone}
+                      onChange={handleChange}
+                    />
+                  </div>
+
+                  <div className="custom-checkout-form-row">
+                    <label className="custom-checkout-label">
+                      Address Line 1 <span className="custom-checkout-required">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="addressLine1"
+                      className="custom-checkout-input"
+                      placeholder="Street address"
+                      required
+                      value={details.addressLine1}
+                      onChange={handleChange}
+                    />
+                  </div>
+
+                  <div className="custom-checkout-form-row">
+                    <label className="custom-checkout-label">
+                      Address Line 2
+                    </label>
+                    <input
+                      type="text"
+                      name="addressLine2"
+                      className="custom-checkout-input"
+                      placeholder="Apartment, suite, unit etc."
+                      value={details.addressLine2}
+                      onChange={handleChange}
+                    />
+                  </div>
+
+                  <div className="custom-checkout-form-row">
+                    <label className="custom-checkout-label">
+                      Town / City <span className="custom-checkout-required">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="city"
+                      className="custom-checkout-input"
+                      placeholder="Town / City"
+                      required
+                      value={details.city}
+                      onChange={handleChange}
+                    />
+                  </div>
+
+                  <div className="custom-checkout-form-row">
+                    <label className="custom-checkout-label">
+                      State <span className="custom-checkout-required">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="state"
+                      className="custom-checkout-input"
+                      placeholder="State"
+                      required
+                      value={details.state}
+                      onChange={handleChange}
+                    />
+                  </div>
+
+                  <div className="custom-checkout-form-row">
+                    <label className="custom-checkout-label">
+                      Postcode / Zip <span className="custom-checkout-required">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="postalCode"
+                      className="custom-checkout-input"
+                      placeholder="Postcode / Zip"
+                      required
+                      value={details.postalCode}
+                      onChange={handleChange}
+                    />
+                  </div>
+
+                  <div className="custom-checkout-form-row">
+                    <label className="custom-checkout-label">
+                      Country <span className="custom-checkout-required">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      className="custom-checkout-input"
+                      value="India"
+                      disabled
+                      name="country"
+                      required
+                    />
                   </div>
                 </div>
               </div>
-            </div>
-          </section>
-          {/* coupon-area end */}
-          {/* checkout-area start */}
-          <section
-            className="checkout-area pb-50 wow fadeInUp"
-            data-wow-duration=".8s"
-            data-wow-delay=".2s"
-          >
-            <div className="container">
-              <form action="#">
-                <div className="row">
-                  <div className="col-lg-6 col-md-12">
-                    <div className="checkbox-form">
-                      <h3>Billing Details</h3>
-                      <div className="row">
-                        <div className="col-md-12">
-                          <div className="checkout-form-list">
-                            <label>
-                              Full Name <span className="required">*</span>
-                            </label>
-                            <input
-                              type="text"
-                              name="fullName"
-                              placeholder="John Doe"
-                              required
-                              value={details.fullName}
-                              onChange={handleChange}
-                            />
-                          </div>
-                        </div>
 
-                        <div className="col-md-12">
-                          <div className="checkout-form-list">
-                            <label>
-                              Phone<span className="required">*</span>
-                            </label>
-                            <input
-                              type="text"
-                              name="phone"
-                              value={details.phone}
-                              placeholder="98989 98989"
-                              required
-                              onChange={handleChange}
-                            />
-                          </div>
-                        </div>
-                        <div className="col-md-12">
-                          <div className="checkout-form-list">
-                            <label>
-                              Address Line 1 <span className="required">*</span>
-                            </label>
-                            <input
-                              type="text"
-                              name="addressLine1"
-                              placeholder="Street address"
-                              required
-                              value={details.addressLine1}
-                              onChange={handleChange}
-                            />
-                          </div>
-                        </div>
-                        <div className="col-md-12">
-                          <div className="checkout-form-list">
-                            <label>Address Line 2 </label>
-                            <input
-                              type="text"
-                              placeholder="Street address"
-                              name="addressLine2"
-                              value={details.addressLine2}
-                              onChange={handleChange}
-                            />
-                          </div>
-                        </div>
-
-                        <div className="col-md-12">
-                          <div className="checkout-form-list">
-                            <label>
-                              Town / City <span className="required">*</span>
-                            </label>
-                            <input
-                              type="text"
-                              placeholder="Town / City"
-                              name="city"
-                              required
-                              value={details.city}
-                              onChange={handleChange}
-                            />
-                          </div>
-                        </div>
-                        <div className="col-md-6">
-                          <div className="checkout-form-list">
-                            <label>
-                              State <span className="required">*</span>
-                            </label>
-                            <input
-                              type="text"
-                              name="state"
-                              placeholder="State"
-                              required
-                              value={details.state}
-                              onChange={handleChange}
-                            />
-                          </div>
-                        </div>
-                        <div className="col-md-6">
-                          <div className="checkout-form-list">
-                            <label>
-                              Postcode / Zip <span className="required">*</span>
-                            </label>
-                            <input
-                              type="text"
-                              placeholder="Postcode / Zip"
-                              name="postalCode"
-                              required
-                              value={details.postalCode}
-                              onChange={handleChange}
-                            />
-                          </div>
-                        </div>
-
-                        <div className="col-md-12">
-                          <div className="checkout-form-list">
-                            <label>
-                              Country <span className="required">*</span>
-                            </label>
-                            <input
-                              type="text"
-                              value="India"
-                              disabled
-                              name="country"
-                              required
-                              //   onChange={handleChange}
-                            />
-                          </div>
-                        </div>
-                        {/* <div className="col-md-12">
-                                                    <div className="checkout-form-list create-acc">
-                                                        <input id="cbox" type="checkbox" onClick={handleCboxToggle} />
-                                                        <label>Create an account?</label>
-                                                    </div>
-                                                    <div id="cbox_info" className="checkout-form-list create-account" style={{ display: `${isCboxToggle ? "block" : "none"}` }}>
-                                                        <p>Create an account by entering the information below. If you are a returning
-                                                            customer please login at the top of the page.</p>
-                                                        <label>Account password <span className="required">*</span></label>
-                                                        <input type="password" placeholder="password" />
-                                                    </div>
-                                                </div> */}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="col-lg-6 col-md-12">
-                    <div className="your-order mb-30 ">
-                      <h3>Your order</h3>
-                      <div className="your-order-table table-responsive">
-                        <table>
-                          <thead>
-                            <tr>
-                              <th className="product-name">Product</th>
-                              <th className="product-total">Total</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {cartItems?.map((item) => (
-                              <tr
-                                key={`${item.productId || item.variantId}-${
-                                  item.size || item.productSize
-                                }`}
-                              >
-                                <td>
-                                  {item.productName}{" "}
-                                  <strong className="product-quantity">
-                                    × {item.quantity}
-                                  </strong>
-                                  <br />
-                                  <small className="stock-status">
-                                    {getStockStatus(item)}
-                                  </small>
-                                </td>
-                                <td>
-                                  <span className="amount">
-                                    ₹ {item.productPrice}
-                                  </span>
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                          <tfoot>
-                            <tr className="cart-subtotal">
-                              <th>Cart Subtotal</th>
-                              <td>
-                                <span className="amount">₹ {total}</span>
-                              </td>
-                            </tr>
-                            <tr className="shipping">
-                              <th>Shipping</th>
-                              <td>
-                                <span className="amount">₹ {shipping}</span>
-                              </td>
-                            </tr>
-                            <tr className="order-total">
-                              <th>Order Total</th>
-                              <td>
-                                <strong>
-                                  <span className="amount">₹ {orderTotal}</span>
-                                </strong>
-                              </td>
-                            </tr>
-                          </tfoot>
-                        </table>
-                      </div>
-                      <div className="payment-method">
-                        <div className="accordion" id="checkoutAccordion">
-                          <div className="accordion-item"></div>
-                        </div>
-                        {isDetailsEmpty ? (
-                          <div className="order-button-payment mt-20">
-                            <PaymentPage
-                              amount={orderTotal}
-                              onPaymentSuccess={setSuccessOrder}
-                              transactionId={transactionId}
-                              setTransactionId={setTransactionId}
-                              setStatus={setStatus}
-                              setMethod={setMethod}
-                            />
-                          </div>
-                        ) : (
-                          <>
-                            <div className="order-button-payment mt-20">
-                              <button
-                                type="submit"
-                                className="tp-btn tp-color-btn w-100 banner-animation"
-                              >
-                                Fill all details
-                              </button>
-                            </div>
-                          </>
-                        )}
-                      </div>
-                    </div>
-                  </div>
+              <div className="custom-checkout-order-summary">
+                <h3 className="custom-checkout-section-title">Your Order</h3>
+                <div className="custom-checkout-order-table">
+                  <table className="custom-checkout-table">
+                    <thead>
+                      <tr>
+                        <th>Product</th>
+                        <th>Total</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {cartItems?.map((item) => {
+                        const { stock, message } = getStockStatus(item);
+                        return (
+                          <tr key={`${item.productId || item.variantId}-${item.size || item.productSize}`}>
+                            <td className="custom-checkout-product-cell">
+                              <span className="custom-checkout-product-name">
+                                {item.productName}
+                              </span>
+                              <span className="custom-checkout-product-quantity">
+                                × {item.quantity}
+                              </span>
+                              <span className="custom-checkout-stock-status">
+                                {message}
+                              </span>
+                            </td>
+                            <td className="custom-checkout-price-cell">
+                              <span className="custom-checkout-amount">
+                                ₹ {item.productPrice}
+                              </span>
+                              {stock === 0 && (
+                                <button 
+                                  className="custom-checkout-remove-button"
+                                  onClick={() => handleRemoveCart(item.productId)}
+                                >
+                                  Remove
+                                </button>
+                              )}
+                              {stock !== null && stock > 0 && stock < item.quantity && (
+                                <div className="custom-checkout-quantity-update">
+                                  <select
+                                    className="custom-checkout-select"
+                                    value={quantity}
+                                    onChange={(e) => setQuantity(Number(e.target.value))}
+                                  >
+                                    <option value="" disabled>Select Quantity</option>
+                                    {Array.from({ length: stock }, (_, i) => (
+                                      <option key={i + 1} value={i + 1}>
+                                        {i + 1}
+                                      </option>
+                                    ))}
+                                  </select>
+                                  <button
+                                    className="custom-checkout-update-button"
+                                    onClick={(e) => handleUpdateCart(e, item.productId, quantity)}
+                                  >
+                                    Update Quantity
+                                  </button>
+                                </div>
+                              )}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                    <tfoot>
+                      <tr>
+                        <th>Cart Subtotal</th>
+                        <td>₹ {total}</td>
+                      </tr>
+                      <tr>
+                        <th>Shipping</th>
+                        <td>₹ {shipping}</td>
+                      </tr>
+                      <tr className="custom-checkout-order-total">
+                        <th>Order Total</th>
+                        <td>₹ {orderTotal}</td>
+                      </tr>
+                    </tfoot>
+                  </table>
                 </div>
-              </form>
+
+                <div className="custom-checkout-payment">
+                  {isDetailsEmpty ? (
+                    <div className="custom-checkout-payment-button">
+                      {allItemsInStock ? (
+                        <PaymentPage
+                          amount={orderTotal}
+                          onPaymentSuccess={setSuccessOrder}
+                          transactionId={transactionId}
+                          setTransactionId={setTransactionId}
+                          setStatus={setStatus}
+                          setMethod={setMethod}
+                        />
+                      ) : (
+                        <button
+                          type="button"
+                          className="custom-checkout-button custom-checkout-button-disabled"
+                          disabled
+                        >
+                          Some items are out of stock
+                        </button>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="custom-checkout-payment-button">
+                      <button
+                        type="submit"
+                        className="custom-checkout-button"
+                      >
+                        Fill all details
+                      </button>
+                    </div>
+                  )}
+                  <div className="custom-checkout-coupon-section">
+                </div>
+              <div className="custom-checkout-accordion my-2">
+                <h3 className="custom-checkout-accordion-title">
+                  Have a coupon?{" "}
+                  <span className="custom-checkout-link" onClick={handleCuponToggle}>
+                    Click here to enter your code
+                  </span>
+                </h3>
+                {isCuponToggle && (
+                  <div className="custom-checkout-coupon-content">
+                    <form className="custom-checkout-form">
+                      <div className="custom-checkout-coupon-row">
+                        <input 
+                          type="text" 
+                          className="custom-checkout-input" 
+                          placeholder="Coupon Code" 
+                          value={couponCode}
+                          onChange={(e) => setCouponCode(e.target.value)}
+                        />
+                        <button className="custom-checkout-button" onClick={(e) => handleApplyCoupon(e)}>
+                          Apply Coupon
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                )}
+              </div>
             </div>
-          </section>
-        </div>
-      </Layout>
+              </div>
+            </div>
+          </form>
+          
+        </section>
+      </div>
+    </Layout>
     </>
   );
 }

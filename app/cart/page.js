@@ -43,7 +43,10 @@ export default function Cart() {
     const price = item.quantity * item.productPrice;
     total = total + price;
   });
-
+  let shipping = 50
+  if(shipping < total){
+    total = total + shipping
+  }
   const handleQuantityChange = async (id, quantity) => {
     try {
       console.log("Update Request:", { id, quantity });
@@ -83,107 +86,158 @@ export default function Cart() {
   };
   return (
     <>
-      <Layout headerStyle={3} footerStyle={1} breadcrumbTitle="Cart">
-        <section
-          className="cart-area pt-80 pb-80 wow fadeInUp"
-          data-wow-duration=".8s"
-          data-wow-delay=".2s"
-        >
-          <div className="container">
-            <div className="row">
-              <div className="col-12">
-                <form action="#">
-                  <div className="table-content table-responsive">
-                    <table className="table">
-                      <thead>
-                        <tr>
-                          <th className="product-thumbnail">Images</th>
-                          <th className="cart-product-name">Product Name</th>
-                          <th className="product-price">Unit Price</th>
-                          <th className="product-color">color</th>
-                          <th className="product-size">size</th>
-                          <th className="product-quantity">Quantity</th>
-                          <th className="product-subtotal">Total</th>
-                          <th className="product-remove">Remove</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {cartItems && cartItems.length === 0 ? (
-                          <CartItems showEmptyMessage={true} />
-                        ) : (
-                          cartItems?.map((item) => (
-                            <CartItems
-                              key={item.productId}
-                              id={item.productId}
-                              name={item.productName}
-                              quanLoading={quanLoading}
-                              price={item.productPrice}
-                              quantity={item.quantity}
-                              image={item.productImage}
-                              total={total}
-                              onQuantityChange={handleQuantityChange}
-                              onDelete={handleDelete}
-                              showEmptyMessage={false}
-                              color={item.productColor}
-                              size={item.productSize}
-                            />
-                          ))
-                        )}
-                      </tbody>
-                    </table>
-                  </div>
-                  <div className="row">
-                    <div className="col-12">
-                      <div className="coupon-all">
-                        <div className="coupon">
-                          <input
-                            id="coupon_code"
-                            className="input-text"
-                            name="coupon_code"
-                            placeholder="Coupon code"
-                            type="text"
-                          />
-                          <button
-                            className="tp-btn tp-color-btn banner-animation"
-                            name="apply_coupon"
-                            type="submit"
-                          >
-                            Apply Coupon
-                          </button>
-                        </div>
-                        {/* <div className="coupon2">
-                                                    <button className="tp-btn tp-color-btn banner-animation" name="update_cart" type="submit">Update cart</button>
-                                                </div> */}
+      <Layout headerStyle={5} footerStyle={2} breadcrumbTitle="Cart Page">
+  <section className="custom-cart-section">
+    <div className="custom-cart-container">
+      {/* Desktop Table View */}
+      <table className="custom-cart-table">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Total</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {cartItems && cartItems.length === 0 ? (
+            <tr>
+              <td colSpan="5" style={{textAlign: 'center'}}>Your cart is empty</td>
+            </tr>
+          ) : (
+            cartItems?.map((item) => (
+              <tr key={item.productId}>
+                <td>
+                  <div style={{display: 'flex', alignItems: 'center', gap: '16px'}}>
+                    <img 
+                      src={item.productImage} 
+                      alt={item.productName} 
+                      style={{width: '60px', height: '60px', objectFit: 'cover', borderRadius: '8px'}}
+                    />
+                    <div>
+                      <div>{item.productName}</div>
+                      <div style={{fontSize: '14px', color: '#666'}}>
+                        {item.productColor && `Color: ${item.productColor}`}
+                        {item.productSize && ` | Size: ${item.productSize}`}
                       </div>
                     </div>
                   </div>
-                  <div className="row justify-content-end">
-                    <div className="col-md-5 ">
-                      <div className="cart-page-total">
-                        <h2>Cart totals</h2>
-                        <ul className="mb-20">
-                          <li>
-                            Subtotal <span>₹{total.toFixed(2)}</span>
-                          </li>
-                          <li>
-                            Total <span>₹{total.toFixed(2)}</span>
-                          </li>
-                        </ul>
-                        <Link
-                          href="/checkout"
-                          className="tp-btn tp-color-btn banner-animation"
-                        >
-                          Proceed to Checkout
-                        </Link>
-                      </div>
-                    </div>
+                </td>
+                <td>₹{item.productPrice}</td>
+                <td>
+                  <div className="custom-cart-quantity">
+                    <button 
+                      className="custom-cart-quantity-btn"
+                      onClick={() => handleQuantityChange(item.productId, item.quantity - 1)}
+                    >-</button>
+                    <span>{item.quantity}</span>
+                    <button 
+                      className="custom-cart-quantity-btn"
+                      onClick={() => handleQuantityChange(item.productId, item.quantity + 1)}
+                    >+</button>
                   </div>
-                </form>
+                </td>
+                <td>₹{(item.productPrice * item.quantity).toFixed(2)}</td>
+                <td>
+                  <button 
+                    onClick={() => handleDelete(item.productId)}
+                    style={{color: '#ff4d4f', background: 'none', border: 'none', cursor: 'pointer'}}
+                  >
+                    Remove
+                  </button>
+                </td>
+              </tr>
+            ))
+          )}
+        </tbody>
+      </table>
+
+      {/* Mobile View */}
+      <div className="custom-cart-mobile-view">
+        {cartItems && cartItems.length === 0 ? (
+          <div className="custom-cart-mobile-card">Your cart is empty</div>
+        ) : (
+          cartItems?.map((item) => (
+            <div key={item.productId} className="custom-cart-mobile-card">
+              <div className="custom-cart-mobile-content">
+                <img 
+                  src={item.productImage} 
+                  alt={item.productName}
+                  className="custom-cart-mobile-image"
+                />
+                <div className="custom-cart-mobile-details">
+                  <h3 style={{margin: '0 0 8px 0'}}>{item.productName}</h3>
+                  <div style={{color: '#666', marginBottom: '12px'}}>
+                    {item.productColor && `Color: ${item.productColor}`}
+                    {item.productSize && ` | Size: ${item.productSize}`}
+                  </div>
+                  <div className="custom-cart-quantity" style={{marginBottom: '12px'}}>
+                    <button 
+                      className="custom-cart-quantity-btn"
+                      onClick={() => handleQuantityChange(item.productId, item.quantity - 1)}
+                    >-</button>
+                    <span>{item.quantity}</span>
+                    <button 
+                      className="custom-cart-quantity-btn"
+                      onClick={() => handleQuantityChange(item.productId, item.quantity + 1)}
+                    >+</button>
+                  </div>
+                  <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+                    <div>₹{(item.productPrice * item.quantity).toFixed(2)}</div>
+                    <button 
+                      onClick={() => handleDelete(item.productId)}
+                      style={{color: '#ff4d4f', background: 'none', border: 'none', cursor: 'pointer'}}
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
+          ))
+        )}
+      </div>
+
+      <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px'}}>
+        {/* Coupon Section */}
+        <div className="custom-cart-coupon">
+          <h3 className="custom-cart-summary-title">Have a Coupon?</h3>
+          <input
+            type="text"
+            className="custom-cart-coupon-input"
+            placeholder="Enter coupon code"
+          />
+          <button className="custom-cart-coupon-btn">
+            Apply Coupon
+          </button>
+        </div>
+
+        {/* Summary Section */}
+        <div className="custom-cart-summary">
+          <h3 className="custom-cart-summary-title">Cart Summary</h3>
+          <div className="custom-cart-summary-row">
+            <span>Subtotal</span>
+            <span>₹{total.toFixed(2)}</span>
           </div>
-        </section>
-      </Layout>
+          <div className="custom-cart-summary-row">
+            <span>Shipping</span>
+            <span>₹50</span>
+          </div>
+          <div className="custom-cart-summary-row" style={{borderTop: '1px solid #eee', paddingTop: '12px', marginTop: '12px'}}>
+            <span style={{fontSize: '18px', fontWeight: '600'}}>Total</span>
+            <span style={{fontSize: '18px', fontWeight: '600', color: 'green'}}>₹{total.toFixed(2)}</span>
+          </div>
+          <Link href="/checkout">
+            <button className="custom-cart-checkout-btn">
+              Proceed to Checkout
+            </button>
+          </Link>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>
     </>
   );
 }
