@@ -108,126 +108,113 @@ const Page = () => {
     }
   }
   return (
-    <Layout headerStyle={5} footerStyle={2}>
-      {loading && <Loader/>}
-      <div className="container account-main">
-        <div>
-          <h1>Account Settings</h1>
+    <Layout headerStyle={3} footerStyle={2}>
+    {loading && <Loader/>}
+    <div className="custom-security-wrapper">
+      <div className="custom-security-container">
+        <div className="custom-security-header">
+          <h1 className="custom-security-title">Account Settings</h1>
         </div>
-        <div className="account-container">
-          <button onClick={toggleUpdateUserName}>
-            <div className="account-inside-container">
-              <img src="/assets/img/account/user.png" />
-              <div className="d-flex align-items-start justify-content-start flex-column">
-                <h3>Change Username</h3>
-                <p>Welcome Back, {username}</p>
+        
+        <div className="custom-security-grid">
+          <button className="custom-security-card" onClick={toggleUpdateUserName}>
+            <div className="custom-security-card-header">
+              <img src="/assets/img/account/user.png" alt="User" className="custom-security-card-icon" />
+              <div>
+                <h3 className="custom-security-card-title">Change Username</h3>
+                <p className="custom-security-card-text">Welcome Back, {username}</p>
               </div>
             </div>
           </button>
+  
           {mailSignedIn && (
-            <button onClick={toggleUpdatePassword}>
-              <div className="account-inside-container">
-                <img src="/assets/img/account/security.png" />
-                <div className="d-flex align-items-start justify-content-start flex-column">
-                  <h3>Change Password</h3>
-                  <p>Reauthenticate to change password</p>
+            <button className="custom-security-card" onClick={toggleUpdatePassword}>
+              <div className="custom-security-card-header">
+                <img src="/assets/img/account/security.png" alt="Security" className="custom-security-card-icon" />
+                <div>
+                  <h3 className="custom-security-card-title">Change Password</h3>
+                  <p className="custom-security-card-text">Update your password</p>
                 </div>
               </div>
             </button>
           )}
-          <Link href="/contact">
-            <div className="account-inside-container">
-              <img src="/assets/img/account/contact.png" />
+  
+          <Link href="/contact" className="custom-security-card">
+            <div className="custom-security-card-header">
+              <img src="/assets/img/account/contact.png" alt="Contact" className="custom-security-card-icon" />
               <div>
-                <h3>Contact Us</h3>
-                <p>Get in touch with us</p>
+                <h3 className="custom-security-card-title">Contact Us</h3>
+                <p className="custom-security-card-text">Get in touch with us</p>
               </div>
             </div>
           </Link>
         </div>
       </div>
-      {userNameContainer && (
-        <div class="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center bg-dark bg-opacity-50">
-          <div
-            class="bg-white p-4 rounded-3 shadow-lg position-relative"
-            style={{ width: "400px" }}
-          >
-            <button
-              class="btn-close position-absolute top-0 end-0 m-2"
-              aria-label="Close"
-              onClick={toggleUpdateUserName}
-            ></button>
-
-            <h5 class="mb-3 text-center">Update Username</h5>
-            <div class="mb-3">
-              <input
-                type="text"
-                class="form-control"
-                placeholder="New Username"
-                onChange={(e) => setNewUsername(e.target.value)}
-              />
-            </div>
-            <div class="d-grid">
-              <button class="btn btn-primary" onClick={handleUpdateUserName}>Save</button>
-            </div>
+    </div>
+  
+    {/* Modals */}
+    {userNameContainer && (
+      <div className="custom-security-modal-overlay">
+        <div className="custom-security-modal">
+          <button className="custom-security-modal-close" onClick={toggleUpdateUserName}>×</button>
+          <h2 className="custom-security-modal-title">Update Username</h2>
+          <div className="custom-security-input-group">
+            <input
+              type="text"
+              className="custom-security-input"
+              placeholder="New Username"
+              onChange={(e) => setNewUsername(e.target.value)}
+            />
           </div>
+          <button className="custom-security-button" onClick={handleUpdateUserName}>
+            Save Changes
+          </button>
         </div>
-      )}
-
-      {/*  */}
-
-      {userPasswordContainer && (
-        <div class="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center bg-dark bg-opacity-50">
-          <div
-            class="bg-white p-4 rounded-3 shadow-lg position-relative"
-            style={{ width: "400px" }}
-          >
-            <button
-              class="btn-close position-absolute top-0 end-0 m-2"
-              aria-label="Close"
-              onClick={toggleUpdatePassword}
-            ></button>
-
-            <h5 class="mb-3 text-center">Update Password</h5>
-            <div class="mb-3">
-              <input
-                type="text"
-                class="form-control mb-3"
-                placeholder="Current Password"
-                name="oldPassword"
-                value={newPassword.oldPassword}
-                onChange={(e) => setNewPassword({ ...newPassword, [e.target.name] : e.target.value})}
-              />
-              <input
-                type="text"
-                class="form-control mb-3"
-                placeholder="New Password"
-                name="newPassword"
-                value={newPassword.newPassword}
-                onChange={(e) => setNewPassword({ ...newPassword, [e.target.name] : e.target.value})}
-              />
-              <input
-                type="text"
-                class="form-control mb-3"
-                placeholder="Confirm New Password"
-                name="confirmPassword"
-                value={newPassword.confirmPassword}
-                onChange={(e) => {setNewPassword({ ...newPassword, [e.target.name] : e.target.value})
-              if(e.target.value === newPassword.newPassword){
-                e.target.style.border = "1px solid green"
-              }else{
-                e.target.style.border = "1px solid red"
-              }}}
-              />
-            </div>
-            {errorMessage && <p className="text-danger">{errorMessage}</p>}
-            <div class="d-grid">
-              <button class="btn btn-primary" onClick={handleUpdatePassword}>Save</button>
-            </div>
+      </div>
+    )}
+  
+    {userPasswordContainer && (
+      <div className="custom-security-modal-overlay">
+        <div className="custom-security-modal">
+          <button className="custom-security-modal-close" onClick={toggleUpdatePassword}>×</button>
+          <h2 className="custom-security-modal-title">Update Password</h2>
+          <div className="custom-security-input-group">
+            <input
+              type="password"
+              className="custom-security-input"
+              placeholder="Current Password"
+              name="oldPassword"
+              value={newPassword.oldPassword}
+              onChange={(e) => setNewPassword({ ...newPassword, [e.target.name]: e.target.value })}
+            />
+            <input
+              type="password"
+              className="custom-security-input"
+              placeholder="New Password"
+              name="newPassword"
+              value={newPassword.newPassword}
+              onChange={(e) => setNewPassword({ ...newPassword, [e.target.name]: e.target.value })}
+            />
+            <input
+              type="password"
+              className="custom-security-input"
+              placeholder="Confirm New Password"
+              name="confirmPassword"
+              value={newPassword.confirmPassword}
+              onChange={(e) => {
+                setNewPassword({ ...newPassword, [e.target.name]: e.target.value });
+                e.target.style.borderColor = e.target.value === newPassword.newPassword ? '#22c55e' : '#ef4444';
+              }}
+            />
+            {errorMessage && <p className="custom-security-error">{errorMessage}</p>}
           </div>
+          <button className="custom-security-button" onClick={handleUpdatePassword}>
+            Update Password
+          </button>
         </div>
-      )}
-    </Layout>
+      </div>
+    )}
+  </Layout>
   );
 };
 

@@ -27,7 +27,7 @@ const User = () => {
   }
   return (
     <>
-        <Layout headerStyle={5} footerStyle={2}>
+        <Layout headerStyle={3} footerStyle={2}>
       {user ? (
         <Account /> // Render Account page if user exists.
       ) : (

@@ -13,9 +13,9 @@ export default function HeaderMobSticky({ scroll, isMobileMenu, handleMobileMenu
                             </div>
                         </div>
                         <div className="col-6">
-                            <div className="logo text-center">
-                                <Link href="/"><img src="/assets/img/logo/logo.png" alt="logo" /></Link>
-                            </div>
+                        <div className="logo" style={{ width: "auto", height: "5rem", display: "flex"}}>
+                                    <Link href="/"><img style={{ width: "auto", height: "5rem", display: "block"}} src="/assets/css/images/jvr-logo-3.png" alt="logo" /></Link>
+                                </div>
                         </div>
                         <div className="col-3">
                             <div className="header-meta-info d-flex align-items-center justify-content-end ml-25">

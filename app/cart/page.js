@@ -86,7 +86,7 @@ export default function Cart() {
   };
   return (
     <>
-      <Layout headerStyle={5} footerStyle={2} breadcrumbTitle="Cart Page">
+      <Layout headerStyle={3} footerStyle={2}>
   <section className="custom-cart-section">
     <div className="custom-cart-container">
       {/* Desktop Table View */}

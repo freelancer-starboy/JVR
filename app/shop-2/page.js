@@ -69,7 +69,7 @@ export default function ShopPage() {
 
   
   return (
-    <Layout headerStyle={3} footerStyle={1}>
+    <Layout headerStyle={3} footerStyle={2}>
       {/* Mobile Filter */}
     
       <div className="mobile-filter-container">

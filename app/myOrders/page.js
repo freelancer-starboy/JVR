@@ -5,7 +5,6 @@ import Layout from "@/components/layout/Layout";
 import { useFetchCheckOutQuery } from "@/features/api/checkout";
 import { useRouter } from "next/navigation";
 import React, { useEffect } from "react";
-import OrderSuccess from "../orderSuccess/page";
 
 const OrdersPage = () => {
   const { userId, isAuthLoading } = useAuth();
@@ -25,71 +24,72 @@ const OrdersPage = () => {
   }
 
   return (
-    <Layout headerStyle={5} footerStyle={2}>
-      <div className="container p-4 mb-10">
-        <h1 className="mb-4">Your Orders</h1>
+    <Layout headerStyle={3} footerStyle={2}>
+      <div className="custom-myorders-container">
+        <h1 className="custom-myorders-title">Your Orders</h1>
         {data && data.length > 0 ? (
-          <div className="row row-cols-1 g-4">
+          <div className="custom-myorders-grid">
             {data.map((order) => (
-              <div key={order._id} className="col">
-                <div className="card">
-                  <div className="card-header bg-light d-flex justify-content-between align-items-center">
-                    <div>
-                      <span className="me-2">
-                        <span className="fw-bold">Order Placed: </span>
-                        {new Date(order.createdAt).toLocaleDateString('en-GB', {
-                            day : '2-digit',
-                            month : 'short',
-                            year: 'numeric'
-                        })}
-                      </span>
-                      <span className="text-muted">
-                        Order ID #-JVR-{order._id.slice(-6)}
-                      </span>
+              <div key={order._id} className="custom-myorders-card">
+                <div className="custom-myorders-header">
+                  <div className="custom-myorders-header-info">
+                    <span className="custom-myorders-date">
+                      <span className="custom-myorders-label">Order Placed: </span>
+                      {new Date(order.createdAt).toLocaleDateString('en-GB', {
+                        day: '2-digit',
+                        month: 'short',
+                        year: 'numeric'
+                      })}
+                    </span>
+                    <span className="custom-myorders-id">
+                      Order ID #-JVR-{order._id.slice(-6)}
+                    </span>
+                  </div>
+                  <div className="custom-myorders-total">
+                    <span className="custom-myorders-total-label">Total: </span>₹
+                    {order.orderTotal}
+                  </div>
+                </div>
+
+                <div className="custom-myorders-content">
+                  <div className="custom-myorders-info-grid">
+                    <div className="custom-myorders-info-item">
+                      <h6 className="custom-myorders-info-title">Shipping Address</h6>
+                      <p className="custom-myorders-info-text">
+                        {order.shippingAddress?.addressLine1},{" "}
+                        {order.shippingAddress?.addressLine2}
+                      </p>
                     </div>
-                    <div className="fw-bold">
-                      <span className="me-2 text-danger">Total: </span>₹
-                      {order.orderTotal}
+                    <div className="custom-myorders-info-item">
+                      <h6 className="custom-myorders-info-title">Payment</h6>
+                      <p className="custom-myorders-info-text">
+                        {order.paymentDetails?.method?.toUpperCase()} -{" "}
+                        {order.paymentDetails?.status}
+                      </p>
+                    </div>
+                    <div className="custom-myorders-info-item">
+                      <h6 className="custom-myorders-info-title">Delivery Status</h6>
+                      <p className="custom-myorders-info-text custom-myorders-success">
+                        {order.orderStatus}
+                      </p>
+                    </div>
+                    <div className="custom-myorders-info-item">
+                      <h6 className="custom-myorders-info-title">Expected Delivery</h6>
+                      <p className="custom-myorders-info-text custom-myorders-success">
+                        {new Date(
+                          new Date(order.createdAt).getTime() +
+                          10 * 24 * 60 * 60 * 1000
+                        ).toLocaleDateString("en-GB", {
+                          day: "2-digit",
+                          month: "short",
+                          year: "numeric",
+                        })}
+                      </p>
                     </div>
                   </div>
-                  <div className="card-body">
-                    <div className="row mb-3">
-                      <div className="col-md-3">
-                        <h6 className="text-muted">Shipping Address</h6>
-                        <p>
-                          {order.shippingAddress?.addressLine1},{" "}
-                          {order.shippingAddress?.addressLine2}
-                        </p>
-                      </div>
-                      <div className="col-md-3">
-                        <h6 className="text-muted">Payment</h6>
-                        <p>
-                          {order.paymentDetails?.method?.toUpperCase()} -{" "}
-                          {order.paymentDetails?.status}
-                        </p>
-                      </div>
-                      <div className="col-md-3">
-                        <h6 className="text-muted">Delivery Status</h6>
-                        <p className="fw-bold text-success">
-                          {order.orderStatus}
-                        </p>
-                      </div>
-                      <div className="col-md-3">
-                        <h6 className="text-muted">Expected Delivery</h6>
-                        <p className="fw-bold text-success">
-                          {new Date(
-                            new Date(order.createdAt).getTime() +
-                              10 * 24 * 60 * 60 * 1000
-                          ).toLocaleDateString("en-GB", {
-                            day: "2-digit",
-                            month: "short",
-                            year: "numeric",
-                          })}
-                        </p>
-                      </div>
-                    </div>
 
-                    <table className="table table-striped">
+                  <div className="custom-myorders-table-container">
+                    <table className="custom-myorders-table">
                       <thead>
                         <tr>
                           <th>Product</th>
@@ -115,7 +115,7 @@ const OrdersPage = () => {
             ))}
           </div>
         ) : (
-          <div className="alert alert-info text-center">No Orders Found</div>
+          <div className="custom-myorders-empty">No Orders Found</div>
         )}
       </div>
     </Layout>

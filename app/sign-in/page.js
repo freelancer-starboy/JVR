@@ -135,6 +135,7 @@ const Login = () => {
         toast.success("Login successful");
         refetch();
         router.push("/cart");
+        window.location.reload();
       } else {
         toast.error("Failed to set cookies.");
       }
@@ -174,9 +175,10 @@ const Login = () => {
         toast.success("Login Successful");
         refetch()
         router.push("/");
+
         setError("")
         setMessage("")
-
+        router.refresh()
       } else {
         toast.error("Login Failed");
         setError("Login Failed")
@@ -239,7 +241,7 @@ const Login = () => {
   return (
     <>
    
-<Layout headerStyle={5 } footerStyle={2}>
+{/* <Layout headerStyle={5 } footerStyle={2}> */}
   <div className="custom-login-main">
       <div className="custom-login-left">
         <img src={`/assets/img/logo/logo.png`} alt="Logo" />
@@ -398,7 +400,7 @@ const Login = () => {
     </div>
 
   
-    </Layout>
+    {/* </Layout> */}
     </>
   );
 };

@@ -66,7 +66,7 @@
     --tp-grey-8: #f6f6f6;
     --tp-grey-9: #999999;
     --tp-text-body: #040404;
-    --tp-text-primary: #d51243;
+    --tp-text-primary: black;
     --tp-text-secondary: #777777;
     --tp-text-tertiary: #adadad;
     --tp-text-4: #a0a0a0;
@@ -11821,3 +11821,449 @@ only screen and (min-width: 768px) and (max-width: 991px),
       font-size: 0.75rem;
     }
   }
+
+.custom-user-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.custom-user-header {
+  margin-bottom: 2rem;
+}
+
+.custom-user-title {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.custom-user-grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.custom-user-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.custom-user-card {
+  background: #ffffff;
+  border: 1px solid #e6e6e6;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.custom-user-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.custom-user-card-content {
+  display: flex;
+  align-items: center;
+  padding: 1.5rem;
+  gap: 1rem;
+}
+
+.custom-user-icon {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+}
+
+.custom-user-text-content {
+  flex: 1;
+}
+
+.custom-user-card-title {
+  font-size: 1.25rem;
+  font-weight: 500;
+  margin: 0 0 0.5rem 0;
+  color: #1a1a1a;
+}
+
+.custom-user-card-description {
+  font-size: 0.95rem;
+  margin: 0;
+  color: #666666;
+}
+
+@media (max-width: 768px) {
+  .custom-user-container {
+    padding: 1rem;
+  }
+  
+  .custom-user-card-content {
+    padding: 1rem;
+  }
+  
+  .custom-user-icon {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .custom-user-card-title {
+    font-size: 1.1rem;
+  }
+  
+  .custom-user-card-description {
+    font-size: 0.9rem;
+  }
+}
+
+.custom-myorders-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 32px 16px;
+  }
+  
+  .custom-myorders-title {
+    font-size: 24px;
+    font-weight: 600;
+    color: #222;
+    margin-bottom: 24px;
+  }
+  
+  .custom-myorders-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  
+  .custom-myorders-card {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+  }
+  
+  .custom-myorders-header {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+    background: #fafafa;
+    border-bottom: 1px solid #e0e0e0;
+    border-radius: 8px 8px 0 0;
+  }
+  
+  .custom-myorders-header-info {
+    display: flex;
+    gap: 24px;
+  }
+  
+  .custom-myorders-date, 
+  .custom-myorders-id {
+    color: #555;
+    font-size: 14px;
+  }
+  
+  .custom-myorders-label {
+    color: #222;
+    font-weight: 500;
+  }
+  
+  .custom-myorders-total {
+    font-weight: 600;
+    font-size: 16px;
+  }
+  
+  .custom-myorders-total-label {
+    color: #555;
+  }
+  
+  .custom-myorders-content {
+    padding: 24px;
+  }
+  
+  .custom-myorders-info-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 32px;
+    margin-bottom: 32px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  
+  .custom-myorders-info-title {
+    color: #666;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+  }
+  
+  .custom-myorders-info-text {
+    margin: 0;
+    color: #222;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  
+  .custom-myorders-success {
+    color: #2e7d32;
+    font-weight: 500;
+  }
+  
+  .custom-myorders-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .custom-myorders-table th {
+    background: #fafafa;
+    padding: 12px 16px;
+    text-align: left;
+    font-weight: 500;
+    color: #555;
+    font-size: 14px;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  
+  .custom-myorders-table td {
+    padding: 16px;
+    color: #333;
+    font-size: 14px;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  
+  .custom-myorders-empty {
+    padding: 48px 24px;
+    text-align: center;
+    background: #fafafa;
+    border-radius: 8px;
+    color: #666;
+    font-size: 15px;
+  }
+  
+  @media (max-width: 1024px) {
+    .custom-myorders-info-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .custom-myorders-container {
+      padding: 16px;
+    }
+  
+    .custom-myorders-header {
+      flex-direction: column;
+      gap: 12px;
+    }
+  
+    .custom-myorders-header-info {
+      flex-direction: column;
+      gap: 8px;
+    }
+  
+    .custom-myorders-info-grid {
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+  
+    .custom-myorders-table {
+      display: block;
+      overflow-x: auto;
+    }
+  
+    .custom-myorders-table th,
+    .custom-myorders-table td {
+      padding: 12px;
+      white-space: nowrap;
+    }
+  }
+
+  .custom-security-wrapper {
+    min-height: calc(100vh - 200px);
+    background: #f8fafc;
+    padding: 40px 20px;
+  }
+  
+  .custom-security-container {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  .custom-security-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+  
+  .custom-security-title {
+    font-size: 28px;
+    color: #0f172a;
+    font-weight: 600;
+  }
+  
+  .custom-security-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+  
+  .custom-security-card {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    cursor: pointer;
+    border: 1px solid #e2e8f0;
+    transition: all 0.3s ease;
+  }
+  
+  .custom-security-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  }
+  
+  .custom-security-card-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+  
+  .custom-security-card-icon {
+    width: 44px;
+    height: 44px;
+    padding: 10px;
+    border-radius: 10px;
+    background: #f1f5f9;
+  }
+  
+  .custom-security-card-title {
+    font-size: 18px;
+    font-weight: 500;
+    color: #1e293b;
+    margin: 0 0 4px 0;
+  }
+  
+  .custom-security-card-text {
+    font-size: 14px;
+    color: #64748b;
+    margin: 0;
+  }
+  
+  /* Modal Styles */
+  .custom-security-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(4px);
+    z-index: 50;
+    display: grid;
+    place-items: center;
+    padding: 20px;
+  }
+  
+  .custom-security-modal {
+    background: white;
+    border-radius: 16px;
+    width: 100%;
+    max-width: 400px;
+    padding: 24px;
+    position: relative;
+  }
+  
+  .custom-security-modal-close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: none;
+    background: #f1f5f9;
+    color: #64748b;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+  }
+  
+  .custom-security-modal-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #0f172a;
+    margin-bottom: 24px;
+  }
+  
+  .custom-security-input-group {
+    margin-bottom: 20px;
+  }
+  
+  .custom-security-input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 15px;
+    transition: all 0.2s;
+    margin-bottom: 12px;
+  }
+  
+  .custom-security-input:focus {
+    outline: none;
+    border-color: #3b82f6;
+  }
+  
+  .custom-security-error {
+    color: #ef4444;
+    font-size: 14px;
+    margin-top: 8px;
+  }
+  
+  .custom-security-button {
+    width: 100%;
+    padding: 12px;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  
+  .custom-security-button:hover {
+    background: #2563eb;
+  }
+  
+  @media (max-width: 768px) {
+    .custom-security-wrapper {
+      padding: 24px 16px;
+    }
+    
+    .custom-security-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .custom-security-title {
+      font-size: 24px;
+    }
+    
+    .custom-security-card {
+      padding: 20px;
+    }
+    
+    .custom-security-modal {
+      padding: 20px;
+    }
+  }
+
+  .custom-logout-container{
+    position: absolute;
+    display: block;
+    border: 1px solid #e2e8f0;
+    background-color: white;
+    padding: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 999;
+    border-top: #000 2px solid;
+  }
+ 

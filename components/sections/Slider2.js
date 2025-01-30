@@ -28,7 +28,7 @@ const swiperOptions = {
 export default function Slider2() {
     return (
         <>
-            <section className="slider-area slider-bg slider-bg-height">
+            <section className="slider-area slider-bg slider-bg-height" style={{ maxWidth: "100%", overflow: "hidden" }}>
                 <div className="slider-pagination-2 p-relative">
                     <div className="swiper-containers slidertwo-active">
                         <Swiper {...swiperOptions}>

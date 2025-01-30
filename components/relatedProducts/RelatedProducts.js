@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Swiper, SwiperSlide } from "swiper/react"
 import { Autoplay, Navigation, Pagination } from "swiper/modules"
 import Link from "next/link"
 import { useRelatedProductsQuery } from "@/features/api/productApi";
+import Preloader from "../elements/Preloader";
 
 
 const swiperOptions = {
@@ -40,8 +41,17 @@ const swiperOptions = {
 
 const RelatedProducts = ({ category }) => {
     const { data : relatedProducts, isLoading, isError } = useRelatedProductsQuery(category);
-    if(isLoading) return <p>Loading...</p>
+    if(isLoading) return <Preloader />
     if(isError) return <p>Error</p>
+
+    if(relatedProducts){
+      console.log(relatedProducts);
+    }
+
+
+
+
+
   return (
     <div className="related-product-area pt-65 pb-50 related-product-border">
       <div className="container">
@@ -69,14 +79,15 @@ const RelatedProducts = ({ category }) => {
               <div className="tpproduct pb-15 mb-30">
                 <div className="tpproduct__thumb p-relative">
                   <Link href={`/ShopDetails/${product._id}`}>
+                  
                     <img
-                      src={product.productImage[0]}
+                      src={product.productVariants?.[0].images?.[0]}
                       alt="product-thumb"
                       style={{ objectFit: "cover" , height: "300px" }}
                     />
                     <img
                       className="product-thumb-secondary"
-                      src={product.productImage[1]}
+                      src={product.productVariants?.[0].images?.[1]}
                       alt=""
                       style={{ objectFit: "cover" , height: "300px" }}
 
@@ -86,9 +97,9 @@ const RelatedProducts = ({ category }) => {
                     <Link className="comphare" href="#">
                       <i className="fal fa-exchange" />
                     </Link>
-                    <Link className="quckview" href={product.productImage[1]}>
+                    {/* <Link className="quckview" href={product.productImage[1]}>
                       <i className="fal fa-eye" />
-                    </Link>
+                    </Link> */}
                     <Link className="wishlist" href="/wishlist">
                       <i className="fal fa-heart" />
                     </Link>
@@ -100,7 +111,7 @@ const RelatedProducts = ({ category }) => {
                   </h3>
                   <div className="tpproduct__priceinfo p-relative">
                     <div className="tpproduct__priceinfo-list">
-                      <span>$ {product.productPrice}</span>
+                      <span>₹ {product.productPrice}</span>
                     </div>
                     <div className="tpproduct__cart">
                       <Link href="/cart">

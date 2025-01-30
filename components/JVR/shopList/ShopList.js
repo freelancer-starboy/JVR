@@ -34,8 +34,8 @@ const ShopList = ({
 
 
       <Link href={`/ShopDetails/${id}`} className="text-decoration-none">
-        <div className="position-relative overflow-hidden" style={{ maxHeight: '350px'}}>
-        {!isHovered && variants && variants.length > 0 && variants[0].images.length > 0 && (
+        <div className="position-relative overflow-hidden tpproduct" style={{ maxHeight: '350px'}}>
+        {/* {!isHovered && variants && variants.length > 0 && variants[0].images.length > 0 && ( */}
 
             <img
               src={variants[0].images[0]}
@@ -46,20 +46,24 @@ const ShopList = ({
                 transition: 'transform 0.3s ease',
               }}
             />
-          ) 
-          }
-          {isHovered && variants && variants.length > 0 && variants[0].images.length > 0 && (
-            <img
-              src={variants[0].images[1]}
-              alt={name}
-              className="card-img-top"
-              style={{ 
-                objectFit: 'cover',
-                transition: 'transform 0.3s ease',
-              }}
-            />
-          )
-          }
+          {/* ) 
+          } */}
+          {/* {isHovered && variants && variants.length > 0 && variants[0].images.length > 0 && ( */}
+            <div className='product-thumb-secondary'>
+
+              <img
+              
+                src={variants[0].images[1]}
+                alt={name}
+                className="card-img-top"
+                style={{ 
+                  objectFit: 'cover',
+                  transition: 'transform 0.3s ease',
+                }}
+              />
+            </div>
+          {/* )
+          } */}
        
           {discount > 0 && (
             <div className="position-absolute top-0 start-0 m-2">
