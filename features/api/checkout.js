@@ -32,8 +32,43 @@ export const checkoutApi = createApi({
                 headers : { 'Content-Type' : 'application/json' },
                 body : { cartItems}
             })
-        })
+        }),
+        createCheckout: builder.mutation({
+            query: ({ userId, cartItems, details, method, transactionId, status, orderTotal }) => ({
+              url: '/checkout/',
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: {
+                userId,
+                cartItems: cartItems.map((item) => ({
+                  productId: item.productId,
+                  productName: item.productName,
+                  quantity: item.quantity,
+                  price: item.productPrice,
+                  color: item.productColor,
+                  size: item.productSize,
+                })),
+                shippingAddress: {
+                  fullName: details.fullName,
+                  phone: details.phone,
+                  addressLine1: details.addressLine1,
+                  addressLine2: details.addressLine2,
+                  city: details.city,
+                  state: details.state,
+                  postalCode: details.postalCode,
+                  country: details.country || 'India',
+                },
+                paymentDetails: {
+                  method,
+                  transactionId,
+                  status,
+                },
+                orderTotal,
+                orderStatus: 'Processing',
+              },
+            })
+          }),
     })
 })
 
-export const { useUpdateStockMutation, useDeleteCartMutation, useFetchCheckOutQuery, useStockValidationMutation } = checkoutApi
+export const { useUpdateStockMutation, useDeleteCartMutation, useFetchCheckOutQuery, useStockValidationMutation, useCreateCheckoutMutation } = checkoutApi

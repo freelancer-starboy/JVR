@@ -1,4 +1,5 @@
 "use client";
+import Address from "@/components/Address/Address";
 import { useAuth } from "@/components/AuthContent/AuthContent";
 import Preloader from "@/components/elements/Preloader";
 import Layout from "@/components/layout/Layout";
@@ -11,6 +12,8 @@ import {
   useUpdateCartMutation,
 } from "@/features/api/cartApi";
 import {
+  useCreateCheckoutMutation,
+  useDeleteCartMutation,
   useStockValidationMutation,
   useUpdateStockMutation,
 } from "@/features/api/checkout";
@@ -22,28 +25,16 @@ import { toast } from "react-toastify";
 export default function Checkout() {
   const [successOrder, setSuccessOrder] = useState(false);
   const [isLoginToggle, setLoginToggle] = useState(false);
-  const [showContent, setShowContent] = useState(false);
   const [transactionId, setTransactionId] = useState(null);
   const [status, setStatus] = useState(null);
   const [method, setMethod] = useState(null);
   const [loadingScreen, setLoadingScreen] = useState(false);
-  const [isStock, setIsStock] = useState(false);
   const [stockValue, setStockValue] = useState(null);
   const [deleteCartItems] = useDeleteCartItemMutation();
   const [updateCart] = useUpdateCartMutation();
-  const handleLoginToggle = () => setLoginToggle(!isLoginToggle);
   const [quantity, setQuantity] = useState(1);
   const [couponCode, setCouponCode] = useState("");
-  const [details, setDetails] = useState({
-    fullName: "",
-    phone: "",
-    addressLine1: "",
-    addressLine2: "",
-    city: "",
-    state: "",
-    country: "India",
-    postalCode: "",
-  });
+  const [details, setDetails] = useState([]);
 
   const [isCuponToggle, setCuponToggle] = useState(false);
   const handleCuponToggle = () => setCuponToggle(!isCuponToggle);
@@ -51,6 +42,7 @@ export default function Checkout() {
   const [isCboxToggle, setCboxToggle] = useState(false);
   const handleCboxToggle = () => setCboxToggle(!isCboxToggle);
 
+  const [createCheckout] = useCreateCheckoutMutation()
   const [isShipToggle, setShipToggle] = useState(false);
   const handleShipToggle = () => setShipToggle(!isShipToggle);
 
@@ -87,9 +79,11 @@ export default function Checkout() {
       validateStock();
     }
   }, [cartItems, validStock]);
+    const [deleteCart] = useDeleteCartMutation()
+  
   useEffect(() => {
+    setLoadingScreen(true);
     if (successOrder) {
-      setLoadingScreen(true);
       const updateStock = async () => {
         try {
           const stockUpdateData = cartItems.map((item) => ({
@@ -101,9 +95,10 @@ export default function Checkout() {
           console.log("Stock update success:", response);
           // Log the success response for debugging
           await updateCheckout();
+          await deleteCart(userId).unwrap()
           // Show success toast and navigate to the success page
           toast.success("Order Placed Successfully");
-          router.push(`/orderSuccess?transactionId=${transactionId}`);
+          router.push(`/myOrders?transactionId=${transactionId}`);
         } catch (error) {
           // Handle error case and show appropriate error message
           console.error("Error updating stock:", error); // Log full error for debugging
@@ -121,43 +116,22 @@ export default function Checkout() {
 
   const updateCheckout = async () => {
     try {
-      const response = await fetch("/api/checkout/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userId,
-          cartItems: cartItems.map((item) => ({
-            productId: item.productId,
-            productName: item.productName,
-            quantity: item.quantity,
-            price: item.productPrice,
-            color: item.productColor,
-            size: item.productSize,
-          })),
-          shippingAddress: details,
-          paymentDetails: {
-            method: method,
-            transactionId: transactionId,
-            status: status,
-          },
-          orderTotal: orderTotal,
-          orderStatus: "Processing",
-        }),
-      });
-      const data = await response.json();
-      if (response.ok) {
-        console.log("Checkout saved successfully", response);
-        toast.success("order checkout saved successfully");
-      } else {
-        console.error("Error saving checkout:", data.message);
-        toast.error(data.message || "Failed to save order checkout");
-      }
-    } catch (error) {
-      console.error("Error during checkout update:", error);
-      toast.error("An unexpected error occurred. Please try again.");
-    }
+
+      const response = await createCheckout({
+        userId,
+        cartItems,
+      details,
+      method,
+      transactionId,
+      status,
+      orderTotal,
+
+      }).unwrap()
+      console.log("Checkout saved successfully", response);
+  } catch (err) {
+    console.error("Checkout failed:", err);
+    toast.error("Failed to save order checkout");
+  }
   };
   if (isLoading) {
     return <Preloader />;
@@ -184,18 +158,9 @@ export default function Checkout() {
    
 }
 
-  const handleChange = (e) => {
-    e.preventDefault();
-    const { name, value } = e.target;
-    setDetails({
-      ...details,
-      [name]: value,
-    });
-  };
+ 
 
-  const isDetailsEmpty = Object.values(details).every(
-    (value) => value.trim() !== ""
-  );
+  const isDetailsEmpty = details?.length != 0;
 
   const getStockStatus = (item) => {
     if (!stockValue) {
@@ -277,6 +242,11 @@ export default function Checkout() {
     const { stock } = getStockStatus(item);
     return stock !== null && stock >= item.quantity;
   });
+
+  const handleAddressChoose = (address) => {
+    console.log("Selected address from front:", address);
+    setDetails(address);
+  }
   return (
     <>
       <Layout headerStyle={3} footerStyle={2}>
@@ -285,130 +255,9 @@ export default function Checkout() {
         
 
         <section className="custom-checkout-main">
-          <form className="custom-checkout-form">
+          {/* <form className="custom-checkout-form"> */}
             <div className="custom-checkout-grid">
-              <div className="custom-checkout-billing">
-                <h3 className="custom-checkout-section-title">Billing Details</h3>
-                <div className="custom-checkout-form-grid">
-                  <div className="custom-checkout-form-row">
-                    <label className="custom-checkout-label">
-                      Full Name <span className="custom-checkout-required">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      name="fullName"
-                      className="custom-checkout-input"
-                      placeholder="John Doe"
-                      required
-                      value={details.fullName}
-                      onChange={handleChange}
-                    />
-                  </div>
-                  
-                  <div className="custom-checkout-form-row">
-                    <label className="custom-checkout-label">
-                      Phone <span className="custom-checkout-required">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      name="phone"
-                      className="custom-checkout-input"
-                      placeholder="98989 98989"
-                      required
-                      value={details.phone}
-                      onChange={handleChange}
-                    />
-                  </div>
-
-                  <div className="custom-checkout-form-row">
-                    <label className="custom-checkout-label">
-                      Address Line 1 <span className="custom-checkout-required">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      name="addressLine1"
-                      className="custom-checkout-input"
-                      placeholder="Street address"
-                      required
-                      value={details.addressLine1}
-                      onChange={handleChange}
-                    />
-                  </div>
-
-                  <div className="custom-checkout-form-row">
-                    <label className="custom-checkout-label">
-                      Address Line 2
-                    </label>
-                    <input
-                      type="text"
-                      name="addressLine2"
-                      className="custom-checkout-input"
-                      placeholder="Apartment, suite, unit etc."
-                      value={details.addressLine2}
-                      onChange={handleChange}
-                    />
-                  </div>
-
-                  <div className="custom-checkout-form-row">
-                    <label className="custom-checkout-label">
-                      Town / City <span className="custom-checkout-required">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      name="city"
-                      className="custom-checkout-input"
-                      placeholder="Town / City"
-                      required
-                      value={details.city}
-                      onChange={handleChange}
-                    />
-                  </div>
-
-                  <div className="custom-checkout-form-row">
-                    <label className="custom-checkout-label">
-                      State <span className="custom-checkout-required">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      name="state"
-                      className="custom-checkout-input"
-                      placeholder="State"
-                      required
-                      value={details.state}
-                      onChange={handleChange}
-                    />
-                  </div>
-
-                  <div className="custom-checkout-form-row">
-                    <label className="custom-checkout-label">
-                      Postcode / Zip <span className="custom-checkout-required">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      name="postalCode"
-                      className="custom-checkout-input"
-                      placeholder="Postcode / Zip"
-                      required
-                      value={details.postalCode}
-                      onChange={handleChange}
-                    />
-                  </div>
-
-                  <div className="custom-checkout-form-row">
-                    <label className="custom-checkout-label">
-                      Country <span className="custom-checkout-required">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      className="custom-checkout-input"
-                      value="India"
-                      disabled
-                      name="country"
-                      required
-                    />
-                  </div>
-                </div>
-              </div>
+              <Address userId={userId} handleAddressChoose={handleAddressChoose} />
 
               <div className="custom-checkout-order-summary">
                 <h3 className="custom-checkout-section-title">Your Order</h3>
@@ -495,8 +344,18 @@ export default function Checkout() {
                 <div className="custom-checkout-payment">
                   {isDetailsEmpty ? (
                     <div className="custom-checkout-payment-button">
-                      {allItemsInStock ? (
-                        <PaymentPage
+                      {allItemsInStock  ? (
+                        orderTotal <= 0 ? (
+                          <div>
+                            <button
+                          type="button"
+                          className="custom-checkout-button custom-checkout-button-disabled"
+                          disabled
+                        >
+                          Add Products to Bag
+                        </button>
+                          </div>
+                        ) : <PaymentPage
                           amount={orderTotal}
                           onPaymentSuccess={setSuccessOrder}
                           transactionId={transactionId}
@@ -520,7 +379,7 @@ export default function Checkout() {
                         type="submit"
                         className="custom-checkout-button"
                       >
-                        Fill all details
+                        Pick an address
                       </button>
                     </div>
                   )}
@@ -555,7 +414,7 @@ export default function Checkout() {
             </div>
               </div>
             </div>
-          </form>
+          {/* </form> */}
           
         </section>
       </div>

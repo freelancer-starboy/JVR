@@ -1,30 +1,20 @@
 'use client'
 import React, { useEffect, useReducer, useState } from 'react';
 import { CheckCircle, Package, ArrowLeft } from 'lucide-react';
-import Router from 'next/router';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useDeleteCartMutation } from '@/features/api/checkout';
 import { useAuth } from '@/components/AuthContent/AuthContent';
 
-const OrderSuccess = () => {
+const OrderSuccess = ({ transactionId}) => {
   const [showContent, setShowContent] = useState(false);
   const [orderId, setOrderId] = useState('');
-  const searchParams = useSearchParams()
-  const [deleteCart] = useDeleteCartMutation()
   const { userId } = useAuth()
   useEffect(() => {
-    const transactionId = searchParams.get('transactionId');
 
     if (transactionId) {
       setOrderId(transactionId);
       setShowContent(true);
     }
-    const DeleteCart = async() => {
-      await deleteCart(userId).unwrap()
-      console.log("Cart Cleared successfully")
-    }
-    DeleteCart()
-  }, [searchParams, userId, deleteCart])
+  }, [transactionId, userId])
   const router = useRouter()
 
   return (
@@ -57,14 +47,9 @@ const OrderSuccess = () => {
           <div className="custom-success-divider" />
           
           <div className="custom-success-delivery">
-            <p className="custom-success-label">Estimated Delivery Date</p>
-            <p className="custom-success-value">
-              {new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-              })}
+            <p className="custom-success-label">Trusted Choice</p>
+            <p className="custom-success-value" style={{ fontWeight: "300", fontSize: "14px"}}>
+            Thank you for your order with JVR Textiles! We appreciate your trust in our products and look forward to serving you again soon.
             </p>
           </div>
         </div>
@@ -72,7 +57,7 @@ const OrderSuccess = () => {
         {/* Action Buttons */}
         <div className="custom-success-actions">
           <button 
-            onClick={() => router.push('/orders')}
+            onClick={() => router.push('/myOrders')}
             className="custom-success-primary-button"
           >
             View Order Details
