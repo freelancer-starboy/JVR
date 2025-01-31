@@ -10538,8 +10538,8 @@ only screen and (min-width: 768px) and (max-width: 991px),
   
   /* Specific styling for sections */
   .custom-login-left {
-    flex-grow: 1;
-    height: 100vh;
+    padding: 0 5rem;
+    height: 110vh;
     background-color: #f8f8f8;
     display: flex;
     justify-content: center;
@@ -10572,10 +10572,23 @@ only screen and (min-width: 768px) and (max-width: 991px),
   }
   
   .custom-login-logo img {
-    width: 60px;
+    width: 100px;
     margin-bottom: 30px;
   }
-  
+  .header-welcome-text-2 {
+    display: inline-block !important;
+    white-space: nowrap !important;
+    animation: rotate-text 30s linear infinite !important;
+  }
+
+  @keyframes rotate-text {
+    0% {
+      transform: translateX(100%);
+    }
+    100% {
+      transform: translateX(-100%);
+    }
+  }
   .custom-login-center h2 {
     font-size: 2.8rem;
     margin-bottom: 16px;
@@ -10639,6 +10652,7 @@ only screen and (min-width: 768px) and (max-width: 991px),
     margin-top: 20px;
     justify-content: center;
     align-items: center;
+
   }
 
   .custom-login-center-buttons-y button {
@@ -10655,12 +10669,12 @@ only screen and (min-width: 768px) and (max-width: 991px),
   }
   
   .custom-login-center-buttons-y button:nth-child(1) {
-    background: linear-gradient(90deg, #ef4406, #e06d1b);
+    background: linear-gradient(90deg, black, black);
     color: white;
   }
   
   .custom-login-center-buttons-y button:nth-child(1):hover {
-    background: linear-gradient(90deg, #ff4500, #ff7a18);
+    background: linear-gradient(90deg, rgb(72, 66, 66), black);
     transform: translateY(-2px);
   }
 
@@ -10707,17 +10721,20 @@ only screen and (min-width: 768px) and (max-width: 991px),
     width: fit-content;
     padding: 14px;
     border: none;
-    border-radius: 50%;
+    color: black;
+    /* background-color: black !important; */
     font-size: 1 rem;
     font-weight: bold;
     cursor: pointer;
     transition: all 0.3s ease;
+    
   }
   
   .custom-login-center-buttons button:nth-child(1) {
     background: linear-gradient(90deg, #ffffff, white);
     /* display: none; */
-    color: white;
+    color: black;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
     border: 1px solid black;
   }
   
