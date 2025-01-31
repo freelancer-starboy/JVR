@@ -1,7 +1,40 @@
+'use client'
 import Link from "next/link"
 import MobileMenu from "./MobileMenu"
+import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
+import { useAuth } from "../AuthContent/AuthContent";
+import { useEffect, useState } from "react";
+import { useDeleteTokenMutation } from "@/features/api/authApi";
+import { toast } from "react-toastify";
 
 export default function Sidebar({ isMobileMenu, handleMobileMenu }) {
+     const { userId } = useAuth();
+      const [userName, setUserName] = useState(null);
+      const auth = getAuth();
+        useEffect(() => {
+          const unsubscribe = onAuthStateChanged(auth, async (user) => {
+            if (user) {
+              setUserName(user.displayName);
+              console.log(user.displayName);
+            }
+          });
+          return () => unsubscribe();
+        }, [userId]);
+          const [deleteCookies ] = useDeleteTokenMutation()
+          const handleDeleteUser = async() => {
+            try {
+                await signOut(auth)
+                const response = await deleteCookies().unwrap()
+                if (response.success) {
+                          toast.success('Logout Successful')
+                          window.location.reload()
+                        }else{
+                          toast.error('Logout Failed')
+                        }
+            } catch (error) {
+                console.error('Error during sign-out:', error);
+            }
+          }
     return (
         <>
             <div className={`tpsideinfo ${isMobileMenu ? "tp-sidebar-opened" : ""}`}>
@@ -40,7 +73,15 @@ export default function Sidebar({ isMobileMenu, handleMobileMenu }) {
                     </div>
                 </div>
                 <div className="tpsideinfo__account-link">
-                    <Link href="/sign-in"><i className="fal fa-user" /> Login / Register</Link>
+                    {userName ? (
+                       <>
+                        <p className="tpsideinfo__account-link-text" style={{ color: "white"}}><i className="fal fa-user" /><span className="mx-2">{userName}</span></p>
+                        <button style={{ color : "white"}} onClick={handleDeleteUser}>Logout</button>
+                       </> 
+                    ) : <Link href="/sign-in"><i className="fal fa-user" />
+                
+                    Login / Register</Link>}
+                    
                 </div>
                 <div className="tpsideinfo__wishlist-link">
                     <Link href="/wishlist" target="_parent"><i className="fal fa-heart" /> Wishlist</Link>
