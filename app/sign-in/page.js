@@ -8,7 +8,7 @@ import {
 import { useFetchCartQuery } from "@/features/api/cartApi";
 import { deleteCart } from "@/features/shopSlice";
 import { current } from "@reduxjs/toolkit";
-import animationData from "@/public/assets/css/images/jvr-lottie-2.json";
+import animationData from "@/public/assets/css/images/jvr-lottie-3.json";
 import {
   createUserWithEmailAndPassword,
   getAuth,
