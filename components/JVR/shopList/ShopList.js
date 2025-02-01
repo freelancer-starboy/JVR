@@ -26,7 +26,7 @@ const ShopList = ({
 
   return (
     <div 
-      className="card h-100 border-0 shadow-sm position-relative w-full sm:w-1/2 md:w-1/3 lg:w-1/4 px-2" 
+      className="card h-100 border-0 shadow-sm position-relative w-full sm:w-1/2 md:w-1/3 lg:w-1/4 px-2 custom-mobile-container-shop-2" 
       key={id}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -34,7 +34,7 @@ const ShopList = ({
 
 
       <Link href={`/ShopDetails/${id}`} className="text-decoration-none">
-        <div className="position-relative overflow-hidden tpproduct" style={{ maxHeight: '350px'}}>
+        <div className="position-relative overflow-hidden tpproduct custom-mobile-container-shop-2-image-div" style={{ maxHeight: '350px'}}>
         {/* {!isHovered && variants && variants.length > 0 && variants[0].images.length > 0 && ( */}
 
             <img
@@ -49,7 +49,7 @@ const ShopList = ({
           {/* ) 
           } */}
           {/* {isHovered && variants && variants.length > 0 && variants[0].images.length > 0 && ( */}
-            <div className='product-thumb-secondary'>
+            <div className='product-thumb-secondary custom-mobile-container-shop-2-image-div'>
 
               <img
               

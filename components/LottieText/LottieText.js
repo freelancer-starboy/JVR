@@ -2,11 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
+import Preloader from '../elements/Preloader';
 
 // Move the dynamic import outside the component
 const Lottie = dynamic(() => import('lottie-react'), {
   ssr: false,
-  loading: () => <div>Loading...</div>
+  loading: () => <Preloader />
 });
 
 // Import animation data inside the component
@@ -25,13 +26,12 @@ const LottieAnimation = () => {
   if (!isClient || !animationData) return null;
 
   return (
-    <div className="custom-login-left">
+    
       <Lottie
         animationData={animationData}
-        style={{ width: "700px", height: "700px", marginBottom: "5rem" }}
+        style={{ width: "500px", height: "500px", marginBottom: "5rem" }}
         loop={true}
       />
-    </div>
   );
 };
 

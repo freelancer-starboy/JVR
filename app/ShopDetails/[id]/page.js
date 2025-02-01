@@ -288,7 +288,7 @@ export default function ShopDetails() {
                                 </span>
                               )
                             ) : (
-                              <span className="text-danger">Out of stock</span>
+                              <span className="text-danger">Out  of stock</span>
                             ))}
                         </div>
                       </div>
@@ -319,7 +319,7 @@ export default function ShopDetails() {
                     <div className="tpproduct-details__cart ml-20">
                       {!selectedVariant || !selectedSize || stock === 0 ? (
                         <button disabled>
-                          <i className="fal fa-shopping-cart" /> Out Of Stock
+                          <i className="fal fa-shopping-cart" />{!selectedSize ? " Select Size" : " Out Of Stock"}
                         </button>
                       ) : (
                         <button onClick={handleAddToCart}>

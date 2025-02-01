@@ -61,7 +61,7 @@ const RelatedProducts = ({ category }) => {
               <h4 className="tpsection__title">Related Products</h4>
             </div>
           </div>
-          <div className="col-sm-6">
+          {/* <div className="col-sm-6">
             <div className="tprelated__arrow d-flex align-items-center justify-content-end mb-40">
               <div className="tprelated__prv">
                 <i className="far fa-long-arrow-left" />
@@ -70,9 +70,9 @@ const RelatedProducts = ({ category }) => {
                 <i className="far fa-long-arrow-right" />
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
-        <div className="swiper-container related-product-active">
+        <div className="swiper-container related-product-active custom-related-products-container">
           <Swiper {...swiperOptions}>
             {relatedProducts.map((product) => (
             <SwiperSlide>
@@ -94,15 +94,15 @@ const RelatedProducts = ({ category }) => {
                     />
                   </Link>
                   <div className="tpproduct__thumb-action">
-                    <Link className="comphare" href="#">
+                    {/* <Link className="comphare" href="#">
                       <i className="fal fa-exchange" />
-                    </Link>
+                    </Link> */}
                     {/* <Link className="quckview" href={product.productImage[1]}>
                       <i className="fal fa-eye" />
                     </Link> */}
-                    <Link className="wishlist" href="/wishlist">
+                    {/* <Link className="wishlist" href="/wishlist">
                       <i className="fal fa-heart" />
-                    </Link>
+                    </Link> */}
                   </div>
                 </div>
                 <div className="tpproduct__content">
@@ -114,9 +114,9 @@ const RelatedProducts = ({ category }) => {
                       <span>₹ {product.productPrice}</span>
                     </div>
                     <div className="tpproduct__cart">
-                      <Link href="/cart">
+                      <Link href={`/ShopDetails/${product._id}`}>
                         <i className="fal fa-shopping-cart" />
-                        Add To Cart
+                        {product.productPrice}
                       </Link>
                     </div>
                   </div>

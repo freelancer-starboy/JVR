@@ -29,11 +29,12 @@ import { FaEye, FaEyeSlash } from "react-icons/fa6";
 import { toast } from "react-toastify";
 import { Link } from "lucide-react";
 import LottieAnimation from "@/components/LottieText/LottieText";
+import Loader from "@/components/Loader/page";
 
 const Login = () => {
   const { userId } = useAuth();
   const [isClient, setIsClient] = useState(false);
-
+  const [isLoading, setIsLoading] = useState(false)
   const [user, setUser] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
@@ -81,7 +82,7 @@ const Login = () => {
   const googleProvider = new GoogleAuthProvider();
   const handleSignUp = async (e, email, password) => {
     e.preventDefault();
-
+    setIsLoading(true)
     // Validate fields
     if (
       !signInData.userName.trim() ||
@@ -109,7 +110,7 @@ const Login = () => {
       await updateProfile(user, { displayName: signInData.userName });
       await sendEmailVerification(user);
       toast.success(
-        "A verification email has been sent to your email address. Please verify your email before logging in."
+        "Verification email has been sent"
       );
       setMessage(
         "A verification email has been sent to your email address. Please verify your email before logging in."
@@ -126,12 +127,14 @@ const Login = () => {
       } else {
         setError("Failed to create user. Please try again.");
       }
+    } finally{
+      setIsLoading(false)
     }
   };
 
   const handleLogin = async (e, email, password) => {
     e.preventDefault();
-
+    setIsLoading(true)
     // Validate fields
     if (!email.trim() || !password) {
       setError("Please enter email and password");
@@ -162,7 +165,7 @@ const Login = () => {
       if (response) {
         toast.success("Login successful");
         refetch();
-        router.push("/cart");
+        router.push("/shop-2");
         router.refresh();
       } else {
         toast.error("Failed to set cookies.");
@@ -185,6 +188,8 @@ const Login = () => {
         setError("Login failed. Please try again.");
       }
       toast.error("Login failed.");
+    } finally {
+      setIsLoading(false)
     }
   };
 
@@ -202,7 +207,6 @@ const Login = () => {
         toast.success("Login Successful");
         refetch();
         router.push("/");
-
         setError("");
         setMessage("");
         router.refresh();
@@ -222,7 +226,7 @@ const Login = () => {
     setIsSignUp(!isSignUp);
   };
 
-  const sendEmailVerification = async (e) => {
+  const sendPasswordChange = async (e) => {
     e.preventDefault();
     try {
       const email = emailInputRef.current.value;
@@ -233,11 +237,11 @@ const Login = () => {
       }
       await sendPasswordResetEmail(auth, email);
       setMessage(
-        "Email verification link has been sent to your email address. Please check your inbox and follow the instructions to verify your email address."
+        "An link for password change has been generated and sent to your email address."
       );
-      toast.success(
-        "Email verification link has been sent to your email address."
-      );
+      // toast.success(
+      //   "An link for password change has been generated and sent to your email address."
+      // );
     } catch (error) {
       if (error.code === "auth/user-not-found") {
         setMessage("User not found. Please sign up.");
@@ -256,15 +260,16 @@ const Login = () => {
 
   return (
     <>
+    {isLoading && <Loader />}
       <div className="col-xl-12 col-lg-12 col-md-12">
         <marquee className="header-welcome-text">
           <span>
-            From the Hills of Ooty, Woven with Love 💗 &ensp;&ensp;&ensp;
+            From the Hills of Ooty, Woven with Love 💗 &ensp;&ensp;
             &ensp;&ensp;&ensp; &ensp;&ensp;&ensp;Discover Handcrafted Styles,
-            Exclusively Online.&ensp;&ensp;&ensp; &ensp;&ensp;&ensp;
+            Exclusively Online.&ensp;&ensp;&ensp; &ensp;&ensp;
             &ensp;&ensp;&ensp; Shop Premium Quality, Crafted for You.
-            &ensp;&ensp;&ensp; &ensp;&ensp;&ensp; Exclusively for Kids – Find
-            Their Perfect Style! &ensp;&ensp;&ensp; &ensp;&ensp;&ensp; Exclusive
+            &ensp;&ensp;&ensp; &ensp;&ensp; Exclusively for Kids – Find
+            Their Perfect Style! &ensp;&ensp;&ensp; &ensp;&ensp; Exclusive
             Deals & Timeless Styles –{" "}
             <span style={{ color: "red", textDecoration: "none" }}>
               <a href="/shop-2">Shop Now!</a>
@@ -274,11 +279,17 @@ const Login = () => {
       </div>
       {/* <Layout headerStyle={5 } footerStyle={2}> */}
       <div className="custom-login-main">
+      <div className="custom-login-left">
       <LottieAnimation />
+    </div>
+
         <div className="custom-login-right">
           <div className="custom-login-right-container">
             <div className="custom-login-logo">
+            <a href="/">
+            
               <img src={`/assets/css/images/jvr-logo-3.png`} alt="Logo" />
+            </a>
             </div>
             <div className="custom-login-center">
               <h2>{isSignUp ? "Create an Account" : "Welcome back!"}</h2>
@@ -296,6 +307,7 @@ const Login = () => {
                     placeholder="Email"
                     name="email"
                     required
+                    className="custom-form"
                     onChange={(e) =>
                       setLogInData({ ...logInData, email: e.target.value })
                     }
@@ -305,6 +317,8 @@ const Login = () => {
                       type={showPassword ? "text" : "password"}
                       placeholder="Password"
                       name="password"
+                    className="custom-form"
+                      
                       onChange={(e) =>
                         setLogInData({ ...logInData, password: e.target.value })
                       }
@@ -350,10 +364,12 @@ const Login = () => {
                     type="email"
                     placeholder="Email"
                     name="email"
+                    className="custom-form"
+
                     ref={emailInputRef}
                   />
                   <div className="custom-login-center-buttons-y">
-                    <button onClick={(e) => sendEmailVerification(e)}>
+                    <button onClick={(e) => sendPasswordChange(e)}>
                       Submit
                     </button>
                   </div>
@@ -382,6 +398,8 @@ const Login = () => {
                       type="text"
                       placeholder="User Name"
                       name="userName"
+                    className="custom-form"
+
                       onChange={(e) =>
                         setSignInData({
                           ...signInData,
@@ -393,6 +411,8 @@ const Login = () => {
                       type="email"
                       placeholder="Email"
                       name="email"
+                    className="custom-form"
+
                       onChange={(e) =>
                         setSignInData({ ...signInData, email: e.target.value })
                       }
@@ -401,6 +421,8 @@ const Login = () => {
                       type={showPassword ? "text" : "password"}
                       placeholder="Password"
                       name="password"
+                    className="custom-form"
+
                       onChange={(e) =>
                         setSignInData({
                           ...signInData,
@@ -412,6 +434,7 @@ const Login = () => {
                       type={showPassword ? "text" : "password"}
                       placeholder="Confirm Password"
                       name="confirmPassword"
+                      className="custom-form"
                       onChange={(e) => {
                         setSignInData({
                           ...signInData,

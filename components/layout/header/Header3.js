@@ -309,9 +309,9 @@ export default function Header3({
                 <div className="main-menu">
                   <nav id="mobile-menu">
                     <ul>
-                      <li className="has-dropdown">
+                      <li className="">
                         <Link href="/">Home</Link>
-                        <ul className="submenu">
+                        {/* <ul className="submenu">
                           <li>
                             <Link href="/">Wooden Home</Link>
                           </li>
@@ -327,120 +327,82 @@ export default function Header3({
                           <li>
                             <Link href="/index-5">Food Grocery</Link>
                           </li>
-                        </ul>
+                        </ul> */}
                       </li>
-                      <li className="has-dropdown">
-                        <Link href="/shop">Shop</Link>
-                        <ul className="submenu">
-                          <li>
-                            <Link href="/shop">Shop</Link>
-                          </li>
-                          <li>
-                            <Link href="/shop-2">Shop 2</Link>
-                          </li>
-                          <li>
-                            <Link href="/shop-details">Shop Details </Link>
-                          </li>
-                          <li>
-                            <Link href="/shop-details-2">Shop Details 2</Link>
-                          </li>
-                          <li>
-                            <Link href="/shop-location">Shop Location</Link>
-                          </li>
-                          <li>
-                            <Link href="/cart">Cart</Link>
-                          </li>
-                          <li>
-                            <Link href="/sign-in">Sign In</Link>
-                          </li>
-                          <li>
-                            <Link href="/checkout">Checkout</Link>
-                          </li>
-                          <li>
-                            <Link href="/wishlist">Wishlist</Link>
-                          </li>
-                          <li>
-                            <Link href="/track">Product Track</Link>
-                          </li>
-                        </ul>
-                      </li>
+                      
                       <li className="has-dropdown has-megamenu">
-                        <Link href="/about">Pages</Link>
+                        <Link href="/about">Shop</Link>
                         <ul className="submenu mega-menu">
                           <li>
-                            <a className="mega-menu-title">Page layout</a>
+                            <a href="/user" className="mega-menu-title">Mens</a>
                             <ul>
                               <li>
-                                <Link href="/shop">Shop filters v1</Link>
+                                <Link href="#">Formal Shirts</Link>
                               </li>
                               <li>
-                                <Link href="/shop-2">Shop filters v2</Link>
+                                <Link href="#">Casual Wear</Link>
                               </li>
                               <li>
-                                <Link href="/shop-details">Shop sidebar</Link>
+                                <Link href="#">T - Shirts</Link>
                               </li>
                               <li>
-                                <Link href="/shop-details-2">
-                                  Shop Right sidebar
-                                </Link>
+                                <Link href="#">Traditional Wear</Link>
                               </li>
                               <li>
-                                <Link href="/shop-location">
-                                  Shop List view
-                                </Link>
+                                <Link href="#">Joggers</Link>
+                              </li>
+                              <li>
+                                <Link href="#">Formal Pant</Link>
+                              </li>
+                              <li>
+                                <Link href="#">Jeans</Link>
                               </li>
                             </ul>
                           </li>
                           <li>
-                            <a className="mega-menu-title">Page layout</a>
+                            <a className="mega-menu-title">Women</a>
                             <ul>
                               <li>
-                                <Link href="/about">About</Link>
+                                <Link href="#">Chuditar</Link>
                               </li>
                               <li>
-                                <Link href="/cart">Cart</Link>
+                                <Link href="#">Leggins</Link>
                               </li>
-                              <li>
-                                <Link href="/checkout">Checkout</Link>
-                              </li>
-                              <li>
-                                <Link href="/sign-in">Sign In</Link>
-                              </li>
-                              <li>
-                                <Link href="/sign-in">Log In</Link>
-                              </li>
+                              
+                              
                             </ul>
                           </li>
+                          
                           <li>
-                            <a className="mega-menu-title">Page type</a>
+                            <a className="mega-menu-title">Kids</a>
                             <ul>
                               <li>
-                                <Link href="/track">Product Track</Link>
+                                <Link href="#">Set</Link>
                               </li>
-                              <li>
-                                <Link href="/wishlist">Wishlist</Link>
-                              </li>
-                              <li>
-                                <Link href="/not-found">404 / Error</Link>
-                              </li>
-                              <li>
-                                <Link href="/coming-soon">Coming Soon</Link>
-                              </li>
+                              
                             </ul>
                           </li>
                         </ul>
                       </li>
                       <li className="has-dropdown">
-                        <Link href="/blog">Blog</Link>
+                        <Link href="/shop">Direct Links</Link>
                         <ul className="submenu">
+                          
                           <li>
-                            <Link href="/blog">Blog</Link>
+                            <Link href="/user">My Account</Link>
                           </li>
                           <li>
-                            <Link href="/blog-details">Blog Details</Link>
+                            <Link href="/myOrders">My Orders</Link>
+                          </li>
+                          <li>
+                            <Link href="/security">Authentication Settings</Link>
+                          </li>
+                          <li>
+                            <Link href="/contact">Contact Us</Link>
                           </li>
                         </ul>
                       </li>
+                      
                       <li>
                         <Link href="/contact">Contact</Link>
                       </li>

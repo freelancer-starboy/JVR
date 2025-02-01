@@ -88,7 +88,7 @@ export default function ShopPage() {
       {/* End of mobile filter */}
       <div className="product-area pt-70 pb-20">
         {selectedCategory.length !== 0 || selectedType.length !== 0 || selectedPrice !== 0 || selectedSize.length !== 0 ? (
-          <h5 className="" style={{fontSize: "30px", marginLeft: "20%"}}>Products - {filteredProducts.length}</h5>
+          <h5 className="custom-mobile-filter-title" style={{fontSize: "30px", marginLeft: "20%"}}>{filteredProducts.length} Products</h5>
         ) : null}
         <div className="custom-container">
           <div className="row">
