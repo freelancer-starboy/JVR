@@ -24,11 +24,11 @@ import {
 import { set } from "mongoose";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa6";
 import { toast } from "react-toastify";
 import { Link } from "lucide-react";
-import dynamic from "next/dynamic";
+import LottieAnimation from "@/components/LottieText/LottieText";
 
 const Login = () => {
   const { userId } = useAuth();
@@ -48,7 +48,6 @@ const Login = () => {
     email: "",
     password: "",
   });
-  const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
   const router = useRouter();
   const [signInData, setSignInData] = useState({
     userName: "",
@@ -77,6 +76,7 @@ const Login = () => {
   useEffect(() => {
     setIsClient(true);
   }, []);
+
   const { refetch } = useFetchCartQuery(userId);
   const googleProvider = new GoogleAuthProvider();
   const handleSignUp = async (e, email, password) => {
@@ -252,6 +252,8 @@ const Login = () => {
     }
   };
 
+ 
+
   return (
     <>
       <div className="col-xl-12 col-lg-12 col-md-12">
@@ -272,15 +274,7 @@ const Login = () => {
       </div>
       {/* <Layout headerStyle={5 } footerStyle={2}> */}
       <div className="custom-login-main">
-      <div className="custom-login-left">
-          {isClient && (
-            <Lottie
-              animationData={animationData}
-              style={{ width: "700px", height: "700px", marginBottom: "5rem" }}
-              loop={true}
-            />
-          )}
-        </div>
+      <LottieAnimation />
         <div className="custom-login-right">
           <div className="custom-login-right-container">
             <div className="custom-login-logo">
