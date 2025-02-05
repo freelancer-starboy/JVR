@@ -34,16 +34,16 @@ export default function Slider2() {
                         <Swiper {...swiperOptions}>
                             <SwiperSlide className="slider-bg">
                                 <div className="container">
-                                    <div className="slider-top-padding pt-55">
+                                    <div className="slider-top-padding pt-40">
                                         <div className="row p-relative align-items-end">
                                             <div className="col-xl-5 col-lg-6 col-md-6 d-flex align-self-center">
                                                 <div className="tpslidertwo__item">
                                                     <div className="tpslidertwo__content">
-                                                        <h4 className="tpslidertwo__sub-title">Winter</h4>
-                                                        <h3 className="tpslidertwo__title mb-10">Exclusive <br /> Winter Collection</h3>
-                                                        <p>New Modern Stylist Fashionable Women's Wear holder</p>
+                                                        <h4 className="tpslidertwo__sub-title">Summer</h4>
+                                                        <h3 className="tpslidertwo__title mb-10">Exclusive <br /> Men's Collection</h3>
+                                                        <p>Modern Edge: Stylish & Trendy Men's Fashion</p>
                                                         <div className="tpslidertwo__slide-btn">
-                                                            <Link className="tp-btn banner-animation" href="/shop">Shop Now <i className="fal fa-long-arrow-right" />
+                                                            <Link className="tp-btn banner-animation" href="/shop-2">Shop Now <i className="fal fa-long-arrow-right" />
                                                             </Link>
                                                         </div>
                                                     </div>
@@ -51,10 +51,10 @@ export default function Slider2() {
                                             </div>
                                             <div className="col-xl-7 col-lg-6 col-md-6 d-none d-md-block">
                                                 <div className="tpslidertwo__img p-relative text-end">
-                                                    <img src="/assets/img/slider/slider-01.png" alt="" />
-                                                    <div className="tpslidertwo__img-shape">
+                                                    <img src="/assets/img/slider/men-banner.png" alt="" />
+                                                    {/* <div className="tpslidertwo__img-shape">
                                                         <img src="/assets/img/slider/fasion-tag-01.png" alt="tag" />
-                                                    </div>
+                                                    </div> */}
                                                 </div>
                                             </div>
                                         </div>
@@ -68,8 +68,8 @@ export default function Slider2() {
                                             <div className="col-xl-5 col-lg-6 col-md-6 d-flex align-self-center">
                                                 <div className="tpslidertwo__item">
                                                     <div className="tpslidertwo__content">
-                                                        <h4 className="tpslidertwo__sub-title">Winter</h4>
-                                                        <h3 className="tpslidertwo__title mb-10">Exclusive <br /> Women's Fashion</h3>
+                                                        <h4 className="tpslidertwo__sub-title">Summer</h4>
+                                                        <h3 className="tpslidertwo__title mb-10">Exclusive <br /> Women's Collections</h3>
                                                         <p>New Modern Stylist Fashionable Women's Wear holder</p>
                                                         <div className="tpslidertwo__slide-btn">
                                                             <Link className="tp-btn banner-animation" href="/shop">Shop Now <i className="fal fa-long-arrow-right" />
@@ -82,7 +82,7 @@ export default function Slider2() {
                                                 <div className="tpslidertwo__img p-relative text-end">
                                                     <img src="/assets/img/slider/slider-02.png" alt="" />
                                                     <div className="tpslidertwo__img-shape">
-                                                        <img src="/assets/img/slider/fasion-tag-01.png" alt="tag" />
+                                                        {/* <img src="/assets/img/slider/fasion-tag-01.png" alt="tag" /> */}
                                                     </div>
                                                 </div>
                                             </div>
@@ -97,11 +97,11 @@ export default function Slider2() {
                                             <div className="col-xl-5 col-lg-6 col-md-6 d-flex align-self-center">
                                                 <div className="tpslidertwo__item">
                                                     <div className="tpslidertwo__content">
-                                                        <h4 className="tpslidertwo__sub-title">Winter</h4>
-                                                        <h3 className="tpslidertwo__title mb-10">Exclusive <br /> Summer Collection</h3>
-                                                        <p>New Modern Stylist Fashionable Women's Wear holder</p>
+                                                        <h4 className="tpslidertwo__sub-title">Summer</h4>
+                                                        <h3 className="tpslidertwo__title mb-10">Exclusive <br /> Kid's Collection</h3>
+                                                        <p>Little Trendsetters: Modern & Stylish Kids' Fashion</p>
                                                         <div className="tpslidertwo__slide-btn">
-                                                            <Link className="tp-btn banner-animation" href="/shop">Shop Now <i className="fal fa-long-arrow-right" />
+                                                            <Link className="tp-btn banner-animation" href="/shop-2">Shop Now <i className="fal fa-long-arrow-right" />
                                                             </Link>
                                                         </div>
                                                     </div>
@@ -111,7 +111,7 @@ export default function Slider2() {
                                                 <div className="tpslidertwo__img p-relative text-end">
                                                     <img src="/assets/img/slider/slider-03.png" alt="" />
                                                     <div className="tpslidertwo__img-shape">
-                                                        <img src="/assets/img/slider/fasion-tag-01.png" alt="tag" />
+                                                        {/* <img src="/assets/img/slider/fasion-tag-01.png" alt="tag" /> */}
                                                     </div>
                                                 </div>
                                             </div>

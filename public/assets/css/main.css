@@ -3464,7 +3464,7 @@ only screen and (min-width: 576px) and (max-width: 767px) {
 .slider-bg-four {
     display: flex;
     align-items: center;
-    height: 570px;
+    height: 500px;
 }
 
 @media only screen and (min-width: 768px) and (max-width: 991px) {
@@ -4998,23 +4998,43 @@ only screen and (min-width: 992px) and (max-width: 1199px) {
 /*----------------------------------------*/
 /*  08. BANNER CSS START
 /*----------------------------------------*/
+.banneritem__thumb {
+    height: 500px; /* Adjust height as needed */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    position: relative;
+    color: white;
+}
+
 .banneritem__thumb:hover .banneritem__content i {
-    opacity: 1;
+    opacity: 10;
     visibility: visible;
     transform: scale(1);
 }
 
 .banneritem__thumb img {
     width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensures image covers full space */
 }
 
 .banneritem__content {
     position: absolute;
-    bottom: 26px;
-    left: 0;
-    right: 0;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
     text-align: center;
-    margin: 0 auto;
+    /* background: rgba(0, 0, 0, 0.6); */
+    color: white;
+    padding: 10px 15px;
+    border-radius: 5px;
+}
+.banneritem__content h4 {
+    margin: 5px 0;
+    font-size: 18px;
 }
 
 @media only screen and (min-width: 768px) and (max-width: 991px) {
@@ -5062,7 +5082,7 @@ only screen and (min-width: 992px) and (max-width: 1199px) {
     font-size: 14px;
     font-weight: 400;
     margin-bottom: 2px;
-    color: var(--tp-text-secondary);
+    color: white;
 }
 
 .banneritem__content-tiele {
@@ -5090,6 +5110,12 @@ only screen and (min-width: 992px) and (max-width: 1199px) {
 .banner-center .banneritem__content-tiele {
     font-size: 40px;
     font-weight: 600;
+}
+
+@media (max-width: 768px) { 
+    .banneritem__thumb {
+        height: 300px; /* Shorter height for mobile */
+    }
 }
 
 @media only screen and (min-width: 768px) and (max-width: 991px),
