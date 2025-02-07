@@ -100,7 +100,7 @@ export default function Footer2() {
                                         </div>
                                     </div>
                                 </div>
-                                <div className="col-xl-6 col-lg-8 col-md-8 col-sm-6">
+                                {/* <div className="col-xl-6 col-lg-8 col-md-8 col-sm-6">
                                     <div className="footer-cta__source">
                                         <div className="footer-cta__source-content">
                                             <h4 className="footer-cta__source-title">Download App on Mobile</h4>
@@ -111,21 +111,16 @@ export default function Footer2() {
                                             <Link href="#"><img src="/assets/img/footer/f-app.jpg" alt="app" /></Link>
                                         </div>
                                     </div>
-                                </div>
+                                </div> */}
                             </div>
                         </div>
                     </div>
                     <div className="footer-copyright black-bg-2">
                         <div className="container">
                             <div className="row align-items-center">
-                                <div className="col-xl-6 col-lg-7 col-md-5">
+                                <div className="col-xl-10 col-lg-7 col-md-5">
                                     <div className="footer-copyright__content">
-                                        <span>Copyright {new Date().getFullYear()} <Link href="/">©Ninico</Link>. All rights reserved. Developed by <Link href="https://themeforest.net/user/alithemes/portfolio"> AliThemes</Link>.</span>
-                                    </div>
-                                </div>
-                                <div className="col-xl-6 col-lg-5 col-md-7">
-                                    <div className="footer-copyright__brand">
-                                        <img src="/assets/img/footer/f-brand-icon-01.png" alt="footer-brand" />
+                                        <span>Copyright  <Link href="/">©  SRI JVR</Link><Link href="/"> . Swipe,Shop,Trend and Repeat</Link></span>
                                     </div>
                                 </div>
                             </div>

@@ -9749,12 +9749,15 @@ only screen and (min-width: 768px) and (max-width: 991px),
 
 .footer-copyright {
     padding: 22px 0 25px 0;
+    justify-content: center;
 }
 
+
 .footer-copyright__content span {
-    font-size: 16px;
+    font-size: 18px;
     color: var(--tp-text-secondary);
     margin-bottom: 0;
+    
 }
 
 @media (max-width: 767px) {
