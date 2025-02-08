@@ -5,6 +5,7 @@ import WishListShow from "../elements/WishListShow"
 import { useAuth } from "@/components/AuthContent/AuthContent"
 import { useEffect, useState } from "react"
 import { getAuth, onAuthStateChanged } from "firebase/auth"
+import HeaderItems from "../HeaderItems/HeaderItems"
 export default function HeaderSticky({ scroll, isCartSidebar, handleCartSidebar }) {
     const { userId } = useAuth()
         const [userName, setUserName] = useState(null)
@@ -28,81 +29,13 @@ export default function HeaderSticky({ scroll, isCartSidebar, handleCartSidebar 
                                     <Link href="/"><img style={{ width: "auto", height: "5rem", display: "block"}} src="/assets/css/images/jvr-logo-3.png" alt="logo" /></Link>
                                 </div>
                         </div>
-                        <div className="col-xl-6 col-lg-6">
-                            <div className="main-menu">
-                                <nav>
-                                    <ul>
-                                        <li className="has-dropdown">
-                                            <Link href="/">Home</Link>
-                                            <ul className="submenu">
-                                                <li><Link href="/">Wooden Home</Link></li>
-                                                <li><Link href="/index-2">Fashion Home</Link></li>
-                                                <li><Link href="/index-3">Furniture Home</Link></li>
-                                                <li><Link href="/index-4">Cosmetics Home</Link></li>
-                                                <li><Link href="/index-5">Food Grocery</Link></li>
-                                            </ul>
-                                        </li>
-                                        <li className="has-dropdown">
-                                            <Link href="/shop">Shop</Link>
-                                            <ul className="submenu">
-                                                <li><Link href="/shop">Shop</Link></li>
-                                                <li><Link href="/shop-2">Shop 2</Link></li>
-                                                <li><Link href="/shop-details">Shop Details </Link></li>
-                                                <li><Link href="/shop-details-2">Shop Details 2</Link></li>
-                                                <li><Link href="/shop-location">Shop Location</Link></li>
-                                                <li><Link href="/cart">Cart</Link></li>
-                                                <li><Link href="/sign-in">Sign In</Link></li>
-                                                <li><Link href="/checkout">Checkout</Link></li>
-                                                <li><Link href="/wishlist">Wishlist</Link></li>
-                                                <li><Link href="/track">Product Track</Link></li>
-                                            </ul>
-                                        </li>
-                                        <li className="has-dropdown has-megamenu">
-                                            <Link href="/about">Pages</Link>
-                                            <ul className="submenu mega-menu">
-                                                <li>
-                                                    <a className="mega-menu-title">Page layout</a>
-                                                    <ul>
-                                                        <li><Link href="/shop">Shop filters v1</Link></li>
-                                                        <li><Link href="/shop-2">Shop filters v2</Link></li>
-                                                        <li><Link href="/shop-details">Shop sidebar</Link></li>
-                                                        <li><Link href="/shop-details-2">Shop Right sidebar</Link></li>
-                                                        <li><Link href="/shop-location">Shop List view</Link></li>
-                                                    </ul>
-                                                </li>
-                                                <li>
-                                                    <a className="mega-menu-title">Page layout</a>
-                                                    <ul>
-                                                        <li><Link href="/about">About</Link></li>
-                                                        <li><Link href="/cart">Cart</Link></li>
-                                                        <li><Link href="/checkout">Checkout</Link></li>
-                                                        <li><Link href="/sign-in">Sign In</Link></li>
-                                                        <li><Link href="/sign-in">Log In</Link></li>
-                                                    </ul>
-                                                </li>
-                                                <li>
-                                                    <a className="mega-menu-title">Page type</a>
-                                                    <ul>
-                                                        <li><Link href="/track">Product Track</Link></li>
-                                                        <li><Link href="/wishlist">Wishlist</Link></li>
-                                                        <li><Link href="/not-found">404 / Error</Link></li>
-                                                        <li><Link href="/coming-soon">Coming Soon</Link></li>
-                                                    </ul>
-                                                </li>
-                                            </ul>
-                                        </li>
-                                        <li className="has-dropdown">
-                                            <Link href="/blog">Blog</Link>
-                                            <ul className="submenu">
-                                                <li><Link href="/blog">Blog</Link></li>
-                                                <li><Link href="/blog-details">Blog Details</Link></li>
-                                            </ul>
-                                        </li>
-                                        <li><Link href="/contact">Contact</Link></li>
-                                    </ul>
-                                </nav>
-                            </div>
-                        </div>
+                        <div className="col-xl-6 col-lg-2">
+                <div className="main-menu">
+                  <nav id="mobile-menu">
+                  <HeaderItems />
+                  </nav>
+                </div>
+              </div>
                         <div className="col-xl-4 col-lg-9">
                             <div className="header-meta-info d-flex align-items-center justify-content-end">
                                 <div className="header-meta__social  d-flex align-items-center">

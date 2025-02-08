@@ -43,7 +43,6 @@ const RelatedProducts = ({ category }) => {
     const { data : relatedProducts, isLoading, isError } = useRelatedProductsQuery(category);
     if(isLoading) return <Preloader />
     if(isError) return <p>Error</p>
-
     if(relatedProducts){
       console.log(relatedProducts);
     }
@@ -57,9 +56,7 @@ const RelatedProducts = ({ category }) => {
       <div className="container">
         <div className="row align-items-center">
           <div className="col-sm-6">
-            <div className="tpsection mb-40">
-              <h4 className="tpsection__title">Related Products</h4>
-            </div>
+            
           </div>
           {/* <div className="col-sm-6">
             <div className="tprelated__arrow d-flex align-items-center justify-content-end mb-40">

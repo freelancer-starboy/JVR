@@ -11,6 +11,7 @@ import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 import { set } from "mongoose";
 import { useDeleteTokenMutation } from "@/features/api/authApi";
 import { toast } from "react-toastify";
+import HeaderItems from "@/components/HeaderItems/HeaderItems";
 
 export default function Header3({
   scroll,
@@ -148,10 +149,10 @@ export default function Header3({
                   <div className="header-search-bar">
                     <form action="#">
                       <div className="search-info p-relative">
-                        <button className="header-search-icon">
-                          <i className="fal fa-search" />
-                        </button>
                         <input type="text" placeholder="Search products..." />
+                        {/* <button className="header-search-icon">
+                          <i className="fal fa-search" />
+                        </button> */}
                       </div>
                     </form>
                   </div>
@@ -205,93 +206,20 @@ export default function Header3({
                   >
                     <ul className="cat-menu__list">
                       <li>
-                        <Link href="/shop-2">
-                          <i className="fal fa-chair" /> Furniture
-                        </Link>
-                      </li>
-                      <li className="menu-item-has-children">
-                        <Link href="/shop">
-                          <i className="far fa-campfire" />
-                          Cooking{" "}
-                        </Link>
-                        <ul className="submenu">
-                          <li>
-                            <Link href="/shop-2">Chair</Link>
-                          </li>
-                          <li>
-                            <Link href="/shop-2">Table</Link>
-                          </li>
-                          <li>
-                            <Link href="/shop">Wooden</Link>
-                          </li>
-                          <li>
-                            <Link href="/shop">furniture</Link>
-                          </li>
-                          <li>
-                            <Link href="/shop">Clock</Link>
-                          </li>
-                          <li>
-                            <Link href="/shop">Gifts</Link>
-                          </li>
-                          <li>
-                            <Link href="/shop">Crafts</Link>
-                          </li>
-                        </ul>
-                      </li>
-                      <li>
-                        <Link href="/shop-2">
-                          <i className="fal fa-shoe-prints" />
-                          Accessories
+                        <Link href="/shop-2?category=mens">
+                          <i className="fal fa-chair" /> Mens
                         </Link>
                       </li>
                       <li>
-                        <Link href="/shop-2">
-                          <i className="fal fa-tshirt" />
-                          Fashion
+                        <Link href="/shop-2?category=women">
+                          <i className="fal fa-chair" /> Women
                         </Link>
                       </li>
                       <li>
-                        <Link href="/shop-2">
-                          <i className="fal fa-clock" />
-                          Clocks
+                        <Link href="/shop-2?shopCategory=kids">
+                          <i className="fal fa-chair" /> Kids
                         </Link>
-                      </li>
-                      <li>
-                        <Link href="/shop-2">
-                          <i className="fal fa-light-ceiling" />
-                          Lighting
-                        </Link>
-                      </li>
-                      <li>
-                        <Link href="/shop-2">
-                          <i className="fal fa-gift" />
-                          Toys
-                        </Link>
-                      </li>
-                      <li>
-                        <Link href="/shop-2">
-                          <i className="fal fa-basketball-ball" />
-                          Hand Made
-                        </Link>
-                      </li>
-                      <li>
-                        <Link href="/shop-2">
-                          <i className="fal fa-gift" />
-                          Minimalism
-                        </Link>
-                      </li>
-                      <li>
-                        <Link href="/shop-2">
-                          <i className="fal fa-lightbulb-dollar" />
-                          Electronics
-                        </Link>
-                      </li>
-                      <li>
-                        <Link href="/shop-2">
-                          <i className="fal fa-car-alt" />
-                          Cars
-                        </Link>
-                      </li>
+                      </li> 
                     </ul>
                     <div className="coupon-offer d-flex align-items-center justify-content-between">
                       <span>
@@ -308,105 +236,7 @@ export default function Header3({
               <div className="col-xl-7 col-lg-6">
                 <div className="main-menu">
                   <nav id="mobile-menu">
-                    <ul>
-                      <li className="">
-                        <Link href="/">Home</Link>
-                        {/* <ul className="submenu">
-                          <li>
-                            <Link href="/">Wooden Home</Link>
-                          </li>
-                          <li>
-                            <Link href="/index-2">Fashion Home</Link>
-                          </li>
-                          <li>
-                            <Link href="/index-3">Furniture Home</Link>
-                          </li>
-                          <li>
-                            <Link href="/index-4">Cosmetics Home</Link>
-                          </li>
-                          <li>
-                            <Link href="/index-5">Food Grocery</Link>
-                          </li>
-                        </ul> */}
-                      </li>
-                      
-                      <li className="has-dropdown has-megamenu">
-                        <Link href="/about">Shop</Link>
-                        <ul className="submenu mega-menu">
-                          <li>
-                            <a href="/user" className="mega-menu-title">Mens</a>
-                            <ul>
-                              <li>
-                                <Link href="#">Formal Shirts</Link>
-                              </li>
-                              <li>
-                                <Link href="#">Casual Wear</Link>
-                              </li>
-                              <li>
-                                <Link href="#">T - Shirts</Link>
-                              </li>
-                              <li>
-                                <Link href="#">Traditional Wear</Link>
-                              </li>
-                              <li>
-                                <Link href="#">Joggers</Link>
-                              </li>
-                              <li>
-                                <Link href="#">Formal Pant</Link>
-                              </li>
-                              <li>
-                                <Link href="#">Jeans</Link>
-                              </li>
-                            </ul>
-                          </li>
-                          <li>
-                            <a className="mega-menu-title">Women</a>
-                            <ul>
-                              <li>
-                                <Link href="#">Chuditar</Link>
-                              </li>
-                              <li>
-                                <Link href="#">Leggins</Link>
-                              </li>
-                              
-                              
-                            </ul>
-                          </li>
-                          
-                          <li>
-                            <a className="mega-menu-title">Kids</a>
-                            <ul>
-                              <li>
-                                <Link href="#">Set</Link>
-                              </li>
-                              
-                            </ul>
-                          </li>
-                        </ul>
-                      </li>
-                      <li className="has-dropdown">
-                        <Link href="/shop">Direct Links</Link>
-                        <ul className="submenu">
-                          
-                          <li>
-                            <Link href="/user">My Account</Link>
-                          </li>
-                          <li>
-                            <Link href="/myOrders">My Orders</Link>
-                          </li>
-                          <li>
-                            <Link href="/security">Authentication Settings</Link>
-                          </li>
-                          <li>
-                            <Link href="/contact">Contact Us</Link>
-                          </li>
-                        </ul>
-                      </li>
-                      
-                      <li>
-                        <Link href="/contact">Contact</Link>
-                      </li>
-                    </ul>
+                    <HeaderItems />
                   </nav>
                 </div>
               </div>

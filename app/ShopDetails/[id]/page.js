@@ -403,6 +403,9 @@ export default function ShopDetails() {
           </div>
         </section>
       </div>
+      <div style={{ marginTop: "2rem" , marginLeft: "2rem"}} className="tpsection mb-40">
+              <h4 className="tpsection__title">Related Products</h4>
+            </div>
       <RelatedProducts category={product.productCategory} />
     </Layout>
   );

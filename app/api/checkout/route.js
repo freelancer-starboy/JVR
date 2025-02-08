@@ -63,7 +63,7 @@ export async function GET(req){
     await connectDb()
       const response = await Checkout.find({
         userId : id
-      })
+      }).sort({ createdAt: -1 })
       if(!response){
         return new Response(JSON.stringify({message : "Checkout not found"}), {status : 404})
       }

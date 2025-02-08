@@ -3,10 +3,11 @@ import { useState, useMemo, useEffect } from "react";
 import Preloader from "@/components/elements/Preloader";
 import Layout from "@/components/layout/Layout";
 import ShopList from "@/components/JVR/shopList/ShopList";
-import { useFetchProductsQuery } from "@/features/api/productApi";
+import { useFetchProductsQuery, useRelatedProductsQuery } from "@/features/api/productApi";
 import ShopFilter from "@/components/shopFilter/ShopFilter";
 import { IoMdArrowRoundBack } from "react-icons/io";
 import ShopFilterMobile from "@/components/shopFilter/ShopFilterMobile";
+import { useSearchParams } from "next/navigation";
 
 export default function ShopPage() {
   const { data: products, error, isLoading } = useFetchProductsQuery();
@@ -16,6 +17,10 @@ export default function ShopPage() {
   const [selectedSize, setSelectedSize] = useState([]);
   const [isFilterPopup, setIsFilterPopup] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const searchParams = useSearchParams();
+  const category = searchParams.get('category') || ''
+
+  const { data: categoryProducts } = useRelatedProductsQuery(category);
   useEffect(() => {
     const handleSize = () => {
       setIsMobile(window.innerWidth <= 768);
@@ -32,9 +37,9 @@ export default function ShopPage() {
     setIsFilterPopup(!isFilterPopup);
   }
   const filteredProducts = useMemo(() => {
-    if (!products) return [];
-
-    return products.filter(item => {
+    if (!categoryProducts) return [];
+    
+    return categoryProducts.filter(item => {
       const categoryMatch =
         selectedCategory.length === 0 ||
         selectedCategory.some(category =>
@@ -62,7 +67,7 @@ export default function ShopPage() {
         console.log("sizeMatch", sizeMatch);
       return categoryMatch && typeMatch && priceMatch && sizeMatch;
     });
-  }, [products, selectedCategory, selectedType, selectedPrice, selectedSize]);
+  }, [categoryProducts, selectedCategory, selectedType, selectedPrice, selectedSize]);
 
   if (isLoading) return <Preloader />;
   if (error) return <div>Error: {error.message}</div>;

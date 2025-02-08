@@ -1,6 +1,26 @@
+'use client'
+import { useRelatedProductsQuery } from "@/features/api/productApi";
 import Link from "next/link";
+import { useState, useEffect} from 'react'
+
 
 export default function Banner1() {
+    const [menCategory, setMenCategory] = useState(null);
+    const [womenCategory, setWomenCategory] = useState(null);
+    const [kidsCategory, setKidsCategory] = useState(null);
+  
+    const { data: mens } = useRelatedProductsQuery("mens");
+    const { data: women } = useRelatedProductsQuery("women");
+    const { data: kids } = useRelatedProductsQuery("kids");
+  
+    useEffect(() => {
+      if (mens && women && kids) {
+        setMenCategory(mens);
+        setWomenCategory(women);
+        setKidsCategory(kids);
+        console.log("men category : ", mens);
+      }
+    }, [mens, women, kids]);
     return (
         <section className="banner-area pt-50  pb-95">
             <div className="container">
@@ -9,8 +29,8 @@ export default function Banner1() {
                         <div className="banneritem__thumb banner-animation text-center p-relative">
                             <img src="/assets/img/banner/men-1.jpg" alt="" />
                             <div className="banneritem__content">
-                                <Link href="/shop-2"><i className="far fa-long-arrow-right" /></Link>
-                                <p>19 Items</p>
+                                <Link href={`/shop-2?category=mens`}><i className="far fa-long-arrow-right" /></Link>
+                                <p>{menCategory?.length} Items</p>
                                 <h4 className="banneritem__content-tiele"><Link href="/shop">Mens</Link></h4>
                             </div>
                         </div>
@@ -19,8 +39,8 @@ export default function Banner1() {
                         <div className="banneritem__thumb banner-animation text-center p-relative">
                             <img src="/assets/img/banner/women.jpg" alt="" />
                             <div className="banneritem__content">
-                                <Link href="/shop-2"><i className="far fa-long-arrow-right" /></Link>
-                                <p>22 Items</p>
+                                <Link href={`/shop-2?category=women`}><i className="far fa-long-arrow-right" /></Link>
+                                <p>{womenCategory?.length} Items</p>
                                 <h4 className="banneritem__content-tiele"><Link href="/shop">Women</Link></h4>
                             </div>
                         </div>
@@ -29,8 +49,8 @@ export default function Banner1() {
                         <div className="banneritem__thumb banner-animation text-center p-relative">
                             <img src="/assets/img/banner/kids.jpg" alt="" />
                             <div className="banneritem__content">
-                                <Link href="/shop-2"><i className="far fa-long-arrow-right" /></Link>
-                                <p>30 Items</p>
+                                <Link href={`/shop-2?category=kids`}><i className="far fa-long-arrow-right" /></Link>
+                                <p>{kidsCategory?.length} Items</p>
                                 <h4 className="banneritem__content-tiele"><Link href="/shop">Kids</Link></h4>
                             </div>
                         </div>
