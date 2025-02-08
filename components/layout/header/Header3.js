@@ -151,7 +151,7 @@ export default function Header3({
                       <div className="search-info p-relative">
                         <input type="text" placeholder="Search products..." />
                         {/* <button className="header-search-icon">
-                          <i className="fal fa-search" />
+                          <i className="fal fa-search" /> 
                         </button> */}
                       </div>
                     </form>
