@@ -1,18 +1,20 @@
 'use client';
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { CheckCircle2, X } from "lucide-react";
-import style from "../../public/assets/css/order.css"; 
+import { AiFillCheckCircle } from "react-icons/ai";
 
-const statuses = ["Processing", "Packed", "Dispatched", "Delivered"];
+const statuses = {
+    Processing: "0",
+    Packed : "1",
+    Dispatched: "2",
+    Delivered: "3",
+};
 
-export default function OrderTracker() {
+export default function OrderTracker({ status }) {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isOpen, setIsOpen] = useState(false);
 
-    const handleSliderChange = (e) => {
-        setCurrentIndex(parseInt(e.target.value));
-    };
 
     // Close modal on "Esc" key press
     useEffect(() => {
@@ -22,6 +24,9 @@ export default function OrderTracker() {
         document.addEventListener("keydown", handleKeyDown);
         return () => document.removeEventListener("keydown", handleKeyDown);
     }, []);
+    useEffect(() => {
+        setCurrentIndex(Object.keys(statuses).indexOf(status));
+    }, [status])
 
     return (
         <div className="popup-container">
@@ -39,12 +44,12 @@ export default function OrderTracker() {
                             <X size={24} />
                         </button>
 
-                        <h1 className="order-title">Order Processing</h1>
+                        <h1 className="order-title">Order Status</h1>
 
                         <div className="order-box">
                             <div className="status-header">
                                 <div className="status-indicator"></div>
-                                <h2>{statuses[currentIndex]}</h2>
+                                <h2>{status}</h2>
                             </div>
 
                             {/* Progress Bar */}
@@ -56,16 +61,16 @@ export default function OrderTracker() {
 
                             {/* Status Indicators */}
                             <div className="status-grid">
-                                {statuses.map((status, index) => (
+                                {Object.entries(statuses).map(([status, key], index) => (
                                     <div key={index} className={`status-item ${index <= currentIndex ? "active" : ""}`}>
-                                        <CheckCircle2 className="status-icon" />
+                                        {index <= currentIndex ? <AiFillCheckCircle style={{ color: "#4CAF50" }} className="status-icon" /> : <CheckCircle2 className="status-icon" />}
                                         <span>{status}</span>
                                     </div>
                                 ))}
                             </div>
 
                             {/* Range Input */}
-                            <input type="range" min="0" max="3" value={currentIndex} onChange={handleSliderChange} className="status-slider" />
+                            <input type="range" min="0" max="3" value={Object.keys(statuses).indexOf(status)}  className="status-slider" />
                         </div>
                     </div>
                 </div>

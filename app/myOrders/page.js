@@ -9,6 +9,7 @@ import OrderSuccess from "../orderSuccess/page";
 import { AiOutlineCopy } from "react-icons/ai";
 import { toast } from "react-toastify";
 import DeliveryStatusSlider from "@/components/deliverySlider/Slider";
+import OrderTracker from "@/components/pop/Popup.js";
 
 const OrdersPage = () => {
   const { userId, isAuthLoading } = useAuth();
@@ -88,7 +89,7 @@ const OrdersPage = () => {
                           />
                         </span>
                         <div>
-                          <button>Track Shipment</button>
+                          <OrderTracker status={order.orderStatus} />
                         </div>
                       </div>
                       <div className="custom-myorders-total">

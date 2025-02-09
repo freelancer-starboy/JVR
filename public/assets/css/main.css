@@ -12766,3 +12766,204 @@ only screen and (min-width: 768px) and (max-width: 991px),
 .custom-form::placeholder{
     color : #6d6d6d;
 }
+
+.popup-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: auto;
+    background: var(--background-color);
+}
+
+/* Track Order Button */
+.track-button {
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: bold;
+    background: var(--primary-color);
+    color: var(--secondary-color);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.track-button:hover {
+    background: gray;
+}
+
+/* Modal Overlay */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(2px);
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Modal Content */
+.modal-content {
+    background: var(--secondary-color);
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--progress-bg);
+    width: 90%;
+    max-width: 600px;
+    position: relative;
+    animation: slideUp 0.3s ease-in-out;
+}
+
+/* Close Button */
+.close-button {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-color);
+    transition: color 0.3s;
+}
+
+.close-button:hover {
+    color: #444;
+}
+
+/* Order Title */
+.order-title {
+    font-size: 2rem;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: var(--primary-color);
+}
+
+/* Order Box */
+.order-box {
+    text-align: center;
+}
+
+/* Status Header */
+.status-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+    color: var(--text-color);
+}
+
+.status-indicator {
+    height: 10px;
+    width: 10px;
+    background: var(--primary-color);
+    border-radius: 50%;
+    margin-right: 10px;
+    animation: pulse 1.5s infinite;
+}
+
+/* Progress Bar */
+.progress-track {
+    width: 100%;
+    height: 6px;
+    background: var(--progress-bg);
+    border-radius: 6px;
+    margin-bottom: 1rem;
+    position: relative;
+}
+
+.progress-bar {
+    height: 100%;
+    background: var(--primary-color);
+    transition: width 0.5s ease-out;
+}
+
+.shimmer {
+    position: absolute;
+    right: 0;
+    width: 30px;
+    height: 100%;
+    background: linear-gradient(to right, transparent, rgba(0, 0, 0, 0.3), transparent);
+    animation: shimmer 1.5s infinite;
+}
+
+/* Status Grid */
+.status-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 1rem;
+    color: var(--text-color);
+}
+
+.status-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    opacity: 0.5;
+    transition: all 0.3s;
+}
+
+.status-item.active {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+.status-icon {
+    width: 1.8rem;
+    height: 1.8rem;
+    color: var(--inactive-color);
+    transition: color 0.3s;
+}
+
+.status-item.active .status-icon {
+    color: var(--primary-color);
+}
+
+/* Range Input */
+.status-slider {
+    width: 100%;
+    height: 5px;
+    background: black;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s;
+    accent-color: var(--tp-common-black);
+}
+
+.status-slider:focus {
+    outline: none;
+    box-shadow: 0 0 10px var(--primary-color);
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.3); }
+}
+@media screen and (max-width :768px ) {
+    .popup-container{
+        justify-content: flex-start !important;
+    }
+    .modal-content{
+        width: 100%;
+        padding: 1rem;
+        margin: 1rem;
+    }
+}
