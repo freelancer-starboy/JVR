@@ -69,7 +69,7 @@ export default function Checkout() {
         setLoadingScreen(true);
         try {
           const response = await validStock(cartItems).unwrap();
-          setStockValue(response);
+          setStockValue(response);``
         } catch (error) {
           console.error("Error validating stock:", error);
         } finally {
@@ -113,7 +113,11 @@ export default function Checkout() {
       updateStock();
     }
   }, [successOrder, cartItems]);
-
+  useEffect(() => {
+    if(cartItems){
+      console.log("Cart Items:", cartItems);
+    }
+  }, [cartItems]);
   const updateCheckout = async () => {
     try {
 

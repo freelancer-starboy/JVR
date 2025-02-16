@@ -41,6 +41,7 @@ export const checkoutApi = createApi({
               body: {
                 userId,
                 cartItems: cartItems.map((item) => ({
+                  productImage : item.productImage,
                   productId: item.productId,
                   productName: item.productName,
                   quantity: item.quantity,
