@@ -12,6 +12,8 @@ import { set } from "mongoose";
 import { useDeleteTokenMutation } from "@/features/api/authApi";
 import { toast } from "react-toastify";
 import HeaderItems from "@/components/HeaderItems/HeaderItems";
+import { useSearchItemsQuery } from "@/features/api/searchApi";
+import { useRouter } from "next/navigation";
 
 export default function Header3({
   scroll,
@@ -25,6 +27,9 @@ export default function Header3({
   const [toggledLogout, setToggledLogout] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const auth = getAuth();
+  const [searchQuery, setSearchQuey] = useState("");
+  const [debounce, setDebounce] = useState("");
+  const router = useRouter()
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
@@ -34,25 +39,43 @@ export default function Header3({
     });
     return () => unsubscribe();
   }, [userId]);
-    const [deleteCookies ] = useDeleteTokenMutation()
-  
+  const [deleteCookies] = useDeleteTokenMutation();
+
   const [isToggled, setToggled] = useState(false);
   const handleToggle = () => setToggled(!isToggled);
-  const handleLogout = async() => {
-      try {
-        await signOut(auth)
-        const response = await deleteCookies().unwrap()
-        if (response.success) {
-          toast.success('Logout Successful')
-          window.location.reload()
-        }else{
-          toast.error('Logout Failed')
-        }
-      } catch (error) {
-        console.error('Error during sign-out:', error);
-        
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      const response = await deleteCookies().unwrap();
+      if (response.success) {
+        toast.success("Logout Successful");
+        window.location.reload();
+      } else {
+        toast.error("Logout Failed");
       }
+    } catch (error) {
+      console.error("Error during sign-out:", error);
     }
+  };
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebounce(searchQuery);
+    }, 500);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchQuery]);
+
+  const { data: searchItems, isLoading } = useSearchItemsQuery(debounce, {
+    enabled : !!debounce && debounce.trim() !== ''
+  });
+
+  const handleProductClick = (id) => {
+    router.push(`/ShopDetails/${id}`)
+  }
+
   return (
     <>
       <header>
@@ -94,7 +117,7 @@ export default function Header3({
                           </div>
                         )}
 
-                        <Link className="order-tick" href="#">
+                        <Link className="order-tick" href="/myOrders">
                           <i className="fal fa-plane-departure" />
                           Track Your Order
                         </Link>
@@ -146,15 +169,82 @@ export default function Header3({
               </div>
               <div className="col-xl-10 col-lg-9">
                 <div className="header-meta-info d-flex align-items-center justify-content-between">
-                  <div className="header-search-bar">
-                    <form action="#">
-                      <div className="search-info p-relative">
-                        <input type="text" placeholder="Search products..." />
-                        {/* <button className="header-search-icon">
-                          <i className="fal fa-search" /> 
-                        </button> */}
-                      </div>
-                    </form>
+                  <div className="custom-searchbar-container">
+                    <div className="custom-searchbar-input-wrapper">
+                      <input
+                        type="text"
+                        placeholder="Search products..."
+                        onChange={(e) => setSearchQuey(e.target.value)}
+                        className="custom-searchbar-input"
+                      />
+                    </div>
+                    <div className="custom-searchbar-results-wrapper">
+                      {(debounce && searchItems?.products?.length > 0 ||
+                        searchItems?.wordSuggestions?.length > 0) && (
+                        <div className="custom-searchbar-dropdown">
+                          {/* Word suggestions section */}
+                          {searchItems?.wordSuggestions?.length > 0 && (
+                            <div className="custom-searchbar-section">
+                              <div className="custom-searchbar-section-title">
+                                <span>Search Suggestions</span>
+                              </div>
+                              {searchItems.wordSuggestions.map(
+                                (suggestion, index) => (
+                                  <div
+                                    key={`suggestion-${index}`}
+                                    className="custom-searchbar-suggestion-item"
+                                    onClick={() =>
+                                      handleSuggestionClick(suggestion)
+                                    }
+                                  >
+                                    <svg
+                                      className="custom-searchbar-search-icon"
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      viewBox="0 0 24 24"
+                                      width="18"
+                                      height="18"
+                                    >
+                                      <path
+                                        fill="currentColor"
+                                        d="M10,18c-4.4,0-8-3.6-8-8s3.6-8,8-8s8,3.6,8,8S14.4,18,10,18z M10,4c-3.3,0-6,2.7-6,6s2.7,6,6,6s6-2.7,6-6 S13.3,4,10,4z M23,22l-6-6l1.4-1.4l6,6L23,22z"
+                                      />
+                                    </svg>
+                                    <span className="custom-searchbar-suggestion-text">
+                                      {suggestion}
+                                    </span>
+                                  </div>
+                                )
+                              )}
+                            </div>
+                          )}
+
+                          {/* Products section */}
+                          {searchItems?.products?.length > 0 && (
+                            <div className="custom-searchbar-section">
+                              <div className="custom-searchbar-section-title">
+                                <span>Products</span>
+                              </div>
+                              {searchItems.products.map((item) => (
+                                <div
+                                  key={item._id}
+                                  className="custom-searchbar-item"
+                                  onClick={() => handleProductClick(item._id)}
+                                >
+                                  <img
+                                    src={item.productVariants?.[0]?.images?.[0]}
+                                    alt={item.productName}
+                                    className="custom-searchbar-item-image"
+                                  />
+                                  <span className="custom-searchbar-item-name">
+                                    {item.productName}
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
                   </div>
                   <div className="header-meta header-brand d-flex align-items-center">
                     <div className="header-meta__social d-flex align-items-center ml-25">
@@ -219,15 +309,15 @@ export default function Header3({
                         <Link href="/shop-2?shopCategory=kids">
                           <i className="fal fa-chair" /> Kids
                         </Link>
-                      </li> 
+                      </li>
                     </ul>
                     <div className="coupon-offer d-flex align-items-center justify-content-between">
                       <span>
-                        Coupon: <Link href="/shop">Offers50</Link>
+                        Coupon: <Link href="/shop">WELCOMEJVR</Link>
                       </span>
                       <Link href="#">
                         {" "}
-                        <i className="fal fa-copy" />
+                        <i className="fal fa-copy" onClick={() => {navigator.clipboard.writeText("WELCOMEJVR"); toast.success("Copied to clipboard")}} />
                       </Link>
                     </div>
                   </div>
@@ -249,7 +339,7 @@ export default function Header3({
                           <i className="fal fa-phone" />
                         </div>
                         <div className="menu-contact__info">
-                          <Link href="/tel:0123456">908. 408. 501. 89</Link>
+                          <Link href="tel:9943933092">+91 99439 33092</Link>
                         </div>
                       </div>
                     </li>

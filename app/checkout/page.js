@@ -35,14 +35,18 @@ export default function Checkout() {
   const [quantity, setQuantity] = useState(1);
   const [couponCode, setCouponCode] = useState("");
   const [details, setDetails] = useState([]);
-
+  const [orderTotal, setOrderTotal] = useState(0);
+  const [total, setTotal] = useState(0);
+  const [shipping, setShipping] = useState(0);
+  const [isCouponApplied, setIsCouponApplied] = useState(false);
   const [isCuponToggle, setCuponToggle] = useState(false);
   const handleCuponToggle = () => setCuponToggle(!isCuponToggle);
+  const [appliedCoupons, setAppliedCoupons] = useState([]);
 
   const [isCboxToggle, setCboxToggle] = useState(false);
   const handleCboxToggle = () => setCboxToggle(!isCboxToggle);
 
-  const [createCheckout] = useCreateCheckoutMutation()
+  const [createCheckout] = useCreateCheckoutMutation();
   const [isShipToggle, setShipToggle] = useState(false);
   const handleShipToggle = () => setShipToggle(!isShipToggle);
 
@@ -59,6 +63,27 @@ export default function Checkout() {
     isError,
     refetch,
   } = useFetchCartQuery(userId);
+
+  useEffect(() => {
+    if (cartItems && cartItems.length > 0) {
+      const newTotal = cartItems.reduce(
+        (acc, item) => acc + item.quantity * item.productPrice,
+        0
+      );
+      setTotal(newTotal);
+      setOrderTotal(newTotal + shipping);
+    } else {
+      setShipping(0);
+      setTotal(0);
+      setOrderTotal(0);
+    }
+  }, [cartItems, shipping]);
+
+  useEffect(() => {
+    if (cartItems && cartItems.length > 0 && shipping === 0) {
+      setShipping(50);
+    }
+  }, [cartItems]);
   const [updateStockValue, { loading, error }] = useFetchStockMutation();
 
   const [validStock] = useStockValidationMutation();
@@ -69,7 +94,8 @@ export default function Checkout() {
         setLoadingScreen(true);
         try {
           const response = await validStock(cartItems).unwrap();
-          setStockValue(response);``
+          setStockValue(response);
+          ``;
         } catch (error) {
           console.error("Error validating stock:", error);
         } finally {
@@ -79,8 +105,8 @@ export default function Checkout() {
       validateStock();
     }
   }, [cartItems, validStock]);
-    const [deleteCart] = useDeleteCartMutation()
-  
+  const [deleteCart] = useDeleteCartMutation();
+
   useEffect(() => {
     setLoadingScreen(true);
     if (successOrder) {
@@ -95,7 +121,7 @@ export default function Checkout() {
           console.log("Stock update success:", response);
           // Log the success response for debugging
           await updateCheckout();
-          await deleteCart(userId).unwrap()
+          await deleteCart(userId).unwrap();
           // Show success toast and navigate to the success page
           toast.success("Order Placed Successfully");
           router.push(`/myOrders?transactionId=${transactionId}`);
@@ -114,28 +140,26 @@ export default function Checkout() {
     }
   }, [successOrder, cartItems]);
   useEffect(() => {
-    if(cartItems){
+    if (cartItems) {
       console.log("Cart Items:", cartItems);
     }
   }, [cartItems]);
   const updateCheckout = async () => {
     try {
-
       const response = await createCheckout({
         userId,
         cartItems,
-      details,
-      method,
-      transactionId,
-      status,
-      orderTotal,
-
-      }).unwrap()
+        details,
+        method,
+        transactionId,
+        status,
+        orderTotal,
+      }).unwrap();
       console.log("Checkout saved successfully", response);
-  } catch (err) {
-    console.error("Checkout failed:", err);
-    toast.error("Failed to save order checkout");
-  }
+    } catch (err) {
+      console.error("Checkout failed:", err);
+      toast.error("Failed to save order checkout");
+    }
   };
   if (isLoading) {
     return <Preloader />;
@@ -143,26 +167,22 @@ export default function Checkout() {
   if (isError) {
     return <Preloader />;
   }
-  let total = 0;
-  cartItems?.forEach((item) => {
-    const price = item.quantity * item.productPrice;
-    total = total + price;
-  });
-  let shipping = 50;
-  // if (total >= 1000) {
-  //   shipping = 0;
-  // }
-  let orderTotal = 0;
-  if (total > 0) {
-    orderTotal = total + shipping;
-  }
 
   const handleApplyCoupon = (e) => {
-    e.preventDefault()
-   
-}
-
- 
+    e.preventDefault();
+    if (isCouponApplied) {
+      toast.error("Coupon already applied");
+      return;
+    }
+    if (couponCode === "WELCOMEJVR") {
+      setShipping(0);
+      toast.success("Coupon applied successfully!");
+      setIsCouponApplied(true);
+      setAppliedCoupons([...appliedCoupons, couponCode]);
+    } else {
+      toast.error("Invalid Coupon Code");
+    }
+  };
 
   const isDetailsEmpty = details?.length != 0;
 
@@ -250,18 +270,23 @@ export default function Checkout() {
   const handleAddressChoose = (address) => {
     console.log("Selected address from front:", address);
     setDetails(address);
-  }
+  };
   return (
     <>
       <Layout headerStyle={3} footerStyle={2}>
-      {loadingScreen && <Loader />}
-      <div className="custom-checkout-container">
-        
-
-        <section className="custom-checkout-main">
-          {/* <form className="custom-checkout-form"> */}
+        {loadingScreen && <Loader />}
+        <div className="custom-checkout-container">
+          <section className="custom-checkout-main">
+            {/* <form className="custom-checkout-form"> */}
             <div className="custom-checkout-grid">
-              <Address userId={userId} handleAddressChoose={handleAddressChoose} />
+              <Address
+                userId={userId}
+                handleAddressChoose={handleAddressChoose}
+              />
+
+              {/* Checkout form */}
+
+              {/* Checkout end */}
 
               <div className="custom-checkout-order-summary">
                 <h3 className="custom-checkout-section-title">Your Order</h3>
@@ -277,7 +302,11 @@ export default function Checkout() {
                       {cartItems?.map((item) => {
                         const { stock, message } = getStockStatus(item);
                         return (
-                          <tr key={`${item.productId || item.variantId}-${item.size || item.productSize}`}>
+                          <tr
+                            key={`${item.productId || item.variantId}-${
+                              item.size || item.productSize
+                            }`}
+                          >
                             <td className="custom-checkout-product-cell">
                               <span className="custom-checkout-product-name">
                                 {item.productName}
@@ -294,35 +323,49 @@ export default function Checkout() {
                                 ₹ {item.productPrice}
                               </span>
                               {stock === 0 && (
-                                <button 
+                                <button
                                   className="custom-checkout-remove-button"
-                                  onClick={() => handleRemoveCart(item.productId)}
+                                  onClick={() =>
+                                    handleRemoveCart(item.productId)
+                                  }
                                 >
                                   Remove
                                 </button>
                               )}
-                              {stock !== null && stock > 0 && stock < item.quantity && (
-                                <div className="custom-checkout-quantity-update">
-                                  <select
-                                    className="custom-checkout-select"
-                                    value={quantity}
-                                    onChange={(e) => setQuantity(Number(e.target.value))}
-                                  >
-                                    <option value="" disabled>Select Quantity</option>
-                                    {Array.from({ length: stock }, (_, i) => (
-                                      <option key={i + 1} value={i + 1}>
-                                        {i + 1}
+                              {stock !== null &&
+                                stock > 0 &&
+                                stock < item.quantity && (
+                                  <div className="custom-checkout-quantity-update">
+                                    <select
+                                      className="custom-checkout-select"
+                                      value={quantity}
+                                      onChange={(e) =>
+                                        setQuantity(Number(e.target.value))
+                                      }
+                                    >
+                                      <option value="" disabled>
+                                        Select Quantity
                                       </option>
-                                    ))}
-                                  </select>
-                                  <button
-                                    className="custom-checkout-update-button"
-                                    onClick={(e) => handleUpdateCart(e, item.productId, quantity)}
-                                  >
-                                    Update Quantity
-                                  </button>
-                                </div>
-                              )}
+                                      {Array.from({ length: stock }, (_, i) => (
+                                        <option key={i + 1} value={i + 1}>
+                                          {i + 1}
+                                        </option>
+                                      ))}
+                                    </select>
+                                    <button
+                                      className="custom-checkout-update-button"
+                                      onClick={(e) =>
+                                        handleUpdateCart(
+                                          e,
+                                          item.productId,
+                                          quantity
+                                        )
+                                      }
+                                    >
+                                      Update Quantity
+                                    </button>
+                                  </div>
+                                )}
                             </td>
                           </tr>
                         );
@@ -348,25 +391,27 @@ export default function Checkout() {
                 <div className="custom-checkout-payment">
                   {isDetailsEmpty ? (
                     <div className="custom-checkout-payment-button">
-                      {allItemsInStock  ? (
+                      {allItemsInStock ? (
                         orderTotal <= 0 ? (
                           <div>
                             <button
-                          type="button"
-                          className="custom-checkout-button custom-checkout-button-disabled"
-                          disabled
-                        >
-                          Add Products to Bag
-                        </button>
+                              type="button"
+                              className="custom-checkout-button custom-checkout-button-disabled"
+                              disabled
+                            >
+                              Add Products to Bag
+                            </button>
                           </div>
-                        ) : <PaymentPage
-                          amount={orderTotal}
-                          onPaymentSuccess={setSuccessOrder}
-                          transactionId={transactionId}
-                          setTransactionId={setTransactionId}
-                          setStatus={setStatus}
-                          setMethod={setMethod}
-                        />
+                        ) : (
+                          <PaymentPage
+                            amount={orderTotal}
+                            onPaymentSuccess={setSuccessOrder}
+                            transactionId={transactionId}
+                            setTransactionId={setTransactionId}
+                            setStatus={setStatus}
+                            setMethod={setMethod}
+                          />
+                        )
                       ) : (
                         <button
                           type="button"
@@ -379,50 +424,71 @@ export default function Checkout() {
                     </div>
                   ) : (
                     <div className="custom-checkout-payment-button">
-                      <button
-                        type="submit"
-                        className="custom-checkout-button"
-                      >
+                      <button type="submit" className="custom-checkout-button">
                         Pick an address
                       </button>
                     </div>
                   )}
-                  <div className="custom-checkout-coupon-section">
-                </div>
-              <div className="custom-checkout-accordion my-2">
-                <h3 className="custom-checkout-accordion-title">
-                  Have a coupon?{" "}
-                  <span className="custom-checkout-link" onClick={handleCuponToggle}>
-                    Click here to enter your code
-                  </span>
-                </h3>
-                {isCuponToggle && (
-                  <div className="custom-checkout-coupon-content">
-                    <form className="custom-checkout-form">
-                      <div className="custom-checkout-coupon-row">
-                        <input 
-                          type="text" 
-                          className="custom-checkout-input" 
-                          placeholder="Coupon Code" 
-                          value={couponCode}
-                          onChange={(e) => setCouponCode(e.target.value)}
-                        />
-                        <button className="custom-checkout-button" onClick={(e) => handleApplyCoupon(e)}>
-                          Apply Coupon
-                        </button>
+                  <div className="custom-checkout-coupon-section"></div>
+                  <div className="custom-checkout-accordion my-2">
+                    <h3 className="custom-checkout-accordion-title">
+                      Have a coupon?{" "}
+                      <span
+                        className="custom-checkout-link"
+                        onClick={handleCuponToggle}
+                      >
+                        Click here to enter your code
+                      </span>
+                    </h3>
+                    {isCuponToggle && (
+                      <div className="custom-checkout-coupon-content">
+                        <form className="custom-checkout-form">
+                          <div className="custom-checkout-coupon-row">
+                          <div class="custom-coupon-container">
+  <input
+    type="text"
+    class="custom-coupon-input form-control"
+    placeholder="Coupon Code"
+    value={couponCode}
+    onChange={(e) => setCouponCode(e.target.value)}
+  />
+
+  {isCouponApplied && (
+    <div class="custom-coupon-applied-container mt-2 d-flex align-items-center">
+      <span class="custom-coupon-badge me-2 badge bg-success">{appliedCoupons}</span>
+      <span
+        class="custom-coupon-remove-btn badge bg-danger d-flex align-items-center justify-content-center"
+        style={{ width: '22px', height: '22px', cursor: 'pointer', padding: '0' }}
+        onClick={() => {
+          setIsCouponApplied(false);
+          setCouponCode('');
+          setShipping(50);
+        }}
+      >
+        ✖
+      </span>
+    </div>
+  )}
+</div>
+
+                            <button
+                              className="custom-checkout-button"
+                              onClick={(e) => handleApplyCoupon(e)}
+                            >
+                              Apply Coupon
+                            </button>
+                          </div>
+                        </form>
                       </div>
-                    </form>
+                    )}
                   </div>
-                )}
+                </div>
               </div>
             </div>
-              </div>
-            </div>
-          {/* </form> */}
-          
-        </section>
-      </div>
-    </Layout>
+            {/* </form> */}
+          </section>
+        </div>
+      </Layout>
     </>
   );
 }

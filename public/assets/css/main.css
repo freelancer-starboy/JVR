@@ -12967,3 +12967,162 @@ only screen and (min-width: 768px) and (max-width: 991px),
         margin: 1rem;
     }
 }
+
+.custom-searchbar-container {
+    position: relative;
+    width: 100%;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+  }
+  
+  .custom-searchbar-input-wrapper {
+    position: relative;
+    width: 100%;
+  }
+  
+  .custom-searchbar-input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  
+  .custom-searchbar-input:focus {
+    border-color: #4a90e2;
+    box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.1);
+  }
+  
+  .custom-searchbar-results-wrapper {
+    position: absolute;
+    width: 100%;
+    z-index: 10;
+  }
+  
+  .custom-searchbar-dropdown {
+    position: absolute;
+    top: 5px;
+    left: 0;
+    width: 100%;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+    max-height: 400px;
+    overflow-y: auto;
+  }
+  
+  .custom-searchbar-section {
+    border-bottom: 1px solid #eaeaea;
+  }
+  
+  .custom-searchbar-section:last-child {
+    border-bottom: none;
+  }
+  
+  .custom-searchbar-section-title {
+    padding: 10px 16px;
+    background-color: #f8f8f8;
+    font-size: 12px;
+    color: #757575;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  
+  .custom-searchbar-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background-color 0.2s ease;
+  }
+  
+  .custom-searchbar-item:last-child {
+    border-bottom: none;
+  }
+  
+  .custom-searchbar-item:hover {
+    background-color: #f9f9f9;
+    cursor: pointer;
+  }
+  
+  .custom-searchbar-item-image {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 6px;
+    margin-right: 16px;
+    border: 1px solid #f0f0f0;
+  }
+  
+  .custom-searchbar-item-name {
+    font-weight: 600;
+    color: #333;
+    font-size: 14px;
+  }
+  
+  .custom-searchbar-suggestion-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 16px;
+    transition: background-color 0.2s ease;
+    cursor: pointer;
+  }
+  
+  .custom-searchbar-suggestion-item:hover {
+    background-color: #f5f5f5;
+  }
+  
+  .custom-searchbar-search-icon {
+    color: #757575;
+    margin-right: 12px;
+  }
+  
+  .custom-searchbar-suggestion-text {
+    font-size: 14px;
+    color: #333;
+  }
+
+
+  .custom-coupon-container {
+    position: relative;
+    margin-bottom: 1rem;
+  }
+  
+  .custom-coupon-input {
+    height: 45px;
+    border-radius: 4px;
+    border: 1px solid #ced4da;
+    font-size: 14px;
+    padding: 0.5rem 1rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  }
+  
+  .custom-coupon-input:focus {
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  }
+  
+  .custom-coupon-applied-container {
+    background-color: #f8f9fa;
+    padding: 8px 12px;
+    border-radius: 4px;
+    border: 1px solid #e9ecef;
+  }
+  
+  .custom-coupon-badge {
+    font-size: 13px;
+    font-weight: 500;
+    padding: 5px 8px;
+  }
+  
+  .custom-coupon-remove-btn {
+    font-size: 12px;
+    border-radius: 50%;
+  }
+  
+  .custom-coupon-remove-btn:hover {
+    background-color: #c82333;
+  }

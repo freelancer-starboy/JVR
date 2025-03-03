@@ -14,9 +14,9 @@ export default function Exclusive() {
                                 </div>
                                 <div className="tpexclusive__content">
                                     <h4 className="tpexclusive__subtitle">Collection</h4>
-                                    <h3 className="tpexclusive__title mb-30">Winter <br /> Exclusive In</h3>
+                                    <h3 className="tpexclusive__title mb-30">New  <br /> Arrivals In</h3>
                                     <div className="tpexclusive__btn">
-                                        <Link href="/shop" className="tp-btn banner-animation">Shop Now</Link>
+                                        <Link href="/shop-2" className="tp-btn banner-animation">Shop Now</Link>
                                     </div>
                                 </div>
                             </div>
@@ -29,7 +29,10 @@ export default function Exclusive() {
                                 <div className="tpexclusive__contentarea text-center">
                                     <h4 className="tpexclusive__subtitle subcolor">Discount</h4>
                                     <h3 className="tpexclusive__title mb-10">50% Offer</h3>
-                                    <p>New Modern Stylist Fashionable <br /> Women's Wear holder</p>
+                                    <p>New Modern Stylist Fashionable <br /> Mens's Wear holder</p>
+                                    <div className="tpexclusive__btn">
+                                        <Link href="/shop-2?category=mens" className="tp-btn banner-animation">Shop Now</Link>
+                                    </div>
                                 </div>
                             </div>
                         </div>

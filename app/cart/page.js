@@ -201,7 +201,7 @@ export default function Cart() {
 
       <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px'}}>
         {/* Coupon Section */}
-        <div className="custom-cart-coupon">
+        {/* <div className="custom-cart-coupon">
           <h3 className="custom-cart-summary-title">Have a Coupon?</h3>
           <input
             type="text"
@@ -211,7 +211,7 @@ export default function Cart() {
           <button className="custom-cart-coupon-btn">
             Apply Coupon
           </button>
-        </div>
+        </div> */}
 
         {/* Summary Section */}
         <div className="custom-cart-summary">

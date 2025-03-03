@@ -40,7 +40,7 @@ export default function Brand1() {
                     <div className="row">
                         <div className="col-md-12 col-12">
                             <div className="tpsection solid-line text-center mb-45">
-                                <h4 className="tpsection__title ">Happy Sponsors</h4>
+                                <h4 className="tpsection__title ">Our Brands</h4>
                             </div>
                         </div>
                     </div>

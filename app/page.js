@@ -15,7 +15,7 @@ export default function Home2() {
                 <Banner1 />
                 <Product2 />
                 <Exclusive />
-                <Blog1 />
+                {/* <Blog1 /> */}
                 <Brand1 />
             </Layout>
         </>
