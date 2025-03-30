@@ -20,7 +20,7 @@ const HeaderItems = () => {
     }
   }, [mens, women, kids]);
   return (
-    <ul>
+    <ul className="">
       <li className="">
         <Link href="/">Home</Link>
       </li>

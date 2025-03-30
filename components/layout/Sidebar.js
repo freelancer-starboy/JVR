@@ -43,7 +43,7 @@ export default function Sidebar({ isMobileMenu, handleMobileMenu }) {
                     <span className="tpsideinfo__search-title mb-20">What Are You Looking For?</span>
                     <form action="#">
                         <input type="text" placeholder="Search Products..." />
-                        <button><i className="fal fa-search" /></button>
+                        <button><i className="fal " /></button>
                     </form>
                 </div>
                 <div className="tpsideinfo__nabtab">
