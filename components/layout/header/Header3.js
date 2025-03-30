@@ -8,7 +8,6 @@ import HeaderSticky from "../HeaderSticky";
 import HeaderTabSticky from "../HeaderTabSticky";
 import { useAuth } from "@/components/AuthContent/AuthContent";
 import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
-import { set } from "mongoose";
 import { useDeleteTokenMutation } from "@/features/api/authApi";
 import { toast } from "react-toastify";
 import HeaderItems from "@/components/HeaderItems/HeaderItems";
@@ -25,24 +24,25 @@ export default function Header3({
   const { userId } = useAuth();
   const [userName, setUserName] = useState(null);
   const [toggledLogout, setToggledLogout] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
   const auth = getAuth();
-  const [searchQuery, setSearchQuey] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
   const [debounce, setDebounce] = useState("");
-  const router = useRouter()
+  const router = useRouter();
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         setUserName(user.displayName);
-        console.log(user.displayName);
       }
     });
     return () => unsubscribe();
-  }, [userId]);
+  }, [userId, auth]);
+
   const [deleteCookies] = useDeleteTokenMutation();
 
   const [isToggled, setToggled] = useState(false);
   const handleToggle = () => setToggled(!isToggled);
+
   const handleLogout = async () => {
     try {
       await signOut(auth);
@@ -68,17 +68,23 @@ export default function Header3({
     };
   }, [searchQuery]);
 
-  const { data: searchItems, isLoading } = useSearchItemsQuery(debounce, {
-    enabled : !!debounce && debounce.trim() !== ''
+  const { data: searchItems } = useSearchItemsQuery(debounce, {
+    skip: !debounce || debounce.trim() === "",
   });
 
   const handleProductClick = (id) => {
-    router.push(`/ShopDetails/${id}`)
-  }
+    router.push(`/ShopDetails/${id}`);
+  };
+
+  const handleSuggestionClick = (suggestion) => {
+    setSearchQuery(suggestion);
+    router.push(`/shop-2?search=${encodeURIComponent(suggestion)}`);
+  };
 
   return (
     <>
       <header>
+        {/* Header Top Section */}
         <div className="header-top tertiary-header-top space-bg">
           <div className="container">
             <div className="row">
@@ -95,13 +101,13 @@ export default function Header3({
                 <div className="headertoplag d-flex align-items-center justify-content-end">
                   <div className="headertoplag__lang">
                     <ul>
-                      <li>
+                      <li className="profile-container">
                         <Link
                           href={userId ? "#" : "/sign-in"}
                           onClick={(e) => {
                             if (userId) {
-                              e.preventDefault(); // Prevent navigation when user is logged in
-                              setToggledLogout((prev) => !prev);
+                              e.preventDefault();
+                              // handle any additional click actions if needed
                             }
                           }}
                           className="position-relative"
@@ -110,10 +116,16 @@ export default function Header3({
                           {userId && userName ? userName : "Login"}
                         </Link>
 
-                        {userId && toggledLogout && (
-                          <div className="custom-logout-container">
-                            <span className="fal fa-logout"></span>
-                            <button onClick={handleLogout}>Logout</button>
+                        {/* Logout button will appear on hover */}
+                        {userId && (
+                          <div className="dropdown-menu">
+                            <button
+                              onClick={handleLogout}
+                              className="dropdown-item d-flex align-items-center"
+                            >
+                              <i className="fal fa-sign-out mr-2" />
+                              Logout
+                            </button>
                           </div>
                         )}
 
@@ -124,15 +136,13 @@ export default function Header3({
                       </li>
                     </ul>
                   </div>
+
                   <div className="menu-top-social">
                     <Link href="#">
                       <i className="fab fa-facebook-f" />
                     </Link>
                     <Link href="#">
                       <i className="fab fa-twitter" />
-                    </Link>
-                    <Link href="#">
-                      <i className="fab fa-behance" />
                     </Link>
                     <Link href="#">
                       <i className="fab fa-youtube" />
@@ -146,19 +156,27 @@ export default function Header3({
             </div>
           </div>
         </div>
-        <div className="logo-area green-logo-area mt-30 d-none d-xl-block">
+
+        {/* Logo and Search Bar Section */}
+        <div className="mt-20 d-none d-xl-block">
           <div className="container">
             <div className="row align-items-center">
               <div className="col-xl-2 col-lg-2">
                 <div
                   className="logo"
-                  style={{ width: "auto", height: "5rem", display: "flex" }}
+                  style={{
+                    width: "3rem",
+                    height: "3rem",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
                 >
                   <Link href="/">
                     <img
                       style={{
                         width: "auto",
-                        height: "5rem",
+                        height: "3rem",
                         display: "block",
                       }}
                       src="/assets/css/images/jvr-logo-3.png"
@@ -168,50 +186,39 @@ export default function Header3({
                 </div>
               </div>
               <div className="col-xl-10 col-lg-9">
-                <div className="header-meta-info d-flex align-items-center justify-content-between">
-                  <div className="custom-searchbar-container">
-                    <div className="custom-searchbar-input-wrapper">
+                <div className="header-meta-info d-flex align-items-center justify-content-end">
+                  <div>
+                    <div className="position-relative w-100">
                       <input
                         type="text"
                         placeholder="Search products..."
-                        onChange={(e) => setSearchQuey(e.target.value)}
-                        className="custom-searchbar-input"
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="form-control"
+                        style={{ minWidth: "300px" }}
                       />
-                    </div>
-                    <div className="custom-searchbar-results-wrapper">
-                      {(debounce && searchItems?.products?.length > 0 ||
+
+                      {/* Search Results Dropdown */}
+                      {((debounce && searchItems?.products?.length > 0) ||
                         searchItems?.wordSuggestions?.length > 0) && (
-                        <div className="custom-searchbar-dropdown">
+                        <div className="dropdown-menu show position-absolute w-100">
                           {/* Word suggestions section */}
                           {searchItems?.wordSuggestions?.length > 0 && (
-                            <div className="custom-searchbar-section">
-                              <div className="custom-searchbar-section-title">
+                            <div className="p-2 border-bottom">
+                              <div className="small font-weight-bold text-muted mb-1">
                                 <span>Search Suggestions</span>
                               </div>
                               {searchItems.wordSuggestions.map(
                                 (suggestion, index) => (
                                   <div
                                     key={`suggestion-${index}`}
-                                    className="custom-searchbar-suggestion-item"
+                                    className="d-flex align-items-center py-1 px-2 suggestion-item"
                                     onClick={() =>
                                       handleSuggestionClick(suggestion)
                                     }
+                                    style={{ cursor: "pointer" }}
                                   >
-                                    <svg
-                                      className="custom-searchbar-search-icon"
-                                      xmlns="http://www.w3.org/2000/svg"
-                                      viewBox="0 0 24 24"
-                                      width="18"
-                                      height="18"
-                                    >
-                                      <path
-                                        fill="currentColor"
-                                        d="M10,18c-4.4,0-8-3.6-8-8s3.6-8,8-8s8,3.6,8,8S14.4,18,10,18z M10,4c-3.3,0-6,2.7-6,6s2.7,6,6,6s6-2.7,6-6 S13.3,4,10,4z M23,22l-6-6l1.4-1.4l6,6L23,22z"
-                                      />
-                                    </svg>
-                                    <span className="custom-searchbar-suggestion-text">
-                                      {suggestion}
-                                    </span>
+                                    <i className="fal fa-search mr-2 text-secondary" />
+                                    <span>{suggestion}</span>
                                   </div>
                                 )
                               )}
@@ -220,24 +227,28 @@ export default function Header3({
 
                           {/* Products section */}
                           {searchItems?.products?.length > 0 && (
-                            <div className="custom-searchbar-section">
-                              <div className="custom-searchbar-section-title">
+                            <div className="p-2">
+                              <div className="small font-weight-bold text-muted mb-1">
                                 <span>Products</span>
                               </div>
                               {searchItems.products.map((item) => (
                                 <div
                                   key={item._id}
-                                  className="custom-searchbar-item"
+                                  className="d-flex align-items-center py-1 px-2 product-item"
                                   onClick={() => handleProductClick(item._id)}
+                                  style={{ cursor: "pointer" }}
                                 >
                                   <img
                                     src={item.productVariants?.[0]?.images?.[0]}
                                     alt={item.productName}
-                                    className="custom-searchbar-item-image"
+                                    style={{
+                                      width: "40px",
+                                      height: "40px",
+                                      objectFit: "cover",
+                                      marginRight: "8px",
+                                    }}
                                   />
-                                  <span className="custom-searchbar-item-name">
-                                    {item.productName}
-                                  </span>
+                                  <span>{item.productName}</span>
                                 </div>
                               ))}
                             </div>
@@ -281,7 +292,9 @@ export default function Header3({
             </div>
           </div>
         </div>
-        <div className="main-menu-area tertiary-main-menu mt-25 d-none d-xl-block">
+
+        {/* Main Menu Area */}
+        <div className="main-menu-area tertiary-main-menu mt-20 d-none d-xl-block">
           <div className="container">
             <div className="row align-items-center">
               <div className="col-xl-2 col-lg-3">
@@ -297,17 +310,17 @@ export default function Header3({
                     <ul className="cat-menu__list">
                       <li>
                         <Link href="/shop-2?category=mens">
-                          <i className="fal fa-chair" /> Mens
+                          <i className="fal fa-tshirt" /> Mens
                         </Link>
                       </li>
                       <li>
                         <Link href="/shop-2?category=women">
-                          <i className="fal fa-chair" /> Women
+                          <i className="fal fa-female" /> Women
                         </Link>
                       </li>
                       <li>
                         <Link href="/shop-2?shopCategory=kids">
-                          <i className="fal fa-chair" /> Kids
+                          <i className="fal fa-child" /> Kids
                         </Link>
                       </li>
                     </ul>
@@ -316,8 +329,13 @@ export default function Header3({
                         Coupon: <Link href="/shop">WELCOMEJVR</Link>
                       </span>
                       <Link href="#">
-                        {" "}
-                        <i className="fal fa-copy" onClick={() => {navigator.clipboard.writeText("WELCOMEJVR"); toast.success("Copied to clipboard")}} />
+                        <i
+                          className="fal fa-copy"
+                          onClick={() => {
+                            navigator.clipboard.writeText("WELCOMEJVR");
+                            toast.success("Copied to clipboard");
+                          }}
+                        />
                       </Link>
                     </div>
                   </div>
@@ -366,6 +384,7 @@ export default function Header3({
         </div>
       </header>
 
+      {/* Sticky Header Components */}
       <HeaderSticky
         scroll={scroll}
         isCartSidebar={isCartSidebar}
