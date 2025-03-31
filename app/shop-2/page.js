@@ -39,6 +39,7 @@ export default function ShopPage() {
   const filteredProducts = useMemo(() => {
     if (!categoryProducts) return [];
     
+    console.log("categoryProducts", categoryProducts);
     return categoryProducts.filter(item => {
       const categoryMatch =
         selectedCategory.length === 0 ||
@@ -59,10 +60,11 @@ export default function ShopPage() {
       const priceMatch =
         selectedPrice === 0 ||
         (item.productPrice >= reducedPrice && item.productPrice <= selectedPrice);
+
         const sizeMatch =
         selectedSize.length === 0 ||
-        item.productSize[0].some(sizeItem => 
-          selectedSize.includes(sizeItem)
+        item.productVariants.some(variant => 
+          variant.sizes?.some(sizeItem => selectedSize.includes(sizeItem.size.trim()))
         );
         console.log("sizeMatch", sizeMatch);
       return categoryMatch && typeMatch && priceMatch && sizeMatch;

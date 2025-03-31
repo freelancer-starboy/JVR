@@ -1,6 +1,14 @@
 import connectDb from "@/lib/database/db"
 import Product from "@/lib/Schema/productSchema"
+import streamifier from "streamifier";
+import { v2 as cloudinary } from "cloudinary";
 
+
+cloudinary.config({
+  cloud_name: "drojxcxa1",
+  api_key: "316898787323286",
+  api_secret: "en2gIyAB52RDFk7d3VN9K0ua3LM",
+});
 export async function GET(req) {
     try {
         const { searchParams } = new URL(req.url)

@@ -38,6 +38,11 @@ export default function Cart() {
   if (isLoading) {
     return <Preloader />;
   }
+  let Subtotal = 0
+  cartItems?.forEach((item) => {
+    const price = item.quantity * item.productPrice;
+    Subtotal = Subtotal + price;
+  })
   let total = 0;
   cartItems?.forEach((item) => {
     const price = item.quantity * item.productPrice;
@@ -218,7 +223,7 @@ export default function Cart() {
           <h3 className="custom-cart-summary-title">Cart Summary</h3>
           <div className="custom-cart-summary-row">
             <span>Subtotal</span>
-            <span>₹{total.toFixed(2)}</span>
+            <span>₹{Subtotal.toFixed(2)}</span>
           </div>
           <div className="custom-cart-summary-row">
             <span>Shipping</span>

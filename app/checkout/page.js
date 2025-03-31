@@ -444,32 +444,39 @@ export default function Checkout() {
                       <div className="custom-checkout-coupon-content">
                         <form className="custom-checkout-form">
                           <div className="custom-checkout-coupon-row">
-                          <div class="custom-coupon-container">
-  <input
-    type="text"
-    class="custom-coupon-input form-control"
-    placeholder="Coupon Code"
-    value={couponCode}
-    onChange={(e) => setCouponCode(e.target.value)}
-  />
+                            <div class="custom-coupon-container">
+                              <input
+                                type="text"
+                                class="custom-coupon-input form-control"
+                                placeholder="Coupon Code"
+                                value={couponCode}
+                                onChange={(e) => setCouponCode(e.target.value)}
+                              />
 
-  {isCouponApplied && (
-    <div class="custom-coupon-applied-container mt-2 d-flex align-items-center">
-      <span class="custom-coupon-badge me-2 badge bg-success">{appliedCoupons}</span>
-      <span
-        class="custom-coupon-remove-btn badge bg-danger d-flex align-items-center justify-content-center"
-        style={{ width: '22px', height: '22px', cursor: 'pointer', padding: '0' }}
-        onClick={() => {
-          setIsCouponApplied(false);
-          setCouponCode('');
-          setShipping(50);
-        }}
-      >
-        ✖
-      </span>
-    </div>
-  )}
-</div>
+                              {isCouponApplied && (
+                                <div class="custom-coupon-applied-container mt-2 d-flex align-items-center">
+                                  <span class="custom-coupon-badge me-2 badge bg-success">
+                                    {appliedCoupons}
+                                  </span>
+                                  <span
+                                    class="custom-coupon-remove-btn badge bg-danger d-flex align-items-center justify-content-center"
+                                    style={{
+                                      width: "22px",
+                                      height: "22px",
+                                      cursor: "pointer",
+                                      padding: "0",
+                                    }}
+                                    onClick={() => {
+                                      setIsCouponApplied(false);
+                                      setCouponCode("");
+                                      setShipping(50);
+                                    }}
+                                  >
+                                    ✖
+                                  </span>
+                                </div>
+                              )}
+                            </div>
 
                             <button
                               className="custom-checkout-button"
