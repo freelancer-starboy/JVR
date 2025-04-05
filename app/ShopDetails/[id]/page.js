@@ -288,7 +288,7 @@ export default function ShopDetails() {
                                 </span>
                               )
                             ) : (
-                              <span className="text-danger">Out  of stock</span>
+                              <span className="text-danger">Out of stock</span>
                             ))}
                         </div>
                       </div>
@@ -319,7 +319,8 @@ export default function ShopDetails() {
                     <div className="tpproduct-details__cart ml-20">
                       {!selectedVariant || !selectedSize || stock === 0 ? (
                         <button disabled>
-                          <i className="fal fa-shopping-cart" />{!selectedSize ? " Select Size" : " Out Of Stock"}
+                          <i className="fal fa-shopping-cart" />
+                          {!selectedSize ? " Select Size" : " Out Of Stock"}
                         </button>
                       ) : (
                         <button onClick={handleAddToCart}>
@@ -403,9 +404,194 @@ export default function ShopDetails() {
           </div>
         </section>
       </div>
-      <div style={{ marginTop: "2rem" , marginLeft: "2rem"}} className="tpsection mb-40">
-              <h4 className="tpsection__title">Related Products</h4>
+      <div className="container mt-5">
+        <div className="tpsection mb-40">
+          <h4 className="tpsection__title">What Our Customers Say</h4>
+          <p className="text-muted mt-2">
+            Authentic reviews from people who purchased this product
+          </p>
+        </div>
+
+        <div className="review-filter mb-4 d-flex flex-wrap align-items-center justify-content-between">
+          <div className="review-summary">
+            <div className="d-flex align-items-center">
+              <div className="review-average me-3">
+                <span className="fs-1 fw-bold">4.5</span>
+              </div>
+              <div className="review-stars">
+                <div style={{ color: "#000" }}>★★★★☆</div>
+                <small className="text-muted">Based on 124 reviews</small>
+              </div>
             </div>
+          </div>
+          <div className="review-sort">
+            <select
+              className="form-select border-dark"
+              aria-label="Filter reviews"
+            >
+              <option>Most Recent</option>
+              <option>Highest Rated</option>
+              <option>Lowest Rated</option>
+            </select>
+          </div>
+        </div>
+
+        <div className="row">
+          {/* Review 1 - Featured Review */}
+          <div className="col-12 mb-4">
+            <div
+              className="border-0 p-4 rounded"
+              style={{
+                backgroundColor: "#f8f9fa",
+                borderLeft: "4px solid #000",
+              }}
+            >
+              <div className="d-flex mb-3 align-items-center">
+                <div className="reviewer-avatar me-3">
+                  <div
+                    className="rounded-circle bg-dark text-white d-flex align-items-center justify-content-center"
+                    style={{ width: "48px", height: "48px" }}
+                  >
+                    <span className="fw-bold">JD</span>
+                  </div>
+                </div>
+                <div>
+                  <h6 className="mb-0 fw-bold">John Doe</h6>
+                  <div className="d-flex align-items-center">
+                    <span style={{ color: "#000" }}>★★★★☆</span>
+                    <small className="text-muted ms-2">March 25, 2025</small>
+                    <span className="badge bg-dark text-white ms-2">
+                      Verified Purchase
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <h6 className="review-title fw-bold mb-2">
+                Perfect Fit & Outstanding Quality
+              </h6>
+              <p className="mb-3">
+                Great quality and fits perfectly! The color is vibrant and
+                exactly as shown in the pictures. Delivery was quick and the
+                packaging was excellent. Definitely recommend this to anyone
+                looking for a reliable product.
+              </p>
+              <div className="helpful-section d-flex align-items-center">
+                <button className="btn btn-sm btn-outline-dark me-2">
+                  <i className="far fa-thumbs-up me-1"></i> Helpful (12)
+                </button>
+                <button className="btn btn-sm btn-outline-secondary">
+                  <i className="far fa-comment me-1"></i> Comment
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Other Reviews - Card Style */}
+          <div className="col-md-4 mb-4">
+            <div
+              className="border h-100 p-4 rounded shadow-sm"
+              style={{
+                backgroundColor: "#fff",
+                transition: "transform 0.3s",
+                cursor: "pointer",
+              }}
+              onMouseOver="this.style.transform='translateY(-5px)'"
+              onMouseOut="this.style.transform='translateY(0)'"
+            >
+              <div className="d-flex justify-content-between mb-2">
+                <div className="d-flex align-items-center">
+                  <div
+                    className="rounded-circle bg-dark text-white d-flex align-items-center justify-content-center"
+                    style={{ width: "32px", height: "32px", fontSize: "12px" }}
+                  >
+                    <span className="fw-bold">SJ</span>
+                  </div>
+                  <h6 className="mb-0 ms-2 fw-bold">Sarah J.</h6>
+                </div>
+                <div style={{ color: "#000" }}>★★★★★</div>
+              </div>
+              <small className="text-muted d-block mb-3">March 18, 2025</small>
+              <p className="mb-0">
+                Absolutely love this product! The sizing guide was accurate and
+                the material feels premium. Would definitely buy again.
+              </p>
+            </div>
+          </div>
+
+          <div className="col-md-4 mb-4">
+            <div
+              className="border h-100 p-4 rounded shadow-sm"
+              style={{
+                backgroundColor: "#fff",
+                transition: "transform 0.3s",
+                cursor: "pointer",
+              }}
+              onMouseOver="this.style.transform='translateY(-5px)'"
+              onMouseOut="this.style.transform='translateY(0)'"
+            >
+              <div className="d-flex justify-content-between mb-2">
+                <div className="d-flex align-items-center">
+                  <div
+                    className="rounded-circle bg-dark text-white d-flex align-items-center justify-content-center"
+                    style={{ width: "32px", height: "32px", fontSize: "12px" }}
+                  >
+                    <span className="fw-bold">MC</span>
+                  </div>
+                  <h6 className="mb-0 ms-2 fw-bold">Michael C.</h6>
+                </div>
+                <div style={{ color: "#000" }}>★★★☆☆</div>
+              </div>
+              <small className="text-muted d-block mb-3">March 15, 2025</small>
+              <p className="mb-0">
+                Good product overall but slightly smaller than expected. The
+                quality is decent for the price point though.
+              </p>
+            </div>
+          </div>
+
+          <div className="col-md-4 mb-4">
+            <div
+              className="border h-100 p-4 rounded shadow-sm"
+              style={{
+                backgroundColor: "#fff",
+                transition: "transform 0.3s",
+                cursor: "pointer",
+              }}
+              onMouseOver="this.style.transform='translateY(-5px)'"
+              onMouseOut="this.style.transform='translateY(0)'"
+            >
+              <div className="d-flex justify-content-between mb-2">
+                <div className="d-flex align-items-center">
+                  <div
+                    className="rounded-circle bg-dark text-white d-flex align-items-center justify-content-center"
+                    style={{ width: "32px", height: "32px", fontSize: "12px" }}
+                  >
+                    <span className="fw-bold">ER</span>
+                  </div>
+                  <h6 className="mb-0 ms-2 fw-bold">Emily R.</h6>
+                </div>
+                <div style={{ color: "#000" }}>★★★★☆</div>
+              </div>
+              <small className="text-muted d-block mb-3">March 10, 2025</small>
+              <p className="mb-0">
+                Excellent customer service and the product arrived earlier than
+                expected. Very happy with my purchase!
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="text-center mt-3 mb-5">
+          <button className="btn btn-dark px-4 py-2">Load More Reviews</button>
+        </div>
+      </div>
+
+      <div
+        style={{ marginTop: "2rem", marginLeft: "2rem" }}
+        className="tpsection mb-40"
+      >
+        <h4 className="tpsection__title">Related Product</h4>
+      </div>
       <RelatedProducts category={product.productCategory} />
     </Layout>
   );
