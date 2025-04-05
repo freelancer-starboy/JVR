@@ -1,5 +1,5 @@
 'use client'
-import { useFetchCartQuery } from "@/features/api/cartApi"
+import { useDeleteCartItemMutation, useFetchCartQuery } from "@/features/api/cartApi"
 import { addQty, deleteCart } from "@/features/shopSlice"
 import { getAuth, onAuthStateChanged } from "firebase/auth"
 import Link from "next/link"
@@ -7,6 +7,7 @@ import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import  { auth} from "@/lib/firebase/firebase"
 import { useAuth } from "../AuthContent/AuthContent"
+import { toast } from "react-toastify"
 
 
 export default function HeaderCart({ isCartSidebar, handleCartSidebar }) {
@@ -35,7 +36,25 @@ export default function HeaderCart({ isCartSidebar, handleCartSidebar }) {
         const price = item.quantity * item.productPrice;
         total = total + price;
     });
-   
+
+      const [deleteCartItem, { error: deleteCartError }] =
+        useDeleteCartItemMutation();
+      const handleDelete = async (id) => {
+        try {
+          const response = await deleteCartItem(id).unwrap();
+    
+          if (response) {
+            toast.success("Item removed successfully");
+            refetch();
+          } else {
+            toast.error("Failed to remove item");
+          }
+        } catch (error) {
+          console.error("Error deleting item:", error);
+          toast.error("Failed to remove item");
+        }
+      };
+
     return (
         <>
             <div className={`tpcartinfo tp-cart-info-area p-relative ${isCartSidebar ? "tp-sidebar-opened" : ""}`}>
@@ -53,7 +72,7 @@ export default function HeaderCart({ isCartSidebar, handleCartSidebar }) {
                                         <div className="tpcart__item">
                                             <div className="tpcart__img">
                                                 <img src={`${item.productImage}`} alt="" />
-                                                <div className="tpcart__del" onClick={() => deleteCartHandler(item?.productId)}>
+                                                <div className="tpcart__del" onClick={() => handleDelete(item?.productId)}>
                                                     <Link href="#"><i className="far fa-times-circle" /></Link>
                                                 </div>
                                             </div>
@@ -62,7 +81,7 @@ export default function HeaderCart({ isCartSidebar, handleCartSidebar }) {
                                                 </span>
                                                 <div className="tpcart__cart-price">
                                                     <span className="quantity">{item?.quantity} x </span>
-                                                    <span className="new-price">$ {item?.productPrice}</span>
+                                                    <span className="new-price">₹{item?.productPrice}</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -75,7 +94,7 @@ export default function HeaderCart({ isCartSidebar, handleCartSidebar }) {
                         <div className="tpcart__checkout">
                             <div className="tpcart__total-price d-flex justify-content-between align-items-center">
                                 <span> Subtotal:</span>
-                                <span className="heilight-price"> ${total.toFixed(2)}</span>
+                                <span className="heilight-price"> ₹{total.toFixed(2)}</span>
                             </div>
                             <div className="tpcart__checkout-btn">
                                 {isError ?

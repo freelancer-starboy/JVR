@@ -75,6 +75,8 @@ const ShopFilter = ({
     });
   };
 
+
+
   const removeType = (type) => () => {
     setSelectedTypes((prevTypes) => prevTypes.filter((t) => t !== type));
     onTypeSelect((prevTypes) => prevTypes.filter((t) => t !== type));

@@ -39,7 +39,6 @@ export async function POST(req) {
     let variantsData;
     try {
       variantsData = JSON.parse(formData.get("productVariants") || "[]");
-      console.log("Parsed variants data:", variantsData); // Debug log
     } catch (error) {
       console.error("Error parsing variants data:", error);
       return new Response(

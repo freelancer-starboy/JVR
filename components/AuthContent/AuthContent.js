@@ -8,6 +8,7 @@ const AuthContext = createContext();
 export function AuthProvider({ children }) {
   const [userId, setUserId] = useState(null);
   const [isAuthLoading, setIsAuthLoading] = useState(true);
+  const [userDetails, setUserDetails] = useState(null);
 
   useEffect(() => {
     const auth = getAuth();
@@ -15,7 +16,8 @@ export function AuthProvider({ children }) {
       if (user) {
         setUserId(user.uid);
         setIsAuthLoading(false);
-        console.log('User signed in:', user.uid);
+        setUserDetails(user)
+        console.log('User signed in:', user);
       } else {
         setUserId(null);
         console.warn('No user is logged in');
@@ -26,7 +28,7 @@ export function AuthProvider({ children }) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ userId, isAuthLoading }}>
+    <AuthContext.Provider value={{ userId, isAuthLoading, userDetails }}>
       {children}
     </AuthContext.Provider>
   );

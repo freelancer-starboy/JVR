@@ -139,7 +139,7 @@ export default function ShopDetails() {
       : 0;
 
   return (
-    <Layout headerStyle={3} footerStyle={1}>
+    <Layout headerStyle={3} footerStyle={2}>
       {Loading && <Loader />}
       <div>
         <section className="product-area pt-80 pb-25">
@@ -209,7 +209,8 @@ export default function ShopDetails() {
                   </div>
                   <div className="tpproduct-details__pera">
                     {product.productDetails?.map((detail, index) => (
-                      <li key={index}>{detail}</li>
+                      // <li key={index}>{detail}</li>
+                      <p key={index} dangerouslySetInnerHTML={{ __html: detail }} />
                     ))}
                   </div>
 
