@@ -78,13 +78,13 @@ const RelatedProducts = ({ category }) => {
                   <Link href={`/ShopDetails/${product._id}`}>
                   
                     <img
-                      src={product.productVariants?.[0].images?.[0]}
+                      src={product.productVariants?.[0]?.images?.[0]}
                       alt="product-thumb"
                       style={{ objectFit: "cover" , height: "300px" }}
                     />
                     <img
                       className="product-thumb-secondary"
-                      src={product.productVariants?.[0].images?.[1]}
+                      src={product.productVariants?.[0]?.images?.[1]}
                       alt=""
                       style={{ objectFit: "cover" , height: "300px" }}
 

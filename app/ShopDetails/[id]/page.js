@@ -496,8 +496,9 @@ export default function ShopDetails() {
                 transition: "transform 0.3s",
                 cursor: "pointer",
               }}
-              onMouseOver="this.style.transform='translateY(-5px)'"
-              onMouseOut="this.style.transform='translateY(0)'"
+              onMouseOver={(e) => { e.currentTarget.style.transform = 'translateY(-5px)'; }}
+              onMouseOut={(e) => { e.currentTarget.style.transform = 'translateY(0)'; }}
+              
             >
               <div className="d-flex justify-content-between mb-2">
                 <div className="d-flex align-items-center">
@@ -527,8 +528,9 @@ export default function ShopDetails() {
                 transition: "transform 0.3s",
                 cursor: "pointer",
               }}
-              onMouseOver="this.style.transform='translateY(-5px)'"
-              onMouseOut="this.style.transform='translateY(0)'"
+              onMouseOver={(e) => { e.currentTarget.style.transform = 'translateY(-5px)'; }}
+              onMouseOut={(e) => { e.currentTarget.style.transform = 'translateY(0)'; }}
+              
             >
               <div className="d-flex justify-content-between mb-2">
                 <div className="d-flex align-items-center">
@@ -558,8 +560,9 @@ export default function ShopDetails() {
                 transition: "transform 0.3s",
                 cursor: "pointer",
               }}
-              onMouseOver="this.style.transform='translateY(-5px)'"
-              onMouseOut="this.style.transform='translateY(0)'"
+              onMouseOver={(e) => { e.currentTarget.style.transform = 'translateY(-5px)'; }}
+              onMouseOut={(e) => { e.currentTarget.style.transform = 'translateY(0)'; }}
+              
             >
               <div className="d-flex justify-content-between mb-2">
                 <div className="d-flex align-items-center">

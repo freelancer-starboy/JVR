@@ -38,7 +38,7 @@ const ShopList = ({
         {/* {!isHovered && variants && variants.length > 0 && variants[0].images.length > 0 && ( */}
 
             <img
-              src={variants[0].images[0]}
+              src={variants?.[0]?.images[0]}
               alt={name}
               className="card-img-top"
               style={{ 
@@ -53,7 +53,7 @@ const ShopList = ({
 
               <img
               
-                src={variants[0].images[1]}
+                src={variants?.[0]?.images[1]}
                 alt={name}
                 className="card-img-top"
                 style={{ 

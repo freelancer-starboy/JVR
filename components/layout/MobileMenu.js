@@ -1,4 +1,5 @@
 "use client";
+import { useRelatedProductsQuery } from "@/features/api/productApi";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 
@@ -12,6 +13,24 @@ export default function MobileMenu() {
   const [productCategories, setProductCategories] = useState([]); // Product categories
   const [loading, setLoading] = useState(true); // Loading state
 
+
+
+    const [menCategory, setMenCategory] = useState(null);
+    const [womenCategory, setWomenCategory] = useState(null);
+    const [kidsCategory, setKidsCategory] = useState(null);
+  
+    const { data: mens } = useRelatedProductsQuery("mens");
+    const { data: women } = useRelatedProductsQuery("women");
+    const { data: kids } = useRelatedProductsQuery("kids");
+
+      useEffect(() => {
+        if (mens && women && kids) {
+          setMenCategory(mens);
+          setWomenCategory(women);
+          setKidsCategory(kids);
+          console.log("men category : ", mens);
+        }
+      }, [mens, women, kids]);
   // Fetch user data and product categories when the component mounts
   useEffect(() => {
     const fetchData = async () => {
@@ -79,28 +98,28 @@ export default function MobileMenu() {
               <Link href="/">Home</Link>
             </li>
             <li>
-              <Link href="/about">About</Link>
+              <Link href="/shop-2">Shop</Link>
             </li>
 
             {/* Dynamic Product Categories */}
             <li className="has-dropdown">
-              <Link href="/shop">Products</Link>
+              <Link href="/shop-2">Products</Link>
               <ul
                 className="submenu"
                 style={{ display: isActive.key === 2 ? "block" : "none" }}
               >
-                {productCategories.map((category) => (
-                  <li key={category.id} className="has-dropdown">
-                    <Link href="#">{category.name}</Link>
-                    <ul className="sub-submenu">
-                      {category.subcategories.map((subcategory) => (
-                        <li key={subcategory.id}>
-                          <Link href={`#${subcategory.name}`}>{subcategory.name}</Link>
-                        </li>
-                      ))}
-                    </ul>
+                  <li className="has-dropdown">
+                    <Link href="/shop-2?category=mens">Mens</Link>
+                    
                   </li>
-                ))}
+                  <li className="has-dropdown">
+                    <Link href="/shop-2?category=women">Women</Link>
+                    
+                  </li>
+                  <li className="has-dropdown">
+                    <Link href="/shop-2?category=kids">Kids</Link>
+                    
+                  </li>
               </ul>
               <Link
                 className="mean-expand"

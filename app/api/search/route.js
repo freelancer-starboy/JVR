@@ -34,6 +34,7 @@ export async function GET(req) {
             // Generate word search suggestions
             const wordSuggestions = generateWordSuggestions(query)
             
+            
             // Combine results
             return new Response(JSON.stringify({
                 products: productResults || [],

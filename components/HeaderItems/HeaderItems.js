@@ -26,10 +26,10 @@ const HeaderItems = () => {
       </li>
 
       <li className="has-dropdown has-megamenu">
-        <Link href="/about">Shop</Link>
+        <Link href="/shop-2">Shop</Link>
         <ul className="submenu mega-menu">
           <li>
-            <a href="/user" className="mega-menu-title">
+            <a href="/shop-2?category=mens" className="mega-menu-title">
               Mens
             </a>
             <ul>

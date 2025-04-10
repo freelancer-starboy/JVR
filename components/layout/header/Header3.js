@@ -2,7 +2,7 @@
 import CartShow from "@/components/elements/CartShow";
 import WishListShow from "@/components/elements/WishListShow";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import HeaderMobSticky from "../HeaderMobSticky";
 import HeaderSticky from "../HeaderSticky";
 import HeaderTabSticky from "../HeaderTabSticky";
@@ -11,7 +11,7 @@ import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 import { useDeleteTokenMutation } from "@/features/api/authApi";
 import { toast } from "react-toastify";
 import HeaderItems from "@/components/HeaderItems/HeaderItems";
-import { useSearchItemsQuery } from "@/features/api/searchApi";
+import { useSearchItemsQuery, useWordsSearchQuery } from "@/features/api/searchApi";
 import { useRouter } from "next/navigation";
 
 export default function Header3({
@@ -28,6 +28,9 @@ export default function Header3({
   const [searchQuery, setSearchQuery] = useState("");
   const [debounce, setDebounce] = useState("");
   const router = useRouter();
+  const searchContainerRef = useRef(null);
+  const [showResults, setShowResults] = useState(false);
+  const wrapperRef = useRef(null);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -37,6 +40,23 @@ export default function Header3({
     });
     return () => unsubscribe();
   }, [userId, auth]);
+
+  // Handle clicks outside of search container
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (searchContainerRef.current && !searchContainerRef.current.contains(event.target)) {
+        setShowResults(false);
+      }
+    }
+
+    // Add event listener
+    document.addEventListener("mousedown", handleClickOutside);
+    
+    // Clean up
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const [deleteCookies] = useDeleteTokenMutation();
 
@@ -72,13 +92,16 @@ export default function Header3({
     skip: !debounce || debounce.trim() === "",
   });
 
+  const { data : wordsSearch } = useWordsSearchQuery()
   const handleProductClick = (id) => {
     router.push(`/ShopDetails/${id}`);
+    setShowResults(false);
   };
 
   const handleSuggestionClick = (suggestion) => {
     setSearchQuery(suggestion);
     router.push(`/shop-2?search=${encodeURIComponent(suggestion)}`);
+    setShowResults(false);
   };
 
   return (
@@ -188,18 +211,20 @@ export default function Header3({
               <div className="col-xl-10 col-lg-9">
                 <div className="header-meta-info d-flex align-items-center justify-content-end">
                   <div>
-                    <div className="position-relative w-100">
+                    <div className="position-relative w-100" ref={searchContainerRef}>
                       <input
                         type="text"
                         placeholder="Search products..."
+                        value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         className="form-control"
+                        onFocus={() => setShowResults(true)}
                         style={{ minWidth: "300px" }}
                       />
 
                       {/* Search Results Dropdown */}
-                      {((debounce && searchItems?.products?.length > 0) ||
-                        searchItems?.wordSuggestions?.length > 0) && (
+                      {((showResults && debounce && searchItems?.products?.length > 0) ||
+                        (showResults && searchItems?.wordSuggestions?.length > 0)) && (
                         <div className="dropdown-menu show position-absolute w-100">
                           {/* Word suggestions section */}
                           {searchItems?.wordSuggestions?.length > 0 && (
@@ -231,7 +256,7 @@ export default function Header3({
                               <div className="small font-weight-bold text-muted mb-1">
                                 <span>Products</span>
                               </div>
-                              {searchItems.products.map((item) => (
+                              {searchItems.products.slice(0, 5).map((item) => (
                                 <div
                                   key={item._id}
                                   className="d-flex align-items-center py-1 px-2 product-item"

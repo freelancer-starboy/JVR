@@ -10,6 +10,7 @@ import { AiOutlineCopy } from "react-icons/ai";
 import { toast } from "react-toastify";
 import DeliveryStatusSlider from "@/components/deliverySlider/Slider";
 import OrderTracker from "@/components/pop/Popup.js";
+import { useAddReviewMutation } from "@/features/api/reviewApi";
 
 const OrdersPage = () => {
   const { userId, isAuthLoading } = useAuth();
@@ -44,7 +45,7 @@ const OrdersPage = () => {
     })
    }
   };
-
+  const [ addReview ] = useAddReviewMutation()
   const handleStarClick = (selectedRating) => {
     setRating(selectedRating);
   };
@@ -55,6 +56,24 @@ const OrdersPage = () => {
       reviewText,
       image,
     });
+
+
+    try {
+      const formData = new FormData()
+      formData.append("username", userId)
+      formData.append("productId", transactionId)
+      formData.append("rating", rating)
+      formData.append("reviewText", reviewText)
+      let imagesArray = []
+      const images = image.forEach((img) => {
+        imagesArray.push(img)
+      })
+
+      formData.append("images", imagesArray)
+      addReview(formData)
+    } catch (error) {
+      
+    }
 
     setShowPopup(false);
 
