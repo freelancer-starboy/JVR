@@ -55,6 +55,12 @@ export async function POST(req) {
 
             await newReview.save()
 
+            console.log("Review ", newReview)
+
+            if(!newReview){
+                return new Response(JSON.stringify({message : "Failed to add review", statusCode : 500}), {status : 500})
+            }
+
             return new Response(JSON.stringify({message : "Review added successfully", statusCode : 201}), {status : 201})
     } catch (error) {
         console.error("Error adding review:", error);

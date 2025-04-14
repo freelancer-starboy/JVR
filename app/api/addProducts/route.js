@@ -115,7 +115,6 @@ export async function POST(req) {
     }));
 
     // Log the final processed variants for debugging
-    console.log("Final processed variants:", JSON.stringify(processedVariants, null, 2));
 
     // Create and save the product
     const productData = {
@@ -129,7 +128,6 @@ export async function POST(req) {
       productBrand
     };
 
-    console.log("Final product data:", JSON.stringify(productData, null, 2));
 
     const newProduct = new Product(productData);
 

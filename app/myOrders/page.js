@@ -19,7 +19,8 @@ const OrdersPage = () => {
   const transactionId = searchParams.get("transactionId");
   const [showSuccess, setShowSuccess] = useState(false);
   const [trackShipment, setTrackShipment] = useState(false);
-
+  const [ addReview , { isLoading : isReviewLoading }] = useAddReviewMutation()
+  const [selectProduct, setSelectProduct] = useState(null)
   // review
   const [showPopup, setShowPopup] = useState(false);
   const [rating, setRating] = useState(0);
@@ -45,12 +46,11 @@ const OrdersPage = () => {
     })
    }
   };
-  const [ addReview ] = useAddReviewMutation()
   const handleStarClick = (selectedRating) => {
     setRating(selectedRating);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async (customerName) => {
     console.log({
       rating,
       reviewText,
@@ -60,19 +60,21 @@ const OrdersPage = () => {
 
     try {
       const formData = new FormData()
-      formData.append("username", userId)
-      formData.append("productId", transactionId)
+      formData.append("username", customerName)
+      formData.append("productId", selectProduct)
       formData.append("rating", rating)
-      formData.append("reviewText", reviewText)
-      let imagesArray = []
-      const images = image.forEach((img) => {
-        imagesArray.push(img)
-      })
-
-      formData.append("images", imagesArray)
-      addReview(formData)
-    } catch (error) {
+      formData.append("comment", reviewText)
       
+    if (Array.isArray(image)) {
+      image.forEach((img) => {
+        formData.append("images", img);
+      });
+    }
+      const res = await addReview(formData).unwrap()
+      toast.success("Review added successfully!");
+    } catch (error) {
+      console.log(error)
+      toast.error("Failed to add review")
     }
 
     setShowPopup(false);
@@ -208,106 +210,6 @@ const OrdersPage = () => {
                                 })}
                               </p>
                             </div>
-
-                            <div className="custom-myorders-container">
-                              <p className="custom-myorders-info-text custom-myorders-success">
-                                <button
-                                  className="custom-myorders-review-button"
-                                  onClick={() => setShowPopup(true)}
-                                >
-                                  Add review
-                                </button>
-                              </p>
-
-                              {showPopup && (
-                                <div className="custom-review-popup-overlay">
-                                  <div className="custom-review-popup-content">
-                                    <div className="custom-review-popup-header">
-                                      <h3 className="custom-review-popup-title">
-                                        Write your review
-                                      </h3>
-                                      <button
-                                        className="custom-review-popup-close"
-                                        onClick={() => setShowPopup(false)}
-                                      >
-                                        &times;
-                                      </button>
-                                    </div>
-
-                                    <div className="custom-review-rating-container">
-                                      <p className="custom-review-rating-label">
-                                        Rating:
-                                      </p>
-                                      <div className="custom-review-stars">
-                                        {[1, 2, 3, 4, 5].map((star) => (
-                                          <span
-                                            key={star}
-                                            className={`custom-review-star ${
-                                              rating >= star
-                                                ? "custom-review-star-active"
-                                                : ""
-                                            }`}
-                                            onClick={() =>
-                                              handleStarClick(star)
-                                            }
-                                          >
-                                            ★
-                                          </span>
-                                        ))}
-                                      </div>
-                                    </div>
-
-                                    <div className="custom-review-image-upload">
-                                      <label className="custom-review-image-label">
-                                        Upload Image:
-                                        <input
-                                          type="file"
-                                          accept="image/*"
-                                          multiple
-                                          className="custom-review-image-input"
-                                          onChange={handleImageChange}
-                                        />
-                                      </label>
-                                      {imagePreview && imagePreview.map((preview, index) => (
-                                      <img key={index} src={preview} alt={`Preview ${index}`} width="100"  
-                                       />
-                                      ))}
-                                    </div>
-
-                                    <div className="custom-review-text-container">
-                                      <label className="custom-review-text-label">
-                                        Your Review:
-                                        <textarea
-                                          className="custom-review-text-input"
-                                          value={reviewText}
-                                          onChange={(e) =>
-                                            setReviewText(e.target.value)
-                                          }
-                                          placeholder="Share your experience..."
-                                          rows={4}
-                                        />
-                                      </label>
-                                    </div>
-
-                                    <div className="custom-review-buttons">
-                                      <button
-                                        className="custom-review-cancel-button"
-                                        onClick={() => setShowPopup(false)}
-                                      >
-                                        Cancel
-                                      </button>
-                                      <button
-                                        className="custom-review-submit-button"
-                                        onClick={handleSubmit}
-                                        disabled={rating === 0}
-                                      >
-                                        Submit Review
-                                      </button>
-                                    </div>
-                                  </div>
-                                </div>
-                              )}
-                            </div>
                           </>
                         ) : (
                           <div className="custom-myorders-info-item">
@@ -341,10 +243,134 @@ const OrdersPage = () => {
                           <tbody>
                             {order.cartItems?.map((product) => (
                               <tr key={product._id}>
+                                <td>{product.productId}</td>
                                 <td>{product.productName}</td>
                                 <td>{product.quantity}</td>
                                 <td>₹{product.price}</td>
                                 <td>₹{product.price * product.quantity}</td>
+                                <td>
+                                  <div className="custom-myorders-container">
+                                    <p className="custom-myorders-info-text custom-myorders-success">
+                                      <button
+                                        className="custom-myorders-review-button"
+                                        onClick={() => {
+                                          setSelectProduct(product.productId)
+                                          setShowPopup(true)}}
+                                      >
+                                        Add review
+                                      </button>
+                                    </p>
+
+                                    {showPopup && (
+                                      <div className="custom-review-popup-overlay">
+                                        <div className="custom-review-popup-content">
+                                          <div className="custom-review-popup-header">
+                                            <h3 className="custom-review-popup-title">
+                                              Write your review
+                                            </h3>
+                                            <button
+                                              className="custom-review-popup-close"
+                                              onClick={() =>
+                                                setShowPopup(false)
+                                              }
+                                            >
+                                              &times;
+                                            </button>
+                                          </div>
+
+                                          <div className="custom-review-rating-container">
+                                            <p className="custom-review-rating-label">
+                                              Rating:
+                                            </p>
+                                            <div className="custom-review-stars">
+                                              {[1, 2, 3, 4, 5].map((star) => (
+                                                <span
+                                                  key={star}
+                                                  className={`custom-review-star ${
+                                                    rating >= star
+                                                      ? "custom-review-star-active"
+                                                      : ""
+                                                  }`}
+                                                  onClick={() =>
+                                                    handleStarClick(star)
+                                                  }
+                                                >
+                                                  ★
+                                                </span>
+                                              ))}
+                                            </div>
+                                          </div>
+
+                                          <div className="custom-review-image-upload">
+                                            <label className="custom-review-image-label">
+                                              Upload Image:
+                                              <input
+                                                type="file"
+                                                accept="image/*"
+                                                multiple
+                                                className="custom-review-image-input"
+                                                onChange={handleImageChange}
+                                              />
+                                            </label>
+                                            {imagePreview &&
+                                              imagePreview.map(
+                                                (preview, index) => (
+                                                  <img
+                                                    key={index}
+                                                    src={preview}
+                                                    alt={`Preview ${index}`}
+                                                    width="100"
+                                                  />
+                                                )
+                                              )}
+                                          </div>
+
+                                          <div className="custom-review-text-container">
+                                            <label className="custom-review-text-label">
+                                              Your Review:
+                                              <textarea
+                                                className="custom-review-text-input"
+                                                value={reviewText}
+                                                onChange={(e) =>
+                                                  setReviewText(e.target.value)
+                                                }
+                                                placeholder="Share your experience..."
+                                                rows={4}
+                                              />
+                                            </label>
+                                          </div>
+
+                                          <div className="custom-review-buttons">
+                                            <button
+                                              className="custom-review-cancel-button"
+                                              onClick={() =>
+                                                setShowPopup(false)
+                                              }
+                                            >
+                                              Cancel
+                                            </button>
+                                            <button
+                                              className="custom-review-submit-button"
+                                              onClick={() =>
+                                                handleSubmit(
+                                                  order.shippingAddress
+                                                    ?.fullName
+                                                )
+                                              }
+                                              disabled={
+                                                rating === 0 || isReviewLoading
+                                              }
+                                            >
+                                              {isReviewLoading
+                                                ? "Submitting..."
+                                                : "Submit Review"}
+                                            </button>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    )}
+                                  </div>
+                                </td>
                               </tr>
                             ))}
                           </tbody>

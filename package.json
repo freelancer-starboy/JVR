@@ -11,6 +11,9 @@
         "sass": "sass --watch public/assets/scss/main.scss:public/assets/css/main.css"
     },
     "dependencies": {
+        "@fortawesome/fontawesome-svg-core": "^6.7.2",
+        "@fortawesome/free-solid-svg-icons": "^6.7.2",
+        "@fortawesome/react-fontawesome": "^0.2.2",
         "@reduxjs/toolkit": "^2.5.0",
         "@tanstack/react-query": "^5.64.1",
         "aws4": "^1.13.2",
