@@ -84,6 +84,9 @@ const HeaderItems = () => {
             <Link href="/security">Authentication Settings</Link>
           </li>
           <li>
+            <Link href="/termsAndConditions">Terms and conditions</Link>
+          </li>
+          <li>
             <Link href="/contact">Contact Us</Link>
           </li>
         </ul>

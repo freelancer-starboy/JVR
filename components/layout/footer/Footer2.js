@@ -42,7 +42,7 @@ export default function Footer2() {
                                                 <li><Link href="#">Privacy Policy</Link></li>
                                                 <li><Link href="#">Discount</Link></li>
                                                 <li><Link href="#">Custom Service</Link></li>
-                                                <li><Link href="#">Terms  Condition</Link></li>
+                                                <li><Link href="/termsAndConditions">Terms & Condition</Link></li>
                                             </ul>
                                         </div>
                                     </div>
