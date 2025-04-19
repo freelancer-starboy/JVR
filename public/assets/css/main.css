@@ -1971,12 +1971,19 @@ only screen and (min-width: 1200px) and (max-width: 1399px) {
 }
 
 .menu-top-social a {
-    font-size: 14px;
-    margin-left: 10px;
-}
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    margin-left: 8px; /* Optional: space between icons */
+    font-size: 18px; /* Increase icon size slightly for clarity */
+  }
 
-.menu-top-social a:hover {
-    color: var(--tp-text-primary);
+.menu-top-social a:hover,
+.menu-top-social a:focus {
+    background-color: #f1f1f1;
+    /* Optional: Change background on hover/focus for better visibility */
 }
 
 .mainmenu__search-bar input {
@@ -13381,17 +13388,17 @@ form input[type="text"] {
 /* Base styles */
 .custom-myorders-container {
     position: relative;
-  }
-  
-  .custom-myorders-info-text {
+}
+
+.custom-myorders-info-text {
     margin: 10px 0;
-  }
-  
-  .custom-myorders-success {
+}
+
+.custom-myorders-success {
     color: #333;
-  }
-  
-  .custom-myorders-review-button {
+}
+
+.custom-myorders-review-button {
     background-color: #000;
     color: white;
     border: none;
@@ -13400,15 +13407,15 @@ form input[type="text"] {
     cursor: pointer;
     font-weight: 500;
     transition: background-color 0.3s, transform 0.2s;
-  }
-  
-  .custom-myorders-review-button:hover {
+}
+
+.custom-myorders-review-button:hover {
     background-color: #333;
     transform: translateY(-2px);
-  }
-  
-  /* Popup overlay with blur effect */
-  .custom-review-popup-overlay {
+}
+
+/* Popup overlay with blur effect */
+.custom-review-popup-overlay {
     position: fixed;
     top: 0;
     left: 0;
@@ -13421,9 +13428,9 @@ form input[type="text"] {
     align-items: center;
     justify-content: center;
     z-index: 1000;
-  }
-  
-  .custom-review-popup-content {
+}
+
+.custom-review-popup-content {
     background-color: rgba(0, 0, 0, 0.85);
     color: white;
     border-radius: 8px;
@@ -13434,75 +13441,75 @@ form input[type="text"] {
     max-height: 90vh;
     overflow-y: auto;
     border: 1px solid rgba(255, 255, 255, 0.1);
-  }
-  
-  .custom-review-popup-header {
+}
+
+.custom-review-popup-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     padding-bottom: 10px;
-  }
-  
-  .custom-review-popup-title {
+}
+
+.custom-review-popup-title {
     margin: 0;
     font-size: 1.5rem;
     color: white;
-  }
-  
-  .custom-review-popup-close {
+}
+
+.custom-review-popup-close {
     background: none;
     border: none;
     font-size: 24px;
     cursor: pointer;
     color: white;
-  }
-  
-  /* Rating stars */
-  .custom-review-rating-container {
+}
+
+/* Rating stars */
+.custom-review-rating-container {
     margin-bottom: 20px;
-  }
-  
-  .custom-review-rating-label {
+}
+
+.custom-review-rating-label {
     margin-bottom: 8px;
     font-weight: 500;
     color: white;
-  }
-  
-  .custom-review-stars {
+}
+
+.custom-review-stars {
     display: flex;
     gap: 8px;
-  }
-  
-  .custom-review-star {
+}
+
+.custom-review-star {
     font-size: 28px;
     cursor: pointer;
     color: #555;
     transition: color 0.2s;
-  }
-  
-  .custom-review-star:hover {
+}
+
+.custom-review-star:hover {
     color: #aaa;
-  }
-  
-  .custom-review-star-active {
+}
+
+.custom-review-star-active {
     color: gold;
-  }
-  
-  /* Image upload */
-  .custom-review-image-upload {
+}
+
+/* Image upload */
+.custom-review-image-upload {
     margin-bottom: 20px;
-  }
-  
-  .custom-review-image-label {
+}
+
+.custom-review-image-label {
     display: block;
     margin-bottom: 8px;
     font-weight: 500;
     color: white;
-  }
-  
-  .custom-review-image-input {
+}
+
+.custom-review-image-input {
     margin-top: 8px;
     width: 100%;
     color: white;
@@ -13510,36 +13517,36 @@ form input[type="text"] {
     padding: 8px;
     border-radius: 4px;
     border: none;
-  }
-  
-  .custom-review-image-preview {
+}
+
+.custom-review-image-preview {
     margin-top: 12px;
     border: 1px solid rgba(255, 255, 255, 0.1);
     padding: 8px;
     border-radius: 4px;
     background-color: rgba(255, 255, 255, 0.05);
-  }
-  
-  .custom-review-preview-img {
+}
+
+.custom-review-preview-img {
     max-width: 100%;
     max-height: 200px;
     display: block;
     margin: 0 auto;
-  }
-  
-  /* Text input */
-  .custom-review-text-container {
+}
+
+/* Text input */
+.custom-review-text-container {
     margin-bottom: 20px;
-  }
-  
-  .custom-review-text-label {
+}
+
+.custom-review-text-label {
     display: block;
     margin-bottom: 8px;
     font-weight: 500;
     color: white;
-  }
-  
-  .custom-review-text-input {
+}
+
+.custom-review-text-input {
     width: 100%;
     padding: 12px;
     background-color: rgba(255, 255, 255, 0.05);
@@ -13549,20 +13556,20 @@ form input[type="text"] {
     resize: vertical;
     font-family: inherit;
     font-size: inherit;
-  }
-  
-  .custom-review-text-input::placeholder {
+}
+
+.custom-review-text-input::placeholder {
     color: rgba(255, 255, 255, 0.5);
-  }
-  
-  /* Buttons */
-  .custom-review-buttons {
+}
+
+/* Buttons */
+.custom-review-buttons {
     display: flex;
     justify-content: flex-end;
     gap: 12px;
-  }
-  
-  .custom-review-cancel-button {
+}
+
+.custom-review-cancel-button {
     background-color: transparent;
     color: white;
     border: 1px solid rgba(255, 255, 255, 0.3);
@@ -13571,13 +13578,13 @@ form input[type="text"] {
     cursor: pointer;
     font-weight: 500;
     transition: background-color 0.3s;
-  }
-  
-  .custom-review-cancel-button:hover {
+}
+
+.custom-review-cancel-button:hover {
     background-color: rgba(255, 255, 255, 0.1);
-  }
-  
-  .custom-review-submit-button {
+}
+
+.custom-review-submit-button {
     background-color: white;
     color: black;
     border: none;
@@ -13586,79 +13593,79 @@ form input[type="text"] {
     cursor: pointer;
     font-weight: 500;
     transition: background-color 0.3s, transform 0.2s;
-  }
-  
-  .custom-review-submit-button:hover:not(:disabled) {
+}
+
+.custom-review-submit-button:hover:not(:disabled) {
     background-color: #e0e0e0;
     transform: translateY(-2px);
-  }
-  
-  .custom-review-submit-button:disabled {
+}
+
+.custom-review-submit-button:disabled {
     background-color: rgba(255, 255, 255, 0.3);
     color: rgba(0, 0, 0, 0.5);
     cursor: not-allowed;
-  }
+}
 
 
 
 
 
-  /* Terms and conditions */
+/* Terms and conditions */
 
 
 
-  /* Base container */
+/* Base container */
 .terms-and-conditions-container {
     min-height: 100vh;
     padding: 2rem;
     background-color: #f5f5f5;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-  }
-  
-  /* Main card */
-  .terms-and-conditions-card {
+}
+
+/* Main card */
+.terms-and-conditions-card {
     max-width: auto;
     margin: 0 auto;
     background-color: white;
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
     overflow: hidden;
-  }
-  
-  /* Header section */
-  .terms-and-conditions-header {
+}
+
+/* Header section */
+.terms-and-conditions-header {
     padding: 2rem;
     text-align: center;
     border-bottom: 1px solid #e0e0e0;
-  }
-  
-  .terms-and-conditions-title {
+}
+
+.terms-and-conditions-title {
     font-size: 1.75rem;
     font-weight: bold;
     color: #000;
     margin-bottom: 1rem;
-  }
-  
-  .terms-and-conditions-intro {
+}
+
+.terms-and-conditions-intro {
     font-size: 1rem;
     line-height: 1.6;
     color: #333;
-  }
-  
-  /* Sections container */
-  .terms-and-conditions-sections {
+}
+
+/* Sections container */
+.terms-and-conditions-sections {
     padding: 1rem 2rem;
-  }
-  
-  /* Individual section */
-  .terms-and-conditions-section {
+}
+
+/* Individual section */
+.terms-and-conditions-section {
     margin-bottom: 1rem;
     border: 1px solid #e0e0e0;
     border-radius: 4px;
-  }
-  
-  /* Section header (button) */
-  .terms-and-conditions-section-header {
+}
+
+/* Section header (button) */
+.terms-and-conditions-section-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -13669,80 +13676,80 @@ form input[type="text"] {
     text-align: left;
     cursor: pointer;
     transition: background-color 0.2s ease;
-  }
-  
-  .terms-and-conditions-section-header:hover {
+}
+
+.terms-and-conditions-section-header:hover {
     background-color: #f9f9f9;
-  }
-  
-  .terms-and-conditions-section-active {
+}
+
+.terms-and-conditions-section-active {
     background-color: #f0f0f0;
     border-bottom: 1px solid #e0e0e0;
-  }
-  
-  /* Section title */
-  .terms-and-conditions-section-title {
+}
+
+/* Section title */
+.terms-and-conditions-section-title {
     font-size: 1.1rem;
     font-weight: 600;
     color: #000;
     margin: 0;
-  }
-  
-  /* Arrow for toggle */
-  .terms-and-conditions-arrow {
+}
+
+/* Arrow for toggle */
+.terms-and-conditions-arrow {
     font-size: 0.8rem;
     transition: transform 0.2s ease;
-  }
-  
-  .terms-and-conditions-arrow-up {
+}
+
+.terms-and-conditions-arrow-up {
     transform: rotate(180deg);
-  }
-  
-  /* Section content */
-  .terms-and-conditions-section-content {
+}
+
+/* Section content */
+.terms-and-conditions-section-content {
     padding: 1rem;
     background-color: white;
-  }
-  
-  /* List styling */
-  .terms-and-conditions-list {
+}
+
+/* List styling */
+.terms-and-conditions-list {
     list-style-type: none;
     padding: 0;
     margin: 0;
-  }
-  
-  .terms-and-conditions-list-item {
+}
+
+.terms-and-conditions-list-item {
     margin-bottom: 0.75rem;
     line-height: 1.6;
     color: #333;
-  }
-  
-  .terms-and-conditions-list-item:last-child {
+}
+
+.terms-and-conditions-list-item:last-child {
     margin-bottom: 0;
-  }
-  
-  /* Footer */
-  .terms-and-conditions-footer {
+}
+
+/* Footer */
+.terms-and-conditions-footer {
     padding: 1.5rem 2rem;
     text-align: center;
     font-style: italic;
     color: #555;
     border-top: 1px solid #e0e0e0;
-  }
-  
-  /* Responsive adjustments */
-  @media (max-width: 640px) {
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
     .terms-and-conditions-container {
-      padding: 1rem;
+        padding: 1rem;
     }
-    
+
     .terms-and-conditions-header,
     .terms-and-conditions-sections,
     .terms-and-conditions-footer {
-      padding: 1rem;
+        padding: 1rem;
     }
-    
+
     .terms-and-conditions-title {
-      font-size: 1.5rem;
+        font-size: 1.5rem;
     }
-  }
+}

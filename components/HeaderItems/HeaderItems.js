@@ -3,25 +3,33 @@ import Link from "next/link";
 import React, { useState, useEffect } from "react";
 
 const HeaderItems = () => {
-  const [menCategory, setMenCategory] = useState(null);
-  const [womenCategory, setWomenCategory] = useState(null);
-  const [kidsCategory, setKidsCategory] = useState(null);
+  const [menCategory, setMenCategory] = useState([]);
+  const [womenCategory, setWomenCategory] = useState([]);
+  const [kidsCategory, setKidsCategory] = useState([]);
 
-  const { data: mens } = useRelatedProductsQuery("mens");
-  const { data: women } = useRelatedProductsQuery("women");
-  const { data: kids } = useRelatedProductsQuery("kids");
+  const { data: mens, error: mensError } = useRelatedProductsQuery("mens");
+  const { data: women, error: womenError } = useRelatedProductsQuery("women");
+  const { data: kids, error: kidsError } = useRelatedProductsQuery("kids");
 
   useEffect(() => {
-    if (mens && women && kids) {
-      setMenCategory(mens);
-      setWomenCategory(women);
-      setKidsCategory(kids);
-      console.log("men category : ", mens);
-    }
+    // Only set state if data is fetched successfully
+    if (mens) setMenCategory(mens);
+    if (women) setWomenCategory(women);
+    if (kids) setKidsCategory(kids);
   }, [mens, women, kids]);
+
+  // Error handling - can display an error message or fallback UI
+  if (mensError || womenError || kidsError) {
+    return (
+      <ul>
+        <li>Error loading categories. Please try again later.</li>
+      </ul>
+    );
+  }
+
   return (
-    <ul className="">
-      <li className="">
+    <ul>
+      <li>
         <Link href="/">Home</Link>
       </li>
 
@@ -33,44 +41,59 @@ const HeaderItems = () => {
               Mens
             </a>
             <ul>
-              {[
-                ...new Set(menCategory?.map((product) => product.productType)),
-              ].map((type, index) => (
-                <li key={index}>
-                  <Link href={`/shop-2?category=${type}`}>{type}</Link>
-                </li>
-              ))}
+              {menCategory.length > 0 ? (
+                [
+                  ...new Set(menCategory.map((product) => product.productType)),
+                ].map((type, index) => (
+                  <li key={index}>
+                    <Link href={`/shop-2?category=${type}`}>{type}</Link>
+                  </li>
+                ))
+              ) : (
+                <li>No products available</li>
+              )}
             </ul>
           </li>
           <li>
             <a className="mega-menu-title">Women</a>
             <ul>
-              {[
-                ...new Set(
-                  womenCategory?.map((product) => product.productType)
-                ),
-              ].map((type, index) => (
-                <li key={index}>
-                  <Link href={`/shop-2?category=${type}`}>{type}</Link>
-                </li>
-              ))}
+              {womenCategory.length > 0 ? (
+                [
+                  ...new Set(
+                    womenCategory.map((product) => product.productType)
+                  ),
+                ].map((type, index) => (
+                  <li key={index}>
+                    <Link href={`/shop-2?category=${type}`}>{type}</Link>
+                  </li>
+                ))
+              ) : (
+                <li>No products available</li>
+              )}
             </ul>
           </li>
 
           <li>
             <a className="mega-menu-title">Kids</a>
             <ul>
-              {[
-                ...new Set(kidsCategory?.map((product) => product.productType)),
-              ].map((type, index) => (
-                <li key={index}>
-                  <Link href={`/shop-2?category=${type}`}>{type}</Link>
-                </li>
-              ))}
+              {kidsCategory.length > 0 ? (
+                [
+                  ...new Set(
+                    kidsCategory.map((product) => product.productType)
+                  ),
+                ].map((type, index) => (
+                  <li key={index}>
+                    <Link href={`/shop-2?category=${type}`}>{type}</Link>
+                  </li>
+                ))
+              ) : (
+                <li>No products available</li>
+              )}
             </ul>
           </li>
         </ul>
       </li>
+
       <li className="has-dropdown">
         <Link href="/shop">Direct Links</Link>
         <ul className="submenu">
