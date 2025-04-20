@@ -1,7 +1,8 @@
 "use client";
 
-import Layout from "@/components/layout/Layout";
+// import Layout from "@/components/layout/Layout";
 import React, { useState } from "react";
+import Link from "next/link";
 
 const TermsAndConditions = () => {
   const [activeSection, setActiveSection] = useState(null);
@@ -48,7 +49,8 @@ const TermsAndConditions = () => {
   ];
 
   return (
-    <Layout headerStyle={3} footerStyle={2}>
+    <>
+    {/* <Layout headerStyle={3} footerStyle={2}> */}
       <div className="terms-and-conditions-container">
         <div className="terms-and-conditions-card">
           <div className="terms-and-conditions-header">
@@ -110,9 +112,20 @@ const TermsAndConditions = () => {
             If anything doesn't meet your expectations, we're here to help make
             it right!
           </div>
+          <div className=" text-center  mt-5 mb-5">
+  <Link
+    href="/"
+    className="btn btn-black-white  "
+  >
+    Back to Home
+  </Link>
+</div>
+
         </div>
+      
       </div>
-    </Layout>
+    {/* </Layout> */}
+    </>
   );
 };
 

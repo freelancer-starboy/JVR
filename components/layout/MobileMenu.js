@@ -95,7 +95,7 @@ export default function MobileMenu() {
         <nav className="mean-nav">
           <ul>
             <li>
-              <Link href="/">Home</Link>
+              <Link href="/" >Home</Link>
             </li>
             <li>
               <Link href="/shop-2">Shop</Link>
@@ -125,7 +125,7 @@ export default function MobileMenu() {
                 className="mean-expand"
                 onClick={() => setIsActive({ status: !isActive.status, key: 2 })}
                 href="#"
-                style={{ fontSize: 18 }}
+                style={{ fontSize: 12 }}
               >
                 <i className="fal fa-plus" />
               </Link>
@@ -138,7 +138,7 @@ export default function MobileMenu() {
                 onMouseEnter={() => setIsActive({ ...isActive, key: 4 })}
                 onMouseLeave={() => setIsActive({ ...isActive, key: "" })}
               >
-                <Link href="#">
+                <Link href="#" >
                   <i className="fal fa-user" />
                   {userData.name || "User"}
                 </Link>

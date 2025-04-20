@@ -292,16 +292,28 @@ export default function Header3({
                         <CartShow />
                       </button>
                       {userId && userName ? (
-                        <div className="custom-menu">
-                          <Link href="/user">
-                            <i className="fal fa-user text-success fw-bolder" />
-                          </Link>
-                        </div>
-                      ) : (
-                        <Link href="/sign-in">
-                          <i className="fal fa-user" />
-                        </Link>
-                      )}
+  <div className="custom-menu user-dropdown">
+    <Link href="/user">
+      <i className="fal fa-user text-success fw-bolder" />
+    </Link>
+    <div className="user-dropdown-menu">
+      <Link href="/user">My Account</Link>
+      <Link href="/myOrders">My Orders</Link>
+     {/* <Link href="/">Logout</Link> */}
+     <button
+        onClick={handleLogout}
+        style={{ cursor: "pointer" }} className="logout-btns"
+      >
+        Logout
+      </button>
+    </div>
+  </div>
+) : (
+  <Link href="/sign-in">
+    <i className="fal fa-user" />
+  </Link>
+)}
+
 
                       <Link
                         href="/wishlist"

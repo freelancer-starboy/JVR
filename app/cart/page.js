@@ -114,20 +114,32 @@ export default function Cart() {
             cartItems?.map((item) => (
               <tr key={item.productId}>
                 <td>
-                  <div style={{display: 'flex', alignItems: 'center', gap: '16px'}}>
-                    <img 
-                      src={item.productImage} 
-                      alt={item.productName} 
-                      style={{width: '60px', height: '60px', objectFit: 'cover', borderRadius: '8px'}}
-                    />
-                    <div>
-                      <div>{item.productName}</div>
-                      <div style={{fontSize: '14px', color: '#666'}}>
-                        {item.productColor && `Color: ${item.productColor}`}
-                        {item.productSize && ` | Size: ${item.productSize}`}
-                      </div>
-                    </div>
-                  </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+  <img 
+    src={item.productImage} 
+    alt={item.productName} 
+    style={{ width: '60px', height: '60px', objectFit: 'cover', borderRadius: '8px' }}
+  />
+  <div>
+    <div>{item.productName}</div>
+    <div style={{ display: 'flex', alignItems: 'center', fontSize: '14px', color: '#666' }}>
+      Color:
+      <span
+        style={{
+          display: 'inline-block',
+          width: '16px',
+          height: '16px',
+          borderRadius: '50%',
+          backgroundColor: item.productColor,
+          margin: '0 8px',
+          border: '1px solid #ccc',
+        }}
+      />
+      {item.productSize && `| Size: ${item.productSize}`}
+    </div>
+  </div>
+</div>
+
                 </td>
                 <td>₹{item.productPrice}</td>
                 <td>

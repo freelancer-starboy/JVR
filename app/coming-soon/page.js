@@ -6,7 +6,6 @@ export default function ComingSoon() {
     return (
         <>
             <main>
-
                 <section className="coming-soon-area tpcoming__bg" style={{ backgroundImage: 'url("/assets/img/banner/comming-soon-1.jpg")' }}>
                     <div className="container">
                         <div className="row justify-content-center">
