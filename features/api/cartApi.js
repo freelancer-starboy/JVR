@@ -43,3 +43,20 @@ export const cartApi = createApi({
 });
 
 export const { useAddToCartMutation, useFetchCartQuery, useUpdateCartMutation, useDeleteCartItemMutation, useFetchStockMutation } = cartApi;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

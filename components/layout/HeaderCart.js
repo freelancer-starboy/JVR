@@ -1,6 +1,5 @@
 'use client'
 import { useDeleteCartItemMutation, useFetchCartQuery } from "@/features/api/cartApi"
-import { addQty, deleteCart } from "@/features/shopSlice"
 import { getAuth, onAuthStateChanged } from "firebase/auth"
 import Link from "next/link"
 import { useEffect, useState } from "react"

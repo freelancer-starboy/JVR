@@ -305,7 +305,7 @@ const Address = ({ userId, handleAddressChoose }) => {
                 <option value="Friends">Friends</option>
               </select>
 
-              <button type="submit" className="custom-checkout-new-button">
+              <button type="submit" className="custom-checkout-new-button mt-3">
                 Save Address
               </button>
             </div>

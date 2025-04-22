@@ -1,11 +1,11 @@
 "use client";
 import Link from "next/link";
-import { useDispatch, useSelector } from "react-redux";
-import { addQty, deleteCart } from "@/features/shopSlice";
+// import { useDispatch, useSelector } from "react-redux";
+// import { addQty, deleteCart } from "@/features/shopSlice";
 import { useState } from "react";
-import { set } from "mongoose";
-import { useDeleteCartItemMutation } from "@/features/api/cartApi";
-import { toast } from "react-toastify";
+// import { set } from "mongoose";
+// import { useDeleteCartItemMutation } from "@/features/api/cartApi";
+// import { toast } from "react-toastify";
 
 const CartItems = ({
   id,
