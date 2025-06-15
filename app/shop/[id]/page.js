@@ -1,7 +1,7 @@
 'use client'
 import Layout from "@/components/layout/Layout"
 import products from "@/data/products"
-import { addCart, addQty } from "@/features/shopSlice"
+// import { addCart, addQty } from "@/features/shopSlice"
 import Link from "next/link"
 import { useParams } from "next/navigation"
 import { useEffect, useState } from "react"
