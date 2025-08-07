@@ -30,6 +30,14 @@ const Address = ({ userId, handleAddressChoose }) => {
   const router = useRouter();
   const handleChange = (e) => {
     const { name, value } = e.target;
+    if (name === "postalCode") {
+      const isValidTamilNaduPincode = /^6[0-4][0-9]{4}$/.test(value);
+
+      if (!isValidTamilNaduPincode && value.length === 6) {
+        alert("We only deliver to Tamil Nadu PIN codes ");
+        return;
+      }
+    }
     setDetails((prev) => ({
       ...prev,
       [name]: value,
@@ -93,61 +101,191 @@ const Address = ({ userId, handleAddressChoose }) => {
     }
   };
   const handleSelectedAddress = (e, address) => {
-    e.stopPropagation()
+    e.stopPropagation();
     setSelectedAddress(address._id);
     handleAddressChoose(address);
     console.log("Selected address:", address._id);
-  }
+  };
 
   return (
     <>
       <div>
         <div className="d-flex justify-align-content-start align-items-start">
-          <div className="custom-address-container">
-            <div className="custom-address-title">Existing Addresses</div>
-            {existingAddresses &&
-              existingAddresses.length > 0 &&
+          <div className="address-section">
+            <h2 className="address-section-title">Your Saved Addresses</h2>
+
+            {existingAddresses.length > 0 ? (
               existingAddresses.map((address) => (
-                
-                <div className={`custom-address-card ${
-                  selectedAddress === address._id ? "selected-address" : ""
-                }`} key={address._id} onClick={(e) => handleSelectedAddress(e, address)}>
+                <div
+                  key={address._id}
+                  className={`address-card ${
+                    selectedAddress === address._id
+                      ? "address-card--selected"
+                      : ""
+                  }`}
+                  onClick={(e) => handleSelectedAddress(e, address)}
+                >
                   <button
-                    className="custom-address-remove-button"
-                    onClick={(e) => {e.stopPropagation();handleRemoveAddress(address._id)}}
-                    style={{ zIndex: "999"}}
+                    className="address-card__remove"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleRemoveAddress(address._id);
+                    }}
                   >
-                    Remove
+                    ✖
                   </button>
-                  <p className="custom-address-name">{address.fullName}</p>
-                  <div className="custom-address-details">
-                    <p className="custom-address-line">📱 {address.phone}</p>
-                    <p className="custom-address-line">
-                      📍 {address.city}, {address.state}
+
+                  <div className="address-card__content">
+                    <p className="address-card__name">{address.fullName}</p>
+                    <p className="address-card__line">📞 {address.phone}</p>
+
+                    <p className="address-card__line ">
+                      📍{address.addressLine1}
                     </p>
-                    <p className="custom-address-line">{address.postalCode}</p>
+                    <p className="address-card__line text-uppercase">
+                      {address.city}, {address.state}
+                    </p>
+                    <p className="address-card__line text-uppercase">
+                      {address.postalCode}
+                    </p>
+                    {address.addressLine2 && (
+                      <p className="address-card__line text-uppercase">
+                        {address.addressLine2}
+                      </p>
+                    )}
+                    <span className="address-card__type text-uppercase">
+                      {address.addressType}
+                    </span>
                   </div>
-                  <p className="custom-address-line">{address.addressLine1}</p>
-                  {address.addressLine2 && (
-                    <p className="custom-address-line">
-                      {address.addressLine2}
-                    </p>
-                  )}
-                  <span className="custom-address-type">
-                    {address.addressType}
-                  </span>
                 </div>
-              ))}
-            {(!existingAddresses || existingAddresses.length === 0) && (
-              <div>No addresses found</div>
+              ))
+            ) : (
+              <div className="no-addresses-message">No addresses found</div>
             )}
+
             <button
               onClick={() => setAddressToggle(!addressToggle)}
-              className="custom-address-add-button"
+              className="custom-checkout-new-button"
             >
-              Add New Address
+              ➕ Add New Address
             </button>
           </div>
+
+          <style>
+            {`
+        .address-section {
+          padding: 20px;
+          max-width: 600px;
+          margin: auto;
+        }
+
+        .address-section-title {
+          font-size: 1.5rem;
+          margin-bottom: 1rem;
+          text-align: center;
+          color: #333;
+        }
+
+        .address-card {
+          position: relative;
+          background-color: #fafafa;
+          border: 2px solid transparent;
+          border-radius: 10px;
+          padding: 15px;
+          margin-bottom: 15px;
+          transition: border-color 0.3s ease, box-shadow 0.3s ease;
+          cursor: pointer;
+        }
+
+        .address-card--selected {
+          border-color: #007bff;
+          box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+        }
+
+        .address-card__remove {
+          position: absolute;
+          top: 10px;
+          right: 10px;
+          background-color: transparent;
+          color: #ff4d4f;
+          border: none;
+          font-size: 1rem;
+          cursor: pointer;
+        }
+
+        .address-card__remove:hover {
+          color: #ff0000;
+        }
+
+        .address-card__content {
+          padding: 20px;
+        }
+
+        .address-card__name {
+          font-weight: bold;
+          font-size: 1.1rem;
+          margin-bottom: 8px;
+        }
+
+        .address-card__line {
+          margin: 2px 0;
+          color: #555;
+          word-break: break-word;
+          font-size: 0.9rem;
+        }
+
+        .address-card__type {
+          display: inline-block;
+          margin-top: 10px;
+          padding: 4px 8px;
+          background-color: #e6f7ff;
+          color: #007bff;
+          border-radius: 4px;
+          font-size: 0.85rem;
+        }
+
+        .no-addresses-message {
+          text-align: center;
+          color: #999;
+          margin: 20px 0;
+        }
+
+        .add-address-button {
+          display: block;
+          margin: 20px auto 0;
+          padding: 10px 20px;
+          background-color: #007bff;
+          color: white;
+          border: none;
+          border-radius: 6px;
+          font-size: 1rem;
+          cursor: pointer;
+          transition: background-color 0.2s ease;
+        }
+
+        .add-address-button:hover {
+          background-color: #0056b3;
+        }
+
+        @media (max-width: 480px) {
+          .address-section {
+            padding: 10px;
+          }
+
+          .address-card {
+            padding: 12px;
+          }
+
+          .address-card__name {
+            font-size: 1rem;
+          }
+
+          .add-address-button {
+            width: 100%;
+          }
+        }
+        `}
+          </style>
         </div>
         {addressToggle && (
           <form onSubmit={saveAddress} className="custom-checkout-new-form">
@@ -165,7 +303,7 @@ const Address = ({ userId, handleAddressChoose }) => {
                     type="text"
                     name="fullName"
                     className="custom-checkout-new-input"
-                    placeholder="John Doe"
+                    placeholder="Full Name"
                     required
                     value={details.fullName}
                     onChange={handleChange}
@@ -181,7 +319,7 @@ const Address = ({ userId, handleAddressChoose }) => {
                     type="text"
                     name="phone"
                     className="custom-checkout-new-input"
-                    placeholder="98989 98989"
+                    placeholder="Phone Number"
                     required
                     value={details.phone}
                     onChange={handleChange}
@@ -260,7 +398,8 @@ const Address = ({ userId, handleAddressChoose }) => {
                     type="text"
                     name="postalCode"
                     className="custom-checkout-new-input"
-                    placeholder="Postcode / Zip"
+                    placeholder="Only Tamil Nadu PIN codes"
+                    maxLength="6"
                     required
                     value={details.postalCode}
                     onChange={handleChange}

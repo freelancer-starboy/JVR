@@ -1,6 +1,6 @@
 'use client'
 import products from "@/data/products"
-import { addCart } from "@/features/shopSlice"
+// import { addCart } from "@/features/shopSlice"
 import Link from "next/link"
 import { useDispatch } from "react-redux"
 import { Autoplay, Navigation, Pagination } from "swiper/modules"
