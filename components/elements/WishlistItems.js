@@ -1,6 +1,6 @@
 'use client'
-import { addCart } from "@/features/shopSlice"
-import { addQty, deleteWishlist } from "@/features/wishlistSlice"
+// import { addCart } from "@/features/shopSlice"
+// import { addQty, deleteWishlist } from "@/features/wishlistSlice"
 import Link from "next/link"
 import products from "@/data/products"
 import { useDispatch, useSelector } from "react-redux"
