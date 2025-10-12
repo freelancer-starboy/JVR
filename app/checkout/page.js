@@ -8,23 +8,17 @@ import PaymentPage from "@/components/paymentSample/PaymentPage";
 import {
   useDeleteCartItemMutation,
   useFetchCartQuery,
-  useFetchStockMutation,
   useUpdateCartMutation,
 } from "@/features/api/cartApi";
 import {
-  useCreateCheckoutMutation,
   useDeleteCartMutation,
   useStockValidationMutation,
-  useUpdateStockMutation,
 } from "@/features/api/checkout";
-import { set } from "mongoose";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+
 export default function Checkout() {
-  const [successOrder, setSuccessOrder] = useState(false);
-  const [isLoginToggle, setLoginToggle] = useState(false);
   const [transactionId, setTransactionId] = useState(null);
   const [status, setStatus] = useState(null);
   const [method, setMethod] = useState(null);
@@ -34,26 +28,18 @@ export default function Checkout() {
   const [updateCart] = useUpdateCartMutation();
   const [quantity, setQuantity] = useState(1);
   const [couponCode, setCouponCode] = useState("");
-  const [details, setDetails] = useState([]);
+  const [shippingAddress, setShippingAddress] = useState(null);
   const [orderTotal, setOrderTotal] = useState(0);
   const [total, setTotal] = useState(0);
   const [shipping, setShipping] = useState(0);
   const [isCouponApplied, setIsCouponApplied] = useState(false);
   const [isCuponToggle, setCuponToggle] = useState(false);
-  const handleCuponToggle = () => setCuponToggle(!isCuponToggle);
   const [appliedCoupons, setAppliedCoupons] = useState([]);
 
-  const [isCboxToggle, setCboxToggle] = useState(false);
-  const handleCboxToggle = () => setCboxToggle(!isCboxToggle);
+  const handleCuponToggle = () => setCuponToggle(!isCuponToggle);
 
-  const [createCheckout] = useCreateCheckoutMutation();
-  const [isShipToggle, setShipToggle] = useState(false);
-  const handleShipToggle = () => setShipToggle(!isShipToggle);
-
-  const [isActive, setIsActive] = useState({
-    status: false,
-    key: 1,
-  });
+  const [deleteCart] = useDeleteCartMutation();
+  const [validStock] = useStockValidationMutation();
 
   const router = useRouter();
   const { userId } = useAuth();
@@ -64,6 +50,7 @@ export default function Checkout() {
     refetch,
   } = useFetchCartQuery(userId);
 
+  // Calculate totals
   useEffect(() => {
     if (cartItems && cartItems.length > 0) {
       const newTotal = cartItems.reduce(
@@ -79,15 +66,14 @@ export default function Checkout() {
     }
   }, [cartItems, shipping]);
 
+  // Set initial shipping
   useEffect(() => {
     if (cartItems && cartItems.length > 0 && shipping === 0) {
       setShipping(50);
     }
   }, [cartItems]);
-  const [updateStockValue, { loading, error }] = useFetchStockMutation();
 
-  const [validStock] = useStockValidationMutation();
-
+  // Validate stock
   useEffect(() => {
     if (cartItems) {
       const validateStock = async () => {
@@ -95,9 +81,9 @@ export default function Checkout() {
         try {
           const response = await validStock(cartItems).unwrap();
           setStockValue(response);
-          ``;
         } catch (error) {
           console.error("Error validating stock:", error);
+          toast.error("Error validating stock");
         } finally {
           setLoadingScreen(false);
         }
@@ -105,65 +91,33 @@ export default function Checkout() {
       validateStock();
     }
   }, [cartItems, validStock]);
-  const [deleteCart] = useDeleteCartMutation();
 
-  useEffect(() => {
-    setLoadingScreen(true);
-    if (successOrder) {
-      const updateStock = async () => {
-        try {
-          const stockUpdateData = cartItems.map((item) => ({
-            variantId: item.variantId,
-            size: item.productSize,
-            quantity: item.quantity,
-          }));
-          const response = await updateStockValue(stockUpdateData).unwrap();
-          console.log("Stock update success:", response);
-          // Log the success response for debugging
-          await updateCheckout();
-          await deleteCart(userId).unwrap();
-          // Show success toast and navigate to the success page
-          toast.success("Order Placed Successfully");
-          router.push(`/myOrders?transactionId=${transactionId}`);
-        } catch (error) {
-          // Handle error case and show appropriate error message
-          console.error("Error updating stock:", error); // Log full error for debugging
-          toast.error(error?.data?.message || "Error updating stock");
-        } finally {
-          // Reset the successOrder flag in both success and failure cases
-          setSuccessOrder(false);
-          setLoadingScreen(false);
-        }
-      };
-
-      updateStock();
-    }
-  }, [successOrder, cartItems]);
-  useEffect(() => {
-    if (cartItems) {
-      console.log("Cart Items:", cartItems);
-    }
-  }, [cartItems]);
-  const updateCheckout = async () => {
-    try {
-      const response = await createCheckout({
-        userId,
-        cartItems,
-        details,
-        method,
-        transactionId,
-        status,
-        orderTotal,
-      }).unwrap();
-      console.log("Checkout saved successfully", response);
-    } catch (err) {
-      console.error("Checkout failed:", err);
-      toast.error("Failed to save order checkout");
+  // Handle payment success - simplified now
+  const handlePaymentSuccess = async (success, paymentData) => {
+    if (success && paymentData) {
+      setLoadingScreen(true);
+      try {
+        // Clear cart after successful payment
+        await deleteCart(userId).unwrap();
+        
+        toast.success("Order Placed Successfully!");
+        
+        // Navigate to orders page
+        router.push(`/myOrders?transactionId=${paymentData.payment.transaction_id}`);
+      } catch (error) {
+        console.error("Error clearing cart:", error);
+        toast.error("Order placed but failed to clear cart");
+        router.push(`/myOrders?transactionId=${paymentData.payment.transaction_id}`);
+      } finally {
+        setLoadingScreen(false);
+      }
     }
   };
+
   if (isLoading) {
     return <Preloader />;
   }
+
   if (isError) {
     return <Preloader />;
   }
@@ -184,7 +138,7 @@ export default function Checkout() {
     }
   };
 
-  const isDetailsEmpty = details?.length != 0;
+  const isAddressSelected = shippingAddress !== null;
 
   const getStockStatus = (item) => {
     if (!stockValue) {
@@ -213,7 +167,7 @@ export default function Checkout() {
     );
 
     if (outOfStockItem) {
-      return { stock: 0, message: outOfStockItem.message }; // Returning 0 stock for out-of-stock items
+      return { stock: 0, message: outOfStockItem.message };
     }
 
     return {
@@ -222,20 +176,12 @@ export default function Checkout() {
     };
   };
 
-  if (isLoading) {
-    return <div>Loading stock information...</div>;
-  }
-
-  // if (!stockValue) {
-  //   return <div>Error loading stock information</div>;
-  // }
-
   const handleRemoveCart = async (id) => {
     try {
       const response = await deleteCartItems(id).unwrap();
       if (response) {
         toast.success("Item removed successfully");
-        window.location.reload();
+        refetch();
       } else {
         toast.error("Failed to remove item");
       }
@@ -244,6 +190,7 @@ export default function Checkout() {
       toast.error("Failed to remove item");
     }
   };
+
   const handleUpdateCart = async (e, id, quantity) => {
     e.preventDefault();
     try {
@@ -254,9 +201,9 @@ export default function Checkout() {
         );
       } else {
         toast.success("Quantity updated successfully");
-        window.location.reload();
+        refetch();
       }
-    } catch {
+    } catch (error) {
       console.error("Unexpected Error:", error);
       toast.error("An unexpected error occurred");
     }
@@ -268,25 +215,21 @@ export default function Checkout() {
   });
 
   const handleAddressChoose = (address) => {
-    console.log("Selected address from front:", address);
-    setDetails(address);
+    console.log("Selected address:", address);
+    setShippingAddress(address);
   };
+
   return (
     <>
       <Layout headerStyle={3} footerStyle={2}>
         {loadingScreen && <Loader />}
         <div className="custom-checkout-container">
           <section className="custom-checkout-main">
-            {/* <form className="custom-checkout-form"> */}
             <div className="custom-checkout-grid">
               <Address
                 userId={userId}
                 handleAddressChoose={handleAddressChoose}
               />
-
-              {/* Checkout form */}
-
-              {/* Checkout end */}
 
               <div className="custom-checkout-order-summary">
                 <h3 className="custom-checkout-section-title">Your Order</h3>
@@ -389,7 +332,7 @@ export default function Checkout() {
                 </div>
 
                 <div className="custom-checkout-payment">
-                  {isDetailsEmpty ? (
+                  {isAddressSelected ? (
                     <div className="custom-checkout-payment-button">
                       {allItemsInStock ? (
                         orderTotal <= 0 ? (
@@ -405,11 +348,13 @@ export default function Checkout() {
                         ) : (
                           <PaymentPage
                             amount={orderTotal}
-                            onPaymentSuccess={setSuccessOrder}
-                            transactionId={transactionId}
+                            onPaymentSuccess={handlePaymentSuccess}
                             setTransactionId={setTransactionId}
                             setStatus={setStatus}
                             setMethod={setMethod}
+                            userId={userId}
+                            cartItems={cartItems}
+                            shippingAddress={shippingAddress}
                           />
                         )
                       ) : (
@@ -424,12 +369,16 @@ export default function Checkout() {
                     </div>
                   ) : (
                     <div className="custom-checkout-payment-button">
-                      <button type="submit" className="custom-checkout-button">
+                      <button
+                        type="button"
+                        className="custom-checkout-button custom-checkout-button-disabled"
+                        disabled
+                      >
                         Pick an address
                       </button>
                     </div>
                   )}
-                  <div className="custom-checkout-coupon-section"></div>
+
                   <div className="custom-checkout-accordion my-2">
                     <h3 className="custom-checkout-accordion-title">
                       Have a coupon?{" "}
@@ -444,22 +393,22 @@ export default function Checkout() {
                       <div className="custom-checkout-coupon-content">
                         <form className="custom-checkout-form">
                           <div className="custom-checkout-coupon-row">
-                            <div class="custom-coupon-container">
+                            <div className="custom-coupon-container">
                               <input
                                 type="text"
-                                class="custom-coupon-input form-control"
+                                className="custom-coupon-input form-control"
                                 placeholder="Coupon Code"
                                 value={couponCode}
                                 onChange={(e) => setCouponCode(e.target.value)}
                               />
 
                               {isCouponApplied && (
-                                <div class="custom-coupon-applied-container mt-2 d-flex align-items-center">
-                                  <span class="custom-coupon-badge me-2 badge bg-success">
+                                <div className="custom-coupon-applied-container mt-2 d-flex align-items-center">
+                                  <span className="custom-coupon-badge me-2 badge bg-success">
                                     {appliedCoupons}
                                   </span>
                                   <span
-                                    class="custom-coupon-remove-btn badge bg-danger d-flex align-items-center justify-content-center"
+                                    className="custom-coupon-remove-btn badge bg-danger d-flex align-items-center justify-content-center"
                                     style={{
                                       width: "22px",
                                       height: "22px",
@@ -492,7 +441,6 @@ export default function Checkout() {
                 </div>
               </div>
             </div>
-            {/* </form> */}
           </section>
         </div>
       </Layout>

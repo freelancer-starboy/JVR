@@ -24,16 +24,17 @@ export const cartApi = createApi({
       })
     }),
     updateCart: builder.mutation({
-      query: ({ id, quantity }) => ({
-          url: 'cart/fetchCart',
+      query: ({ id, quantity, userId }) => ({
+          url: `cart/fetchCart?userId=${userId}`,
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ id, quantity })
       })
   }),
     deleteCartItem : builder.mutation({
-      query : (id) => ({
-        url : 'cart/fetchCart',
+
+      query : ({id, userId}) => ({
+        url : `cart/fetchCart?userId=${userId}`,
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body : JSON.stringify({id})

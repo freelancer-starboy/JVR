@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { AlertCircle, Loader2 } from "lucide-react";
 import Loader from "../Loader/page";
 
 export default function PaymentPage({
@@ -9,6 +8,9 @@ export default function PaymentPage({
   setTransactionId,
   setStatus,
   setMethod,
+  userId,
+  cartItems,
+  shippingAddress,
 }) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
@@ -51,10 +53,13 @@ export default function PaymentPage({
     setIsLoading(true);
 
     try {
-      // Validate amount
-      setIsLoading(true);
+      // Validate required data
       if (!amount || amount <= 0) {
         throw new Error("Invalid payment amount");
+      }
+
+      if (!userId || !cartItems?.length || !shippingAddress) {
+        throw new Error("Missing required order information");
       }
 
       // Create order
@@ -65,7 +70,7 @@ export default function PaymentPage({
           amount: parseInt(amount),
           currency: "INR",
           receipt: `receipt_${Date.now()}`,
-          notes: { purpose: "Test Payment" },
+          notes: { purpose: "Order Payment" },
         }),
       });
 
@@ -86,11 +91,11 @@ export default function PaymentPage({
         amount: order.amount,
         currency: order.currency,
         name: "JVR Textiles",
-        description: "Test Transaction",
+        description: "Order Payment",
         order_id: order.id,
         handler: async function (response) {
           console.log("Razorpay Response:", response);
-          console.log("Order ID:", order.id);
+          
           if (
             !response.razorpay_payment_id ||
             !order.id ||
@@ -100,9 +105,15 @@ export default function PaymentPage({
             setError(
               "Payment verification parameters are missing. Please try again."
             );
+            setIsLoading(false);
             return;
           }
+
           try {
+            // Show loading state
+            setIsLoading(true);
+
+            // Verify payment and create order in one call
             const verifyResponse = await fetch("/api/payments/verifyPayment", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
@@ -110,29 +121,50 @@ export default function PaymentPage({
                 razorpay_payment_id: response.razorpay_payment_id,
                 razorpay_order_id: order.id,
                 razorpay_signature: response.razorpay_signature,
+                userId,
+                cartItems: cartItems.map(item => ({
+                  productImage: item.productImage || "",
+                  productId: item.productId || item.variantId,
+                  productName: item.productName,
+                  quantity: item.quantity,
+                  price: item.productPrice,
+                  color: item.productColor || item.color || "N/A",
+                  size: item.productSize || item.size,
+                  variantId: item.variantId,
+                })),
+                shippingAddress,
+                orderTotal: amount,
               }),
             });
 
             if (!verifyResponse.ok) {
-              throw new Error("Payment verification failed");
+              const errorData = await verifyResponse.json();
+              throw new Error(errorData.error || "Payment verification failed");
             }
 
             const data = await verifyResponse.json();
 
-            setTransactionId(data.transaction_id);
-            setStatus(data.status);
-            setMethod(data.method);
-            onPaymentSuccess(true);
+            console.log("Payment verified and order created:", data);
+
+            // Set transaction details
+            setTransactionId(data.payment.transaction_id);
+            setStatus(data.payment.status);
+            setMethod(data.payment.method);
+
+            // Notify parent component of success
+            onPaymentSuccess(true, data);
+
           } catch (error) {
             console.error("Verification error:", error);
-            setError("Payment verification failed. Please contact support.");
+            setError(error.message || "Payment verification failed. Please contact support.");
             onPaymentSuccess(false);
+            setIsLoading(false);
           }
         },
         prefill: {
-          name: "John Doe",
-          email: "john.doe@example.com",
-          contact: "9344934224",
+          name: shippingAddress?.name || "Customer",
+          email: shippingAddress?.email || "",
+          contact: shippingAddress?.phone || "",
         },
         theme: {
           color: "#3399cc",
@@ -140,6 +172,7 @@ export default function PaymentPage({
         modal: {
           ondismiss: function () {
             setIsLoading(false);
+            setError("Payment cancelled");
           },
         },
       };
@@ -147,6 +180,7 @@ export default function PaymentPage({
       const rzp = new window.Razorpay(options);
 
       rzp.on("payment.failed", function (response) {
+        console.error("Payment failed:", response);
         setError("Payment failed. Please try again.");
         onPaymentSuccess(false);
         setIsLoading(false);
@@ -157,7 +191,6 @@ export default function PaymentPage({
       console.error("Payment error:", error);
       setError(error.message || "Payment failed. Please try again.");
       onPaymentSuccess(false);
-    } finally {
       setIsLoading(false);
     }
   };
@@ -199,7 +232,7 @@ export default function PaymentPage({
         {isLoading && <Loader />}
         <span style={{ color: "white" }}>
           {isLoading ? "Processing..." : "Pay with Razorpay"}
-        </span> 
+        </span>
       </button>
     </div>
   );
