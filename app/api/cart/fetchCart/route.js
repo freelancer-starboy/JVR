@@ -23,24 +23,59 @@ export async function GET(req){
 
 
 export async function PUT(req){
-    const { id, quantity } = await req.json()
-    console.log("Received Update Request:", { id, quantity });
-
     try {
-        // Ensure quantity is a valid number
+        const { searchParams } = new URL(req.url)
+        const userId = searchParams.get('userId') // Get userId from query params
+        const { id, quantity } = await req.json()
+        
+
+        if (!userId) {
+            return new Response(JSON.stringify({ 
+                message: "User ID is required"
+            }), { status: 400 });
+        }
+
+        // Ensure quantity is a valid number (allow 0 for potential deletion)
         const quan = Number(quantity)
-        if (isNaN(quan) || quan <= 0) {
+        if (isNaN(quan) || quan < 0) {
             return new Response(JSON.stringify({ 
                 message: "Invalid quantity",
                 details: { id, quantity }
             }), { status: 400 });
         }
 
+        // If quantity is 0, delete the item instead
+        if (quan === 0) {
+            await connectDb()
+            const data = await Cart.findOneAndUpdate(
+                { 
+                    userId,
+                    "items.productId": id // Keep as string, let Mongoose handle conversion
+                },
+                { $pull: { items: { productId: id } } },
+                { new: true }
+            );
+            if (!data) {
+                return new Response(JSON.stringify({ 
+                    message: "Item not found"
+                }), { status: 404 });
+            }
+            return new Response(JSON.stringify(data), { status: 200 });
+        }
+
         await connectDb()
-        
+        // Update with userId filter
         const data = await Cart.findOneAndUpdate(
-            { "items.productId": new mongoose.Types.ObjectId(id) }, 
-            { $set: { "items.$.quantity": quan, "items.$.updatedAt": new Date() } }, 
+            { 
+                userId,
+                "items.productId": id // Mongoose will handle string to ObjectId conversion
+            }, 
+            { 
+                $set: { 
+                    "items.$.quantity": quan, 
+                    "items.$.updatedAt": new Date() 
+                } 
+            }, 
             { 
                 new: true,
                 runValidators: true
@@ -49,8 +84,8 @@ export async function PUT(req){
 
         if (!data) {
             return new Response(JSON.stringify({ 
-                message: "Item not found",
-                details: { id, quantity }
+                message: "Cart or item not found",
+                details: { userId, id }
             }), { status: 404 });
         }
         return new Response(JSON.stringify(data), { status: 200 });
@@ -58,27 +93,56 @@ export async function PUT(req){
         console.error("Update Error:", error);
         return new Response(JSON.stringify({ 
             message: error.message,
-            details: { id, quantity }
+            stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
         }), {status: 500})
     }
 }
 export async function DELETE(req){
     try {
-        const  {id}  = await req.json()
+        const { searchParams } = new URL(req.url)
+        const userId = searchParams.get('userId')
+        const { id } = await req.json()
+        
+        console.log("Received Delete Request:", { userId, id });
+
+        if (!userId) {
+            return new Response(JSON.stringify({ 
+                message: "User ID is required"
+            }), { status: 400 });
+        }
+
+        if (!id) {
+            return new Response(JSON.stringify({ 
+                message: "Product ID is required"
+            }), { status: 400 });
+        }
+
         await connectDb()
+        
         const data = await Cart.findOneAndUpdate(
-            { "items.productId": id },
+            { 
+                userId,
+                "items.productId": id 
+            },
             { $pull: { items: { productId: id } } },
             { new: true }
         );
+
         if (!data) {
             console.error("No item found to delete");
-            return new Response(JSON.stringify({ message: "Item not found" }), { status: 404 });
+            return new Response(JSON.stringify({ 
+                message: "Cart or item not found",
+                details: { userId, id }
+            }), { status: 404 });
         }
+
+        console.log("Delete successful:", data);
         return new Response(JSON.stringify(data), { status: 200 });
     } catch (error) {
         console.error("Delete Error:", error);
-        return new Response(JSON.stringify({ message: error.message }), { status: 500 });
+        return new Response(JSON.stringify({ 
+            message: error.message,
+            stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+        }), { status: 500 });
     }
 }
-
