@@ -55,7 +55,7 @@ export default function Cart() {
   const handleQuantityChange = async (id, quantity) => {
     try {
       console.log("Update Request:", { id, quantity });
-      const response = await updateQuantity({ id, quantity });
+      const response = await updateQuantity({ id, quantity, userId : userId });
 
       console.log("Update Response:", response);
 
@@ -76,7 +76,7 @@ export default function Cart() {
 
   const handleDelete = async (id) => {
     try {
-      const response = await deleteCartItem(id).unwrap();
+      const response = await deleteCartItem({id : id, userId : userId}).unwrap();
 
       if (response) {
         toast.success("Item removed successfully");
