@@ -12,13 +12,12 @@ const HeaderItems = () => {
   const { data: kids, error: kidsError } = useRelatedProductsQuery("kids");
 
   useEffect(() => {
-    // Only set state if data is fetched successfully
     if (mens) setMenCategory(mens);
     if (women) setWomenCategory(women);
     if (kids) setKidsCategory(kids);
   }, [mens, women, kids]);
 
-  // Error handling - can display an error message or fallback UI
+  // Handle errors gracefully
   if (mensError || womenError || kidsError) {
     return (
       <ul>
@@ -27,94 +26,66 @@ const HeaderItems = () => {
     );
   }
 
+  // Helper to get unique product types
+  const getUniqueTypes = (products) =>
+    [...new Set(products.map((product) => product.productType))];
+
   return (
-    <ul>
-      <li>
+    <ul className="">
+      {/* Home */}
+      <li className="">
         <Link href="/">Home</Link>
       </li>
 
-      <li className="has-dropdown has-megamenu">
-        <Link href="/shop-2">Shop</Link>
-        <ul className="submenu mega-menu">
-          <li>
-            <a href="/shop-2?category=mens" className="mega-menu-title">
-              Mens
-            </a>
-            <ul>
-              {menCategory.length > 0 ? (
-                [
-                  ...new Set(menCategory.map((product) => product.productType)),
-                ].map((type, index) => (
-                  <li key={index}>
-                    <Link href={`/shop-2?category=${type}`}>{type}</Link>
-                  </li>
-                ))
-              ) : (
-                <li>No products available</li>
-              )}
-            </ul>
-          </li>
-          <li>
-            <a className="mega-menu-title">Women</a>
-            <ul>
-              {womenCategory.length > 0 ? (
-                [
-                  ...new Set(
-                    womenCategory.map((product) => product.productType)
-                  ),
-                ].map((type, index) => (
-                  <li key={index}>
-                    <Link href={`/shop-2?category=${type}`}>{type}</Link>
-                  </li>
-                ))
-              ) : (
-                <li>No products available</li>
-              )}
-            </ul>
-          </li>
-
-          <li>
-            <a className="mega-menu-title">Kids</a>
-            <ul>
-              {kidsCategory.length > 0 ? (
-                [
-                  ...new Set(
-                    kidsCategory.map((product) => product.productType)
-                  ),
-                ].map((type, index) => (
-                  <li key={index}>
-                    <Link href={`/shop-2?category=${type}`}>{type}</Link>
-                  </li>
-                ))
-              ) : (
-                <li>No products available</li>
-              )}
-            </ul>
-          </li>
+      {/* Mens */}
+      <li className="has-dropdown margin-20">
+        <Link href="/shop-2?category=mens" className="">Mens</Link>
+        <ul className="submenu ">
+          {menCategory.length > 0 ? (
+            getUniqueTypes(menCategory).map((type, index) => (
+              <li key={index}>
+                <Link href={`/shop-2?category=${type}`}>{type}</Link>
+              </li>
+            ))
+          ) : (
+            <li className="">No mens products</li>
+          )}
         </ul>
       </li>
 
+      {/* Womens */}
       <li className="has-dropdown">
-        <Link href="/shop">Direct Links</Link>
+        <Link href="/shop-2?category=women">Womens</Link>
         <ul className="submenu">
-          <li>
-            <Link href="/user">My Account</Link>
-          </li>
-          <li>
-            <Link href="/myOrders">My Orders</Link>
-          </li>
-          <li>
-            <Link href="/security">Authentication Settings</Link>
-          </li>
-          <li>
-            <Link href="/termsAndConditions">Terms and conditions</Link>
-          </li>
-          <li>
-            <Link href="/contact">Contact Us</Link>
-          </li>
+          {womenCategory.length > 0 ? (
+            getUniqueTypes(womenCategory).map((type, index) => (
+              <li key={index}>
+                <Link href={`/shop-2?category=${type}`}>{type}</Link>
+              </li>
+            ))
+          ) : (
+            <li>No womens products</li>
+          )}
         </ul>
       </li>
 
+      {/* Kids */}
+      <li className="has-dropdown">
+        <Link href="/shop-2?category=kids">Kids</Link>
+        <ul className="submenu">
+          {kidsCategory.length > 0 ? (
+            getUniqueTypes(kidsCategory).map((type, index) => (
+              <li key={index}>
+                <Link href={`/shop-2?category=${type}`}>{type}</Link>
+              </li>
+            ))
+          ) : (
+            <li>No kids products</li>
+          )}
+        </ul>
+      </li>
+
+      {/* Contact */}
       <li>
         <Link href="/contact">Contact</Link>
       </li>

@@ -108,11 +108,38 @@ html {
 ---------------------------------*/
 body {
     font-family: var(--tp-ff-body);
-    font-size: 18px;
+    font-size: 14px;
     font-weight: 400;
     color: var(--tp-text-body);
     line-height: 26px;
     overflow-x: hidden !important;
+}
+
+.all-section{
+    padding: 0 64px;
+}
+@media (max-width: 1440px) {
+    .all-section{
+        padding: 0 40px;
+    }
+}
+@media (max-width: 991px) {
+    .all-section{
+        padding: 0 20px;
+    }
+}
+@media (max-width: 575px) {
+    .all-section{
+        padding: 0 25px;
+    }
+}
+
+.top-stick{
+    position: sticky!important;
+    top: 0;
+    z-index: 1000;
+    background-color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 .btn-black-white {
     background-color: #000; /* Black background */
@@ -415,6 +442,7 @@ only screen and (min-width: 576px) and (max-width: 767px) {
     .gx-6 {
         --bs-gutter-x: 30px;
     }
+
 }
 
 .f-right {
@@ -1161,6 +1189,7 @@ only screen and (min-width: 576px) and (max-width: 767px) {
     .tpnavbar .nav-link {
         margin-left: 20px;
     }
+    
 }
 
 @media (max-width: 767px) {
@@ -1735,7 +1764,7 @@ only screen and (min-width: 1200px) and (max-width: 1399px) {
     position: relative;
     list-style: none;
     display: inline-block;
-    margin-right: 65px;
+    /* margin-right: 65px; */
 }
 
 @media only screen and (min-width: 1400px) and (max-width: 1600px) {
@@ -1770,10 +1799,19 @@ only screen and (min-width: 1200px) and (max-width: 1399px) {
     position: relative;
 }
 
+.has-dropdown:hover .submenu,
+.has-dropdown:hover .mega-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+
+
 .main-menu ul>li.has-dropdown>a::after {
     transform: translateY(2px);
     content: "\f107";
-    font-size: 14px;
+    font-size: 16px;
     color: var(--tp-grey-3);
     font-family: var(--tp-ff-fontawesome);
     margin-left: 4px;
@@ -1781,22 +1819,41 @@ only screen and (min-width: 1200px) and (max-width: 1399px) {
     font-weight: 400;
 }
 
-.main-menu ul>li .submenu {
-    position: absolute;
-    top: 120%;
-    left: 0;
-    min-width: 250px;
-    padding: 15px 0;
-    background-color: var(--tp-common-white);
-    z-index: 2;
-    transition: opacity 0.4s cubic-bezier(0.19, 1, 0.22, 1), visibility 0.4s cubic-bezier(0.19, 1, 0.22, 1), transform 0.4s cubic-bezier(0.19, 1, 0.22, 1);
-    box-shadow: 0px 8px 20px rgba(61, 110, 168, 0.1);
-    border-radius: 0px 0px 10px 10px;
-    border-top: 2px solid var(--tp-text-primary);
-    opacity: 0;
-    visibility: hidden;
-    transition: 0.1s;
+.main-menu ul > li {
+  position: relative;
 }
+
+.main-menu ul > li:hover > .submenu {
+  opacity: 1;
+  visibility: visible;
+  top: 100%; /* Adjust if needed */
+  transform: translateY(0);
+}
+
+.main-menu ul > li .submenu {
+  position: absolute;
+  top: 140%; /* Will be overridden on hover */
+  left: 0;
+  min-width: 250px;
+  padding: 15px;
+  background-color: var(--tp-common-white);
+  z-index: 2;
+  transition: opacity 0.4s cubic-bezier(0.19, 1, 0.22, 1),
+              visibility 0.4s cubic-bezier(0.19, 1, 0.22, 1),
+              transform 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+  box-shadow: 0px 8px 20px rgba(61, 110, 168, 0.1);
+  border-radius: 0 0 10px 10px;
+  border-top: 2px solid var(--tp-text-primary);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(20px);
+  pointer-events: none;
+}
+
+.main-menu ul > li:hover > .submenu {
+  pointer-events: auto;
+}
+
 
 .main-menu ul>li .submenu li {
     display: block;
@@ -1808,6 +1865,7 @@ only screen and (min-width: 1200px) and (max-width: 1399px) {
     position: absolute;
     top: 50%;
     right: 25px;
+    gap: 10px;
     -webkit-transform: translateY(-50%) rotate(-90deg);
     -moz-transform: translateY(-50%) rotate(-90deg);
     -ms-transform: translateY(-50%) rotate(-90deg);
@@ -2238,7 +2296,7 @@ only screen and (min-width: 1200px) and (max-width: 1399px) {
 }
 
 .mainmenu-5 .main-menu a {
-    padding: 45px 0;
+    padding: 25px 0;
 }
 
 .tpsideinfo {
@@ -2660,6 +2718,17 @@ a.add-to-cart {
 
 .tpcart__checkout {
     margin-bottom: 30px;
+}
+
+
+@keyframes marquee {
+  0% {
+    transform: translateX(100%);
+  }
+
+  100% {
+    transform: translateX(-100%);
+  }
 }
 
 .header-sticky {

@@ -7,6 +7,7 @@ import HeaderCart from "./HeaderCart"
 import Sidebar from "./Sidebar"
 import Footer1 from './footer/Footer1'
 import Footer2 from './footer/Footer2'
+// import Header from "./header/Header"
 import Header1 from "./header/Header1"
 import Header2 from './header/Header2'
 import Header3 from "./header/Header3"
@@ -41,6 +42,7 @@ export default function Layout({ headerStyle, footerStyle, headTitle, breadcrumb
         <>
             {/* <PageHead headTitle={headTitle} /> */}
             <DataBg />
+           
             {!headerStyle && <Header1 scroll={scroll} isMobileMenu={isMobileMenu} handleMobileMenu={handleMobileMenu} isCartSidebar={isCartSidebar} handleCartSidebar={handleCartSidebar} />}
             {headerStyle == 1 ? <Header1 scroll={scroll} isMobileMenu={isMobileMenu} handleMobileMenu={handleMobileMenu} isCartSidebar={isCartSidebar} handleCartSidebar={handleCartSidebar} /> : null}
             {headerStyle == 2 ? <Header2 scroll={scroll} isMobileMenu={isMobileMenu} handleMobileMenu={handleMobileMenu} isCartSidebar={isCartSidebar} handleCartSidebar={handleCartSidebar} /> : null}
