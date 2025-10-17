@@ -6,14 +6,21 @@ import { useAuth } from "@/components/AuthContent/AuthContent";
 import { useEffect, useState } from "react";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import HeaderItems from "../HeaderItems/HeaderItems";
+import SidebarSearch from "../SearchSidebar/Sidebar-Search";
 
 export default function HeaderSticky({
   scroll,
   isCartSidebar,
   handleCartSidebar,
+  searchItems,
+  wordsSearch,
+  handleProductClick,
+  handleSuggestionClick
 }) {
   const { userId } = useAuth();
   const [userName, setUserName] = useState(null);
+  const [isSearchSidebar, setIsSearchSidebar] = useState(false);
+
   const auth = getAuth();
 
   useEffect(() => {
@@ -30,17 +37,16 @@ export default function HeaderSticky({
     <>
       <div
         id="header-sticky"
-        className={`logo-area tp-sticky-one mainmenu-5 ${
-          scroll ? "header-sticky" : ""
-        }`}
+        className={`logo-area tp-sticky-one mainmenu-5 ${scroll ? "header-sticky" : ""
+          }`}
       >
-        <div className="container ">
+        <div className="all-section ">
           <div className="row align-items-center m-0 justify-content-between d-flex ">
             <div className="col-xl-2 col-lg-3 ">
               <div className="">
                 <Link href="/">
                   <img
-                    className="logo-image"
+                    className="logo-image justify-content-start"
                     src="/assets/css/images/jvr-logo-3.png"
                     alt="logo"
                     style={{
@@ -52,16 +58,47 @@ export default function HeaderSticky({
                 </Link>
               </div>
             </div>
-            <div className="col-xl-6 col-lg-2 ">
-              <div className="main-menu">
+            <div className="col-xl-7 col-lg-2 ">
+              <div className="main-menu justify-content-center d-flex">
                 <nav id="mobile-menu ">
                   <HeaderItems />
                 </nav>
               </div>
             </div>
-            <div className="col-xl-4 col-lg-3 col-md-4 col-sm-5 col-6">
+            <div className="col-xl-1 col-lg-3 col-md-4 col-sm-5 col-6 text-end me-4">
               <div className=" d-flex align-items-center ">
                 <div className="header-meta__social d-flex align-items-center">
+                  <div className="header-search-bar-5">
+                    {/* <form action="#"> */}
+                    <div className="search-info-5 p-relative">
+                      <button
+                        //  type="button"
+                        onClick={() => {
+
+                          setIsSearchSidebar(true)
+                        }}
+                        className="d-flex align-items-center"
+                        style={{
+                          borderRadius: "25px",
+                          padding: "8px 15px",
+                          fontSize: "18px",
+                        }}
+                      >
+                        <i className="fal fa-search" />
+                      </button>
+
+                      {/* Search Sidebar */}
+                      <SidebarSearch
+                        isOpen={isSearchSidebar}
+                        onClose={() => setIsSearchSidebar(false)}
+                        searchItems={searchItems}
+                        wordsSearch={wordsSearch}
+                        onProductClick={handleProductClick}
+                        onSuggestionClick={handleSuggestionClick}
+                      />
+                    </div>
+                    {/* </form> */}
+                  </div>
                   <button
                     className="header-cart p-relative tp-cart-toggle"
                     onClick={handleCartSidebar}
@@ -78,30 +115,18 @@ export default function HeaderSticky({
                       <i className="fal fa-user" />
                     </Link>
                   )}
-                  <Link
+                  {/* <Link
                     href="/wishlist"
                     className="header-cart p-relative tp-cart-toggle"
                   >
                     <i className="fal fa-heart" />
                     <WishListShow />
-                  </Link>
+                  </Link> */}
                 </div>
                 <div className="header-meta__search-5 ml-25 w-100">
-                  <div className="header-search-bar-5">
-                    <form action="#">
-                      <div className="search-info-5 p-relative">
-                        <button className="header-search-icon-5">
-                          <i className="fal " />
-                        </button>
-                        <input type="text" placeholder="Search products..." />
-                      </div>
-                    </form>
-                  </div>
                 </div>
               </div>
-              
             </div>
-            
           </div>
         </div>
       </div>

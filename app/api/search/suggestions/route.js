@@ -18,7 +18,7 @@ export async function GET(req){
 
             const productResults = await Product.find(productFilter)
             if(productResults.length === 0){
-            return new Response(JSON.stringify(productResults), {status : 200})
+            return new Response(JSON.stringify({details : productResults }), {status : 200})
             }
             return new Response({ statuscode : 400, message : "No products found"})
         }

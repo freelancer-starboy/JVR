@@ -1,163 +1,126 @@
 "use client";
+
 import Link from "next/link";
-import { Autoplay, Navigation, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay, Pagination } from "swiper/modules";
 
-const swiperOptions = {
-  modules: [Autoplay, Pagination, Navigation],
-  slidesPerView: 1,
-  spaceBetween: 30,
-  autoplay: {
-    delay: 2500,
-  },
+import "swiper/css";
+import "swiper/css/pagination";
 
-  // Navigation
-  navigation: {
-    nextEl: ".h1n",
-    prevEl: ".h1p",
+const slides = [
+  {
+    bg: "#f8f8f8",
+    title: "Men’s Essentials",
+    subtitle: "Summer Drop",
+    description: "Discover sleek, everyday styles crafted for modern men.",
+    link: "/shop-2?category=mens",
+    bgImage: "/assets/img/banner/main/main-banner-1.png",
   },
-
-  // Pagination
-  pagination: {
-    el: ".slidertwo_pagination",
-    clickable: true,
+  {
+    bg: "#fff0f5",
+    title: "Women’s Trends",
+    subtitle: "New Season",
+    description: "Fresh cuts and bold colors for the empowered woman.",
+    link: "/shop-2?category=women",
+     bgImage: "/assets/img/banner/main/main-banner-2.png",
   },
-};
+  {
+    bg: "#f0f9ff",
+    title: "Kids’ Collection",
+    subtitle: "Mini Style",
+    description: "Trendy, comfy fits for the little trendsetters.",
+    link: "/shop-2?category=kids",
+     bgImage: "/assets/img/banner/main/main-banner-3.jpg",
+  },
+];
 
 export default function Slider2() {
   return (
-    <>
-      <section
-        className="slider-area slider-bg slider-bg-height"
-        style={{ maxWidth: "100%", overflow: "hidden" }}
+    <section className="slider-area" style={{ overflow: "hidden" }}>
+      <Swiper
+        modules={[Autoplay, Pagination]}
+        slidesPerView={1}
+        loop
+        autoplay={{ delay: 3000 }}
+        pagination={{ clickable: true }}
       >
-        <div className="slider-pagination-2 p-relative">
-          <div className="swiper-containers slidertwo-active">
-            <Swiper {...swiperOptions}>
-              <SwiperSlide className="slider-bg">
-                <div className="container">
-                  <div className="slider-top-padding pt-40">
-                    <div className="row p-relative align-items-end">
-                      <div className="col-xl-5 col-lg-6 col-md-6 d-flex align-self-center">
-                        <div className="tpslidertwo__item">
-                          <div className="tpslidertwo__content">
-                            <h4 className="tpslidertwo__sub-title">Summer</h4>
-                            <h3 className="tpslidertwo__title mb-10">
-                              Exclusive <br /> Men's Collectionm
-                            </h3>
-                            <p>Modern Edge: Stylish & Trendy Men's Fashion</p>
-                            <div className="tpslidertwo__slide-btn">
-                              <Link
-                                className="tp-btn banner-animation"
-                                href="/shop-2?category=mens"
-                              >
-                                Shop Now{" "}
-                                <i className="fal fa-long-arrow-right" />
-                              </Link>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="col-xl-7 col-lg-6 col-md-6 d-none d-md-block">
-                        <div className="tpslidertwo__img p-relative text-end">
-                          <img src="/assets/img/slider/men-banner.png" alt="" />
-                          {/* <div className="tpslidertwo__img-shape">
-                                                        <img src="/assets/img/slider/fasion-tag-01.png" alt="tag" />
-                                                    </div> */}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </SwiperSlide>
-              <SwiperSlide className="slider-bg">
-                <div className="container">
-                  <div className="slider-top-padding pt-55">
-                    <div className="row p-relative align-items-end">
-                      <div className="col-xl-5 col-lg-6 col-md-6 d-flex align-self-center">
-                        <div className="tpslidertwo__item">
-                          <div className="tpslidertwo__content">
-                            <h4 className="tpslidertwo__sub-title">Summer</h4>
-                            <h3 className="tpslidertwo__title mb-10">
-                              Exclusive <br /> Women's Collections
-                            </h3>
-                            <p>
-                              New Modern Stylist Fashionable Women's Wear holder
-                            </p>
-                            <div className="tpslidertwo__slide-btn">
-                              <Link
-                                className="tp-btn banner-animation"
-                                href="/shop-2?category=women"
-                              >
-                                Shop Now{" "}
-                                <i className="fal fa-long-arrow-right" />
-                              </Link>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="col-xl-7 col-lg-6 col-md-6 d-none d-md-block">
-                        <div className="tpslidertwo__img p-relative text-end">
-                          <img src="/assets/img/slider/slider-02.png" alt="" />
-                          <div className="tpslidertwo__img-shape">
-                            {/* <img src="/assets/img/slider/fasion-tag-01.png" alt="tag" /> */}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </SwiperSlide>
-              <SwiperSlide className="slider-bg">
-                <div className="container">
-                  <div className="slider-top-padding pt-55">
-                    <div className="row p-relative align-items-end">
-                      <div className="col-xl-5 col-lg-6 col-md-6 d-flex align-self-center">
-                        <div className="tpslidertwo__item">
-                          <div className="tpslidertwo__content">
-                            <h4 className="tpslidertwo__sub-title">Summer</h4>
-                            <h3 className="tpslidertwo__title mb-10">
-                              Exclusive <br /> Kid's Collection
-                            </h3>
-                            <p>
-                              Little Trendsetters: Modern & Stylish Kids'
-                              Fashion
-                            </p>
-                            <div className="tpslidertwo__slide-btn">
-                              <Link
-                                className="tp-btn banner-animation"
-                                href="/shop-2?category=kids"
-                              >
-                                Shop Now{" "}
-                                <i className="fal fa-long-arrow-right" />
-                              </Link>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="col-xl-7 col-lg-6 col-md-6 d-none d-md-block">
-                        <div className="tpslidertwo__img p-relative text-end">
-                          <img src="/assets/img/slider/slider-03.png" alt="" />
-                          <div className="tpslidertwo__img-shape">
-                            {/* <img src="/assets/img/slider/fasion-tag-01.png" alt="tag" /> */}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </SwiperSlide>
-            </Swiper>
-          </div>
-          <div className="slider-two-pagination">
-            <div className="container">
-              <div className="slider-two-pagination-item p-relative">
-                <div className="slidertwo_pagination" />
+        {slides.map((slide, index) => (
+          <SwiperSlide key={index}>
+            <div
+              className="text-slide d-flex align-items-center justify-content-center position-relative"
+              style={{
+                background: slide.bgImage
+                  ? `url(${slide.bgImage}) center/cover no-repeat`
+                  : slide.bg,
+                height: "80vh",
+                padding: "2rem",
+                position: "relative",
+                color: slide.bgImage ? "#fff" : "#111",
+              }}
+            >
+              {/* Optional dark overlay for text readability on image */}
+              {slide.bgImage && (
+                <div
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    background: "rgba(0, 0, 0, 0.4)",
+                    zIndex: 1,
+                  }}
+                />
+              )}
+
+              <div style={{ textAlign: "center", zIndex: 2 }}>
+                <h4
+                  style={{
+                    fontSize: "1.25rem",
+                    color: slide.bgImage ? "#ddd" : "#555",
+                    marginBottom: "1rem",
+                  }}
+                >
+                  {slide.subtitle}
+                </h4>
+                <h1
+                  style={{
+                    fontSize: "2.5rem",
+                    fontWeight: "bold",
+                    marginBottom: "1rem",
+                  }}
+                >
+                  {slide.title}
+                </h1>
+                <p
+                  style={{
+                    fontSize: "1rem",
+                    color: slide.bgImage ? "#eee" : "#777",
+                    maxWidth: "500px",
+                    margin: "0 auto 1.5rem",
+                  }}
+                >
+                  {slide.description}
+                </p>
+                <Link
+                  href={slide.link}
+                  className="tp-btn"
+                  style={{
+                    padding: "0.75rem 1.5rem",
+                    backgroundColor: slide.bgImage ? "#fff" : "#000",
+                    color: slide.bgImage ? "#000" : "#fff",
+                    borderRadius: "5px",
+                    textDecoration: "none",
+                    fontWeight: "500",
+                  }}
+                >
+                  Shop Now →
+                </Link>
               </div>
             </div>
-          </div>
-        </div>
-      </section>
-    </>
+          </SwiperSlide>
+        ))}
+      </Swiper>
+    </section>
   );
 }
