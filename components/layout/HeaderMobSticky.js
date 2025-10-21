@@ -83,7 +83,7 @@ export default function HeaderMobSticky({
               <div className="logo d-flex align-items-center" style={{ height: "3rem" }}>
                 <Link href="/">
                   <img
-                    src="/assets/css/images/jvr-logo-3.png"
+                    src="/assets/img/logo/main-logo.png"
                     alt="logo"
                     style={{ height: "3rem", width: "auto", display: "block" }}
                   />

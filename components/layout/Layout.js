@@ -5,7 +5,7 @@ import DataBg from "../elements/DataBg"
 import Breadcrumb from './Breadcrumb'
 import HeaderCart from "./HeaderCart"
 import Sidebar from "./Sidebar"
-import Footer1 from './footer/Footer1'
+import Footer1 from './footer/Footer2'
 import Footer2 from './footer/Footer2'
 // import Header from "./header/Header"
 import Header1 from "./header/Header1"

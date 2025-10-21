@@ -85,7 +85,7 @@ export default function HeaderTabSticky({
               <div className="logo d-flex align-items-center" style={{ height: "3rem" }}>
                 <Link href="/">
                   <img
-                    src="/assets/css/images/jvr-logo-3.png"
+                    src="/assets/img/logo/main-logo.png"
                     alt="JVR Logo"
                     style={{ height: "3rem", width: "auto" }}
                   />
