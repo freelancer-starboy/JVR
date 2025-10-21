@@ -47,7 +47,7 @@ export default function HeaderSticky({
                 <Link href="/">
                   <img
                     className="logo-image justify-content-start"
-                    src="/assets/css/images/jvr-logo-3.png"
+                    src="/assets/img/logo/main-logo.png"
                     alt="logo"
                     style={{
                       width: "auto",

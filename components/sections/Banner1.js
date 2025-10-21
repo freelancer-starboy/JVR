@@ -25,7 +25,7 @@ export default function Banner1() {
         <section className="banner-area pt-50  pb-95">
             <div className="container">
                 <div className="row g-3"> {/* g-3 adds gap between columns */}
-                    <div className="col-lg-4 col-md-4 col-sm-6 col-12">
+                    <div className="col-lg-4 col-md-4 col-sm-6 col-12 ">
                         <div className="banneritem__thumb banner-animation text-center p-relative">
                             <img src="/assets/img/banner/men-1.jpg" alt="" />
                             <div className="banneritem__content">

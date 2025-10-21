@@ -1,6 +1,6 @@
 "use client";
 
-// import Layout from "@/components/layout/Layout";
+import Layout from "@/components/layout/Layout";
 import React, { useState } from "react";
 import Link from "next/link";
 
@@ -50,8 +50,8 @@ const TermsAndConditions = () => {
 
   return (
     <>
-    {/* <Layout headerStyle={3} footerStyle={2}> */}
-      <div className="terms-and-conditions-container">
+    <Layout headerStyle={3} footerStyle={2}>
+      <div className="terms-and-conditions-container ">
         <div className="terms-and-conditions-card">
           <div className="terms-and-conditions-header">
             <h1 className="terms-and-conditions-title">
@@ -115,7 +115,7 @@ const TermsAndConditions = () => {
           <div className=" text-center  mt-5 mb-5">
   <Link
     href="/"
-    className="btn btn-black-white  "
+    className="btn btn-black-white mb-4 "
   >
     Back to Home
   </Link>
@@ -124,7 +124,7 @@ const TermsAndConditions = () => {
         </div>
       
       </div>
-    {/* </Layout> */}
+    </Layout>
     </>
   );
 };

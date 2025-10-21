@@ -52,6 +52,7 @@ export default function PlatinamProduct() {
     return (
         <>
             <section className="platinam-product-area pt-65">
+                 
                 <div className="container">
                     <div className="row">
                         <div className="col-lg-6 col-md-6">
