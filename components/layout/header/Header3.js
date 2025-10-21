@@ -91,6 +91,7 @@ export default function Header3({
                   <marquee className="marquee-reverse">
                     <span>From the Hills of Ooty, Woven with Love.</span>
                   </marquee>
+                  
                 </div>
               </div>
             </div>
@@ -100,11 +101,11 @@ export default function Header3({
 
         <div className="all-section">
           <div className="flex text-end items-center text-[10px] gap-2 py-2">
-            <Link href="/track" className="hover:underline mx-2">Track Order</Link>
+            <Link href="/myOrders" className="hover:underline mx-2 text-dark text-decoration-none">Track Order</Link>
             <span>|</span>
-            <Link href="/store-locator" className="hover:underline mx-2">Store Locator</Link>
+            <Link href="/store-locator" className="hover:underline mx-2 text-dark text-decoration-none">Store Locator</Link>
             <span>|</span>
-            <Link href="/contact" className="hover:underline ms-2">Contact Us</Link>
+            <Link href="/contact" className="hover:underline ms-2 text-dark text-decoration-none">Contact Us</Link>
           </div>
         </div>
 
@@ -118,12 +119,12 @@ export default function Header3({
             <div className="row align-items-center">
               {/* Logo */}
               <div className="col-xl-2 col-lg-2">
-                <div className="logo d-flex justify-content-start align-items-center" style={{ height: "3rem" }}>
+                <div className="logo d-flex justify-content-start align-items-center" style={{ height: "4rem" }}>
                   <Link href="/">
                     <img
-                      src="/assets/css/images/jvr-logo-3.png"
+                      src="/assets/img/logo/main-logo.png"
                       alt="logo"
-                      style={{ height: "3rem", width: "auto" }}
+                      style={{ height: "5rem", width: "auto" }}
                     />
                   </Link>
                 </div>

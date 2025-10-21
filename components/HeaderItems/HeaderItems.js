@@ -34,12 +34,12 @@ const HeaderItems = () => {
     <ul className="">
       {/* Home */}
       <li className="">
-        <Link href="/">Home</Link>
+        <Link href="/" className=" text-decoration-none">Home</Link>
       </li>
 
       {/* Mens */}
       <li className="has-dropdown margin-20">
-        <Link href="/shop-2?category=mens" className="">Mens</Link>
+        <Link href="/shop-2?category=mens" className=" text-decoration-none">Mens</Link>
         <ul className="submenu ">
           {menCategory.length > 0 ? (
             getUniqueTypes(menCategory).map((type, index) => (
@@ -55,7 +55,7 @@ const HeaderItems = () => {
 
       {/* Womens */}
       <li className="has-dropdown">
-        <Link href="/shop-2?category=women">Womens</Link>
+        <Link href="/shop-2?category=women" className=" text-decoration-none">Womens</Link>
         <ul className="submenu">
           {womenCategory.length > 0 ? (
             getUniqueTypes(womenCategory).map((type, index) => (
@@ -71,7 +71,7 @@ const HeaderItems = () => {
 
       {/* Kids */}
       <li className="has-dropdown">
-        <Link href="/shop-2?category=kids">Kids</Link>
+        <Link href="/shop-2?category=kids" className=" text-decoration-none">Kids</Link>
         <ul className="submenu">
           {kidsCategory.length > 0 ? (
             getUniqueTypes(kidsCategory).map((type, index) => (
@@ -87,7 +87,7 @@ const HeaderItems = () => {
 
       {/* Contact */}
       <li>
-        <Link href="/contact">Contact</Link>
+        <Link href="/contact" className=" text-decoration-none">Contact</Link>
       </li>
     </ul>
   );
