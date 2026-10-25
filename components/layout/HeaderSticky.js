@@ -115,13 +115,13 @@ export default function HeaderSticky({
                       <i className="fal fa-user" />
                     </Link>
                   )}
-                  {/* <Link
+                  <Link
                     href="/wishlist"
                     className="header-cart p-relative tp-cart-toggle"
                   >
                     <i className="fal fa-heart" />
                     <WishListShow />
-                  </Link> */}
+                  </Link>
                 </div>
                 <div className="header-meta__search-5 ml-25 w-100">
                 </div>

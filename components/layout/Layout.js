@@ -15,7 +15,7 @@ import Header4 from "./header/Header4"
 import Header5 from "./header/Header5"
 
 export default function Layout({ headerStyle, footerStyle, headTitle, breadcrumbTitle, children }) {
-    const [scroll, setScroll] = useState(0)
+    const [scroll, setScroll] = useState(false)
     // Mobile Menu
     const [isMobileMenu, setMobileMenu] = useState(false)
     const handleMobileMenu = () => setMobileMenu(!isMobileMenu)
@@ -31,13 +31,17 @@ export default function Layout({ headerStyle, footerStyle, headTitle, breadcrumb
         })
         window.wow.init()
 
-        document.addEventListener("scroll", () => {
-            const scrollCheck = window.scrollY > 100
-            if (scrollCheck !== scroll) {
-                setScroll(scrollCheck)
-            }
-        })
+        const onScroll = () => setScroll(window.scrollY > 100)
+        onScroll()
+        document.addEventListener("scroll", onScroll, { passive: true })
+        return () => document.removeEventListener("scroll", onScroll)
     }, [])
+
+    // Lock page scroll while a drawer (cart / mobile menu) is open
+    useEffect(() => {
+        document.body.classList.toggle("jvr-scroll-lock", isCartSidebar || isMobileMenu)
+        return () => document.body.classList.remove("jvr-scroll-lock")
+    }, [isCartSidebar, isMobileMenu])
     return (
         <>
             {/* <PageHead headTitle={headTitle} /> */}

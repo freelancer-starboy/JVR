@@ -1,9 +1,9 @@
 'use client'
 import { createContext, useContext, useEffect, useState } from 'react';
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import  { auth} from "@/lib/firebase/firebase"
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from "@/lib/firebase/firebase"
 
-const AuthContext = createContext();
+const AuthContext = createContext({ userId: null, userName: null, isAuthLoading: true, userDetails: null });
 
 export function AuthProvider({ children }) {
   const [userId, setUserId] = useState(null);
@@ -11,24 +11,19 @@ export function AuthProvider({ children }) {
   const [userDetails, setUserDetails] = useState(null);
 
   useEffect(() => {
-    const auth = getAuth();
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setUserId(user.uid);
-        setIsAuthLoading(false);
-        setUserDetails(user)
-        console.log('User signed in:', user);
-      } else {
-        setUserId(null);
-        console.warn('No user is logged in');
-      }
+      setUserId(user ? user.uid : null);
+      setUserDetails(user || null);
+      setIsAuthLoading(false);
     });
 
     return () => unsubscribe();
   }, []);
 
+  const userName = userDetails?.displayName || userDetails?.email || null;
+
   return (
-    <AuthContext.Provider value={{ userId, isAuthLoading, userDetails }}>
+    <AuthContext.Provider value={{ userId, userName, isAuthLoading, userDetails }}>
       {children}
     </AuthContext.Provider>
   );

@@ -1,14 +1,12 @@
 'use client'
-
-import { useDispatch, useSelector } from "react-redux"
+import useWishlist from "@/components/wishlist/useWishlist"
 
 export default function WishListShow() {
-    const { wishlist } = useSelector((state) => state.wishlist) || {}
-    const dispatch = useDispatch()
-  
+    const { count } = useWishlist()
+
     return (
         <>
-            <span className="tp-product-count">{wishlist?.length}</span>
+            <span className="tp-product-count">{count}</span>
         </>
     )
 }

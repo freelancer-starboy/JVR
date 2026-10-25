@@ -5,7 +5,7 @@ import { Provider } from "react-redux"
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify"
 import "/public/assets/css/animate.css"
-import "/public/assets/css/bootstrap.min.css"
+import "bootstrap/dist/css/bootstrap.min.css"
 import "/public/assets/css/fontawesome.min.css"
 import "/public/assets/css/nice-select.css"
 import "/public/assets/css/slick.css"
@@ -14,6 +14,7 @@ import "/public/assets/css/magnific-popup.css"
 import "/public/assets/css/meanmenu.css"
 import "/public/assets/css/spacing.css"
 import "/public/assets/css/main.css"
+import "/public/assets/css/jvr-enhance.css"
 import { AuthProvider } from "@/components/AuthContent/AuthContent";
 const jost = Jost({
     weight: ['300', '400', '500', '600', '700'],

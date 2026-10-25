@@ -187,10 +187,10 @@ export default function Header3({
                   )}
 
                   {/* Wishlist */}
-                  {/* <Link href="/wishlist" className="header-cart p-relative tp-cart-toggle">
+                  <Link href="/wishlist" className="header-cart p-relative tp-cart-toggle">
                     <i className="fal fa-heart" />
                     <WishListShow />
-                  </Link> */}
+                  </Link>
                 </div>
               </div>
             </div>

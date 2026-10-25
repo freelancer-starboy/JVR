@@ -1,0 +1,1053 @@
+/* ==========================================================================
+   SRI JVR TEXTILES — UX polish layer
+   Loaded after main.css. Uses the existing palette only:
+   black / white, crimson hover (#b50833), gold accent (#866528), theme greys.
+   ========================================================================== */
+
+:root {
+    --jvr-black: #000;
+    --jvr-white: #fff;
+    --jvr-accent: #b50833;
+    --jvr-gold: #866528;
+    --jvr-grey-bg: var(--tp-grey-2, #f3f4f7);
+    --jvr-border: var(--tp-border-1, #e7e7e7);
+    --jvr-muted: var(--tp-text-secondary, #777);
+    --jvr-whatsapp: #25d366;
+    --jvr-whatsapp-dark: #1da851;
+    --jvr-radius: 12px;
+    --jvr-ease: cubic-bezier(0.22, 1, 0.36, 1);
+    --jvr-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
+    --jvr-shadow-md: 0 12px 28px rgba(0, 0, 0, 0.1);
+}
+
+/* ---------- Global smoothness & glitch fixes ---------- */
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    overflow-x: hidden; /* stops sideways jiggle from wide sliders / marquees */
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+}
+
+body.jvr-scroll-lock {
+    overflow: hidden;
+}
+
+img {
+    max-width: 100%;
+}
+
+a,
+button,
+.tp-btn,
+.tpcart-btn,
+.tpcheck-btn,
+input,
+select,
+textarea {
+    transition: color 0.25s ease, background-color 0.25s ease, border-color 0.25s ease,
+        box-shadow 0.25s ease, opacity 0.25s ease, transform 0.25s var(--jvr-ease);
+}
+
+:focus-visible {
+    outline: 2px solid var(--jvr-gold);
+    outline-offset: 2px;
+}
+
+button:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+/* Page enter — opacity only, so position:fixed headers/drawers are never affected */
+.jvr-page {
+    animation: jvrFadeIn 0.45s ease both;
+}
+
+@keyframes jvrFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes jvrPop {
+    0% { transform: scale(1); }
+    40% { transform: scale(1.25); }
+    100% { transform: scale(1); }
+}
+
+/* ---------- Product cards ---------- */
+.tpproduct__thumb,
+.custom-mobile-container-shop-2-image-div {
+    overflow: hidden;
+    border-radius: 10px;
+}
+
+.tpproduct__thumb img,
+.custom-main-product .card-img-top {
+    transition: transform 0.7s var(--jvr-ease), opacity 0.5s ease;
+    will-change: transform;
+}
+
+.tpproduct:hover .tpproduct__thumb img,
+.custom-main-product .card:hover .card-img-top {
+    transform: scale(1.04);
+}
+
+.custom-main-product .card {
+    border-radius: var(--jvr-radius);
+    transition: box-shadow 0.35s ease, transform 0.35s var(--jvr-ease);
+}
+
+.custom-main-product .card:hover {
+    box-shadow: var(--jvr-shadow-md) !important;
+    transform: translateY(-3px);
+}
+
+.tpproduct__title a:hover,
+.custom-main-product .card:hover .card-title {
+    color: var(--jvr-accent) !important;
+}
+
+/* ---------- Wishlist heart ---------- */
+.jvr-wish-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--jvr-border);
+    background: var(--jvr-white);
+    color: var(--jvr-black);
+    border-radius: 50%;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.jvr-wish-btn:hover {
+    color: var(--jvr-accent);
+    border-color: var(--jvr-accent);
+}
+
+.jvr-wish-btn.is-active {
+    color: var(--jvr-accent);
+    border-color: var(--jvr-accent);
+}
+
+.jvr-wish-btn.is-active i {
+    animation: jvrPop 0.35s ease;
+}
+
+.jvr-wish-btn--floating {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 3;
+    width: 38px;
+    height: 38px;
+    font-size: 16px;
+    border-color: transparent;
+    box-shadow: var(--jvr-shadow-sm);
+    background: rgba(255, 255, 255, 0.92);
+}
+
+.jvr-wish-btn--inline {
+    width: 50px;
+    height: 50px;
+    font-size: 18px;
+}
+
+/* The theme draws its own box around the wishlist slot — let the heart button be that box */
+.tpproduct-details__wishlist,
+.tpproduct-details__wishlist:hover {
+    border: 0;
+    background: none;
+    line-height: 1;
+}
+
+.tpproduct-details__wishlist .jvr-wish-btn--inline {
+    width: 100%;
+    height: 100%;
+    border-radius: 6px;
+    border-color: var(--tp-border-1, #e7e7e7);
+}
+
+.tpproduct-details__condation-item {
+    gap: 14px;
+}
+
+.tpproduct-details__condation-text p {
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* ---------- WhatsApp order button ---------- */
+.jvr-whatsapp-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 50px;
+    padding: 12px 28px;
+    border: 2px solid var(--jvr-black);
+    border-radius: 30px;
+    background: var(--jvr-black);
+    color: var(--jvr-white);
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+.jvr-whatsapp-btn i {
+    font-size: 20px;
+    color: var(--jvr-whatsapp);
+    transition: color 0.25s ease;
+}
+
+.jvr-whatsapp-btn:hover:not(:disabled) {
+    background: var(--jvr-whatsapp-dark);
+    border-color: var(--jvr-whatsapp-dark);
+    color: var(--jvr-white);
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px rgba(29, 168, 81, 0.25);
+}
+
+.jvr-whatsapp-btn:hover:not(:disabled) i {
+    color: var(--jvr-white);
+}
+
+.jvr-whatsapp-btn:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.jvr-whatsapp-btn--compact {
+    min-height: 40px;
+    padding: 8px 16px;
+    font-size: 12px;
+}
+
+.jvr-whatsapp-btn--compact i {
+    font-size: 16px;
+}
+
+.jvr-whatsapp-note {
+    margin: 10px 0 0;
+    font-size: 13px;
+    color: var(--jvr-muted);
+    line-height: 1.5;
+}
+
+.custom-cart-summary .jvr-whatsapp-btn {
+    border-radius: 8px;
+}
+
+.tpcart__checkout-btn .jvr-whatsapp-btn {
+    width: 100%;
+    font-size: 13px;
+}
+
+/* ---------- Cart drawer & cart page ---------- */
+.tpcart__product {
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+
+button.tpcart__del {
+    background: var(--jvr-white);
+    border: 0;
+    border-radius: 50%;
+    padding: 0;
+    line-height: 1;
+    cursor: pointer;
+}
+
+button.tpcart__del:hover {
+    color: var(--jvr-accent);
+}
+
+.jvr-empty-note {
+    list-style: none;
+    text-align: center;
+    padding: 40px 10px;
+    color: var(--jvr-muted);
+}
+
+.jvr-empty-note i {
+    display: block;
+    font-size: 36px;
+    margin-bottom: 12px;
+    color: var(--tp-grey-3, #c8c8c8);
+}
+
+.jvr-empty-note a {
+    color: var(--jvr-accent);
+    font-weight: 500;
+}
+
+.jvr-cart-product {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    color: inherit;
+}
+
+.jvr-cart-product img {
+    width: 64px;
+    height: 64px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.jvr-cart-product:hover .jvr-cart-product__name {
+    color: var(--jvr-accent);
+}
+
+.jvr-cart-product__meta {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    color: #666;
+}
+
+.jvr-color-dot {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    margin: 0 8px;
+    border-radius: 50%;
+    border: 1px solid #ccc;
+}
+
+.jvr-link-danger {
+    background: none;
+    border: none;
+    padding: 0;
+    color: var(--jvr-accent);
+    cursor: pointer;
+}
+
+.jvr-link-danger:hover {
+    text-decoration: underline;
+}
+
+.custom-cart-quantity-btn:hover {
+    background: var(--jvr-black);
+    color: var(--jvr-white);
+}
+
+/* ---------- Product details ---------- */
+.size-selector:hover:not(.bg-dark) {
+    border-color: var(--jvr-black) !important;
+}
+
+.size-selector.is-sold-out {
+    position: relative;
+    opacity: 0.45;
+    text-decoration: line-through;
+}
+
+.color-selector:hover {
+    transform: scale(1.1);
+}
+
+.tpproduct-details__nab .tab-pane img {
+    border-radius: 10px;
+}
+
+.tpproduct-details__nab .nav-link img {
+    transition: opacity 0.25s ease;
+}
+
+.tpproduct-details__nab .nav-link:not(.active) img {
+    opacity: 0.65;
+}
+
+.tpproduct-details__nab .nav-link:hover img {
+    opacity: 1;
+}
+
+/* ---------- Empty states ---------- */
+.jvr-empty-state {
+    width: 100%;
+    max-width: 460px;
+    margin: 40px auto;
+    padding: 48px 24px;
+    text-align: center;
+    animation: jvrFadeIn 0.4s ease both;
+}
+
+.jvr-empty-state > i {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 84px;
+    height: 84px;
+    margin-bottom: 20px;
+    border-radius: 50%;
+    background: var(--jvr-grey-bg);
+    font-size: 32px;
+    color: var(--jvr-black);
+}
+
+.jvr-empty-state h3 {
+    font-size: 22px;
+    margin-bottom: 8px;
+}
+
+.jvr-empty-state p {
+    color: var(--jvr-muted);
+    margin-bottom: 24px;
+}
+
+.jvr-empty-state .tpcheck-btn {
+    padding-left: 36px;
+    padding-right: 36px;
+}
+
+/* ---------- Skeleton loaders ---------- */
+.jvr-skeleton {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e6e6e6 37%, #f0f0f0 63%);
+    background-size: 400% 100%;
+    animation: jvrShimmer 1.4s ease infinite;
+    border-radius: 8px;
+}
+
+.jvr-skeleton--img {
+    aspect-ratio: 4 / 5;
+    width: 100%;
+    border-radius: 10px;
+}
+
+.jvr-skeleton--line {
+    height: 14px;
+    margin-top: 12px;
+    width: 80%;
+}
+
+.jvr-skeleton--line.short {
+    width: 45%;
+}
+
+@keyframes jvrShimmer {
+    0% { background-position: 100% 50%; }
+    100% { background-position: 0 50%; }
+}
+
+.jvr-product-skeleton-grid {
+    display: grid;
+    width: 100%;
+    gap: 24px;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    padding: 0 8px;
+}
+
+/* ---------- Wishlist page ---------- */
+.jvr-wishlist-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 28px;
+}
+
+.jvr-wishlist-toolbar p {
+    margin: 0;
+    font-size: 16px;
+    color: var(--jvr-muted);
+}
+
+.jvr-wishlist-grid {
+    display: grid;
+    gap: 24px;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+}
+
+.jvr-wishlist-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background: var(--jvr-white);
+    border: 1px solid var(--jvr-border);
+    border-radius: var(--jvr-radius);
+    overflow: hidden;
+    transition: box-shadow 0.35s ease, transform 0.35s var(--jvr-ease);
+    animation: jvrFadeIn 0.4s ease both;
+}
+
+.jvr-wishlist-card:hover {
+    box-shadow: var(--jvr-shadow-md);
+    transform: translateY(-3px);
+}
+
+.jvr-wishlist-card__media {
+    position: relative;
+    display: block;
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    background: var(--jvr-grey-bg);
+}
+
+.jvr-wishlist-card__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.7s var(--jvr-ease);
+}
+
+.jvr-wishlist-card:hover .jvr-wishlist-card__media img {
+    transform: scale(1.04);
+}
+
+.jvr-wishlist-card__body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    padding: 16px;
+}
+
+.jvr-wishlist-card__title {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--jvr-black);
+    line-height: 1.4;
+}
+
+.jvr-wishlist-card__title:hover {
+    color: var(--jvr-accent);
+}
+
+.jvr-price {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.jvr-price span {
+    font-size: 17px;
+    font-weight: 600;
+}
+
+.jvr-price del {
+    font-size: 13px;
+    color: var(--jvr-muted);
+}
+
+.jvr-wishlist-card__actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: auto;
+}
+
+.jvr-wishlist-card__actions .tpcart-btn {
+    min-height: 40px;
+    padding: 8px 10px;
+    font-size: 12px;
+    display: flex;
+}
+
+.jvr-badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    background: var(--jvr-accent);
+    color: var(--jvr-white);
+    font-size: 11px;
+    font-weight: 500;
+}
+
+/* ---------- Search drawer ---------- */
+.jvr-search-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    background: rgba(0, 0, 0, 0.45);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.jvr-search-overlay.open {
+    opacity: 1;
+    visibility: visible;
+}
+
+.jvr-search {
+    position: fixed;
+    top: 0;
+    right: 0;
+    z-index: 1001;
+    display: flex;
+    flex-direction: column;
+    width: min(380px, 100vw);
+    height: 100%;
+    padding: 20px;
+    background: var(--jvr-white);
+    box-shadow: -8px 0 30px rgba(0, 0, 0, 0.12);
+    transform: translateX(100%);
+    visibility: hidden;
+    transition: transform 0.4s var(--jvr-ease), visibility 0.4s;
+    text-align: left;
+}
+
+.jvr-search.open {
+    transform: translateX(0);
+    visibility: visible;
+}
+
+.jvr-search__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.jvr-search__header h4 {
+    margin: 0;
+    font-size: 20px;
+}
+
+.jvr-search__header button {
+    display: inline-flex;
+    padding: 6px;
+    border: 0;
+    border-radius: 50%;
+    background: none;
+}
+
+.jvr-search__header button:hover {
+    background: var(--jvr-grey-bg);
+}
+
+.jvr-search__box {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    border: 1px solid var(--jvr-border);
+    border-radius: 30px;
+    overflow: hidden;
+}
+
+.jvr-search__box:focus-within {
+    border-color: var(--jvr-black);
+}
+
+.jvr-search__box input {
+    flex: 1;
+    min-width: 0;
+    height: 46px;
+    padding: 0 18px;
+    border: 0;
+    outline: none;
+    background: transparent;
+}
+
+.jvr-search__box button {
+    display: inline-flex;
+    padding: 0 16px;
+    height: 46px;
+    align-items: center;
+    border: 0;
+    background: none;
+}
+
+.jvr-search__body {
+    flex: 1;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+
+.jvr-search__section {
+    margin-bottom: 24px;
+}
+
+.jvr-search__title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--jvr-muted);
+}
+
+.jvr-search__results,
+.jvr-search__list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.jvr-search__results button {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 8px;
+    border: 0;
+    border-radius: 10px;
+    background: none;
+    text-align: left;
+}
+
+.jvr-search__results button:hover {
+    background: var(--jvr-grey-bg);
+}
+
+.jvr-search__results img {
+    width: 48px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 6px;
+    flex-shrink: 0;
+}
+
+.jvr-search__results span {
+    display: flex;
+    flex-direction: column;
+}
+
+.jvr-search__results strong {
+    font-weight: 500;
+    font-size: 14px;
+    color: var(--jvr-black);
+}
+
+.jvr-search__results small {
+    color: var(--jvr-muted);
+}
+
+.jvr-search__all {
+    margin-top: 8px;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--jvr-accent);
+    font-weight: 500;
+}
+
+.jvr-search__list button {
+    width: 100%;
+    padding: 8px 4px;
+    border: 0;
+    background: none;
+    text-align: left;
+    color: #333;
+}
+
+.jvr-search__list button:hover {
+    color: var(--jvr-accent);
+}
+
+.jvr-search__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.jvr-search__tags button {
+    padding: 6px 14px;
+    border: 1px solid var(--jvr-border);
+    border-radius: 20px;
+    background: var(--jvr-white);
+    font-size: 13px;
+    text-transform: capitalize;
+}
+
+.jvr-search__tags button:hover {
+    border-color: var(--jvr-black);
+    background: var(--jvr-black);
+    color: var(--jvr-white);
+}
+
+.jvr-search-heading {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 16px;
+    max-width: 1320px;
+    margin: 0 auto 24px;
+    padding: 0 16px;
+}
+
+.jvr-search-heading h5 {
+    margin: 0;
+    font-size: 22px;
+}
+
+.jvr-search-heading a {
+    color: var(--jvr-accent);
+    font-size: 14px;
+}
+
+/* ---------- Reviews ---------- */
+.jvr-stars {
+    display: flex;
+    gap: 3px;
+    font-size: 20px;
+    color: #f5a623;
+}
+
+.jvr-stars .is-off {
+    color: var(--tp-grey-7, #d3d3d3);
+}
+
+.jvr-review-cta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 32px;
+    padding: 20px 24px;
+    border: 1px solid var(--jvr-border);
+    border-radius: var(--jvr-radius);
+    background: var(--jvr-grey-bg);
+}
+
+.jvr-review-cta p {
+    margin: 0;
+    color: #333;
+}
+
+.jvr-review-cta .tpcart-btn,
+.jvr-review-cta .tpcheck-btn {
+    padding-left: 28px;
+    padding-right: 28px;
+}
+
+.jvr-review-cta.is-blocked {
+    justify-content: flex-start;
+    background: #fff5f6;
+    border-color: #f3c6cf;
+}
+
+.jvr-review-cta.is-blocked i {
+    font-size: 20px;
+    color: var(--jvr-accent);
+}
+
+.jvr-review-form {
+    margin-bottom: 32px;
+    padding: 24px;
+    border: 1px solid var(--jvr-border);
+    border-radius: var(--jvr-radius);
+    background: var(--jvr-white);
+    box-shadow: var(--jvr-shadow-sm);
+    animation: jvrFadeIn 0.3s ease both;
+}
+
+.jvr-review-form h5 {
+    margin-bottom: 12px;
+}
+
+.jvr-review-form__stars {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 16px;
+}
+
+.jvr-review-form__stars button {
+    padding: 2px;
+    border: 0;
+    background: none;
+    font-size: 26px;
+    line-height: 1;
+    color: var(--tp-grey-7, #d3d3d3);
+}
+
+.jvr-review-form__stars button.is-on {
+    color: #f5a623;
+}
+
+.jvr-review-form__stars button:hover {
+    transform: scale(1.12);
+}
+
+.jvr-review-form__stars span {
+    margin-left: 10px;
+    font-size: 14px;
+    color: var(--jvr-muted);
+}
+
+.jvr-review-form textarea {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1px solid var(--jvr-border);
+    border-radius: 10px;
+    resize: vertical;
+    outline: none;
+}
+
+.jvr-review-form textarea:focus {
+    border-color: var(--jvr-black);
+}
+
+.jvr-review-form__count {
+    margin-top: 4px;
+    text-align: right;
+    font-size: 12px;
+    color: var(--jvr-muted);
+}
+
+.jvr-review-form__photos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.jvr-review-form__thumb,
+.jvr-review-form__add {
+    position: relative;
+    width: 76px;
+    height: 76px;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.jvr-review-form__thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.jvr-review-form__thumb button {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 22px;
+    height: 22px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.65);
+    color: var(--jvr-white);
+    font-size: 12px;
+    line-height: 22px;
+}
+
+.jvr-review-form__add {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    margin: 0;
+    border: 1px dashed var(--tp-grey-3, #c8c8c8);
+    font-size: 11px;
+    color: var(--jvr-muted);
+    cursor: pointer;
+    transition: border-color 0.25s ease, color 0.25s ease;
+}
+
+.jvr-review-form__add i {
+    font-size: 20px;
+}
+
+.jvr-review-form__add:hover {
+    border-color: var(--jvr-black);
+    color: var(--jvr-black);
+}
+
+.jvr-review-form__hint {
+    margin: 8px 0 0;
+    font-size: 13px;
+    color: var(--jvr-muted);
+}
+
+.jvr-review-form__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.jvr-review-form__actions button {
+    min-width: 130px;
+}
+
+/* ---------- Drawers & dropdowns: smoother motion ---------- */
+.tpcartinfo,
+.tpsideinfo {
+    transition: transform 0.45s var(--jvr-ease), right 0.45s var(--jvr-ease), left 0.45s var(--jvr-ease),
+        opacity 0.3s ease, visibility 0.3s ease !important;
+}
+
+.cartbody-overlay,
+.body-overlay {
+    transition: opacity 0.3s ease, visibility 0.3s ease !important;
+}
+
+/* ---------- Responsive tweaks ---------- */
+@media (max-width: 575px) {
+    .jvr-wishlist-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+
+    .jvr-wishlist-card__body {
+        padding: 12px;
+    }
+
+    .jvr-wishlist-card__actions {
+        grid-template-columns: 1fr;
+    }
+
+    .jvr-wishlist-toolbar .jvr-whatsapp-btn {
+        width: 100%;
+    }
+
+    .jvr-product-skeleton-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+
+}
+
+@media (max-width: 767px) {
+    .tpproduct-details__content .jvr-whatsapp-btn,
+    .custom-cart-summary .jvr-whatsapp-btn {
+        width: 100%;
+    }
+
+    .jvr-review-cta {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+    }
+
+    .jvr-review-form {
+        padding: 18px;
+    }
+
+    .jvr-review-form__actions button {
+        flex: 1;
+        min-width: 0;
+    }
+}
+
+/* Respect users who prefer less motion */
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}

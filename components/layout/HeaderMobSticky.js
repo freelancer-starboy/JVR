@@ -143,14 +143,14 @@ export default function HeaderMobSticky({
                 )}
 
                 {/* Wishlist Icon */}
-                {/* <Link
+                <Link
                   href="/wishlist"
                   className="btn-icon position-relative"
                   aria-label="View wishlist"
                 >
                   <i className="fal fa-heart fs-5" />
                   <WishListShow />
-                </Link> */}
+                </Link>
               </div>
             </div>
 

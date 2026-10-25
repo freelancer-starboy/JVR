@@ -12,12 +12,12 @@ export async function GET(req){
         await connectDb()
         const data = await Cart.findOne({userId})
         if(!data){
-            return new Response({message : "Cart not found"}, {status : 500})
+            return new Response(JSON.stringify([]), {status : 200})
         }
         return new Response(JSON.stringify(data.items), {status : 200})
     } catch (error) {
         console.log(error.message)
-        return new Response({message : error.message}, {status : 500})
+        return new Response(JSON.stringify({message : error.message}), {status : 500})
     }
 }
 

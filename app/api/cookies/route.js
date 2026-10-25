@@ -11,8 +11,8 @@ export async function POST(req) {
     if (token) {
         response.headers.set(
           'Set-Cookie',
-          `firebaseToken=${token}; Max-Age=${30 * 24 * 60 * 60}; Path=/; HttpOnly; ${
-            process.env.NODE_ENV === 'production'
+          `firebaseToken=${token}; Max-Age=${30 * 24 * 60 * 60}; Path=/; HttpOnly; SameSite=Lax${
+            process.env.NODE_ENV === "production" ? "; Secure" : ""
           }`
         );
       } else {
