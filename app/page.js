@@ -6,8 +6,6 @@ import Brand1 from "@/components/sections/Brand1"
 import Exclusive from "@/components/sections/Exclusive"
 import Product2 from "@/components/sections/Product2"
 import Slider2 from "@/components/sections/Slider2"
-import 'bootstrap/dist/css/bootstrap.min.css';
-// import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import Link from "next/link"
 export default function Home2() {
 

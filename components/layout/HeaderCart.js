@@ -1,93 +1,75 @@
 'use client'
 import { useDeleteCartItemMutation, useFetchCartQuery } from "@/features/api/cartApi"
-import { getAuth, onAuthStateChanged } from "firebase/auth"
 import Link from "next/link"
-import { useEffect, useState } from "react"
-import { useDispatch, useSelector } from "react-redux"
-import  { auth} from "@/lib/firebase/firebase"
 import { useAuth } from "../AuthContent/AuthContent"
 import { toast } from "react-toastify"
+import WhatsAppOrderButton from "../whatsapp/WhatsAppOrderButton"
+import { cartItemsToOrderItems } from "@/lib/whatsapp"
+import { CHECKOUT_ENABLED } from "@/lib/siteConfig"
 
 
 export default function HeaderCart({ isCartSidebar, handleCartSidebar }) {
-    const { cart } = useSelector((state) => state.shop) || {}
     const { userId } = useAuth()
-    
-    const dispatch = useDispatch()
 
-    // delete cart item
+    const { data, isLoading } = useFetchCartQuery(userId, { skip: !userId })
+    const cartItems = Array.isArray(data) ? data : []
 
+    const total = cartItems.reduce((sum, item) => sum + item.quantity * item.productPrice, 0)
 
-    // qty handler
-  
-    
-    const {data: cartItems, isLoading, isError, refetch} = useFetchCartQuery(userId)
-   
-    useEffect(() => {
-        if(userId){
-
-            refetch()
-        }
-    }, [userId, refetch])
-   
-    let total = 0;
-    cartItems?.forEach((item) => {
-        const price = item.quantity * item.productPrice;
-        total = total + price;
-    });
-
-      const [deleteCartItem, { error: deleteCartError }] =
-        useDeleteCartItemMutation();
-      const handleDelete = async (id) => {
+    const [deleteCartItem] = useDeleteCartItemMutation()
+    const handleDelete = async (id) => {
         try {
-          const response = await deleteCartItem(id).unwrap();
-    
-          if (response) {
-            toast.success("Item removed successfully");
-            refetch();
-          } else {
-            toast.error("Failed to remove item");
-          }
+            await deleteCartItem({ id, userId }).unwrap()
+            toast.success("Item removed successfully")
         } catch (error) {
-          console.error("Error deleting item:", error);
-          toast.error("Failed to remove item");
+            console.error("Error deleting item:", error)
+            toast.error("Failed to remove item")
         }
-      };
+    }
 
     return (
         <>
             <div className={`tpcartinfo tp-cart-info-area p-relative ${isCartSidebar ? "tp-sidebar-opened" : ""}`}>
-                <button className="tpcart__close" onClick={handleCartSidebar}><i className="fal fa-times" /></button>
+                <button className="tpcart__close" onClick={handleCartSidebar} aria-label="Close cart"><i className="fal fa-times" /></button>
                 <div className="tpcart">
                     <h4 className="tpcart__title">Your Cart</h4>
-                    <div className="tpcart__product" style={{ overflow : "scroll"}}>
+                    <div className="tpcart__product">
                         <div className="tpcart__product-list">
                             <ul>
-                                {isError && !userId && <p className="text-center"><span className="text-danger"><a href='/sign-in'>Login</a></span> to add to cart!</p> }
-                                {userId && cartItems && cartItems?.length === 0  ? <p className="text-center"><span className="text-danger"><a href='/shop-2'>Add</a></span> items to add to cart!</p> : 
-
-                                cartItems?.map((item,i) => (
-                                    <li key={i}>
+                                {!userId && (
+                                    <li className="jvr-empty-note">
+                                        <i className="fal fa-shopping-bag" />
+                                        <p><Link href="/sign-in" onClick={handleCartSidebar}>Sign in</Link> to add items to your cart.</p>
+                                    </li>
+                                )}
+                                {userId && isLoading && <li className="jvr-empty-note"><p>Loading your cart…</p></li>}
+                                {userId && !isLoading && cartItems.length === 0 && (
+                                    <li className="jvr-empty-note">
+                                        <i className="fal fa-shopping-bag" />
+                                        <p>Your cart is empty. <Link href="/shop-2" onClick={handleCartSidebar}>Start shopping</Link></p>
+                                    </li>
+                                )}
+                                {cartItems.map((item) => (
+                                    <li key={`${item.productId}-${item.productSize}-${item.productColor}`}>
                                         <div className="tpcart__item">
                                             <div className="tpcart__img">
-                                                <img src={`${item.productImage}`} alt="" />
-                                                <div className="tpcart__del" onClick={() => handleDelete(item?.productId)}>
-                                                    <Link href="#"><i className="far fa-times-circle" /></Link>
-                                                </div>
+                                                <img src={item.productImage} alt={item.productName} />
+                                                <button type="button" className="tpcart__del" onClick={() => handleDelete(item.productId)} aria-label={`Remove ${item.productName}`}>
+                                                    <i className="far fa-times-circle" />
+                                                </button>
                                             </div>
                                             <div className="tpcart__content">
-                                                <span className="tpcart__content-title"><Link href="/shop-details">{item.productName}</Link>
+                                                <span className="tpcart__content-title">
+                                                    <Link href={`/ShopDetails/${item.productId}`} onClick={handleCartSidebar}>{item.productName}</Link>
                                                 </span>
                                                 <div className="tpcart__cart-price">
-                                                    <span className="quantity">{item?.quantity} x </span>
-                                                    <span className="new-price">₹{item?.productPrice}</span>
+                                                    <span className="quantity">{item.quantity} x </span>
+                                                    <span className="new-price">₹{item.productPrice}</span>
                                                 </div>
                                             </div>
                                         </div>
                                     </li>
-                                ))
-                                }
-                                
+                                ))}
                             </ul>
                         </div>
                         <div className="tpcart__checkout">
@@ -95,16 +77,20 @@ export default function HeaderCart({ isCartSidebar, handleCartSidebar }) {
                                 <span> Subtotal:</span>
                                 <span className="heilight-price"> ₹{total.toFixed(2)}</span>
                             </div>
-                            <div className="tpcart__checkout-btn">
-                                {isError ?
-                                <></>
-                                : <>
-                                    <Link className="tpcart-btn mb-10" href="/cart">View Cart</Link> 
-                                    <Link className="tpcheck-btn" href="/checkout">Checkout</Link>
-                                </>
-                            }
-                                
-                            </div>
+                            {userId && cartItems.length > 0 && (
+                                <div className="tpcart__checkout-btn">
+                                    <Link className="tpcart-btn mb-10" href="/cart" onClick={handleCartSidebar}>View Cart</Link>
+                                    {CHECKOUT_ENABLED ? (
+                                        <Link className="tpcheck-btn" href="/checkout">Checkout</Link>
+                                    ) : (
+                                        <WhatsAppOrderButton
+                                            source="cart"
+                                            items={cartItemsToOrderItems(cartItems)}
+                                            className="w-100"
+                                        />
+                                    )}
+                                </div>
+                            )}
                         </div>
                     </div>
                     <div className="tpcart__free-shipping text-center">

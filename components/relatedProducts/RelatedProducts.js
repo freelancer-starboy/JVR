@@ -3,7 +3,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Navigation, Pagination } from "swiper/modules";
 import Link from "next/link";
 import { useRelatedProductsQuery } from "@/features/api/productApi";
-import Preloader from "../elements/Preloader";
+import WishlistButton from "../wishlist/WishlistButton";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
@@ -33,8 +33,23 @@ const swiperOptions = {
 const RelatedProducts = ({ category }) => {
   const { data: relatedProducts, isLoading, isError } = useRelatedProductsQuery(category);
 
-  if (isLoading) return <Preloader />;
-  if (isError) return <p className="text-danger text-center">Error loading related products.</p>;
+  if (isLoading) {
+    return (
+      <div className="container pt-65 pb-50">
+        <div className="jvr-product-skeleton-grid">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <div key={i}>
+              <div className="jvr-skeleton jvr-skeleton--img" />
+              <div className="jvr-skeleton jvr-skeleton--line" />
+              <div className="jvr-skeleton jvr-skeleton--line short" />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+  if (isError) return <p className="text-muted text-center py-4">Products could not be loaded right now.</p>;
+  if (!relatedProducts?.length) return null;
 
   return (
     <div className="related-product-area pt-65 pb-50 related-product-border">
@@ -54,17 +69,19 @@ const RelatedProducts = ({ category }) => {
           <Swiper {...swiperOptions}>
             {relatedProducts?.map((product) => {
               const images = product.productVariants?.[0]?.images || [];
-              const primaryImg = images[0] || "/assets/img/no-image.jpg";
+              const primaryImg = images[0] || "/assets/img/no-image.svg";
               const secondaryImg = images[1] || null;
 
               return (
                 <SwiperSlide key={product._id}>
                   <div className="tpproduct pb-15 mb-30">
                     <div className="tpproduct__thumb p-relative">
+                      <WishlistButton product={product} />
                       <Link href={`/ShopDetails/${product._id}`}>
                         <img
                           src={primaryImg}
                           alt={product.productName}
+                          loading="lazy"
                           style={{ objectFit: "cover", height: "300px", width: "100%", borderRadius: "10px" }}
                         />
                         {secondaryImg && (

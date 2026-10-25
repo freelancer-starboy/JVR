@@ -1,3 +1,4 @@
+import { CHECKOUT_ENABLED } from "@/lib/siteConfig";
 import crypto from "crypto";
 import connectDb from "@/lib/database/db";
 import Checkout from "@/lib/Schema/checkoutSchema";
@@ -173,6 +174,13 @@ async function handleOrderPaid(order) {
 }
 
 export async function POST(req) {
+  // Online payment is disabled while orders are taken on WhatsApp (see lib/siteConfig.js).
+  if (!CHECKOUT_ENABLED) {
+    return new Response(JSON.stringify({ error: "Online checkout is currently disabled" }), {
+      status: 503,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
   try {
     // Get webhook signature from headers
     const signature = req.headers.get('x-razorpay-signature');

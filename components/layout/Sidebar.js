@@ -491,11 +491,11 @@ export default function Sidebar({ isMobileMenu, handleMobileMenu }) {
             </Link>
           )}
         </div>
-        {/* <div className="tpsideinfo__wishlist-link">
+        <div className="tpsideinfo__wishlist-link">
           <Link href="/wishlist" target="_parent">
             <i className="fal fa-heart" /> Wishlist
           </Link>
-        </div> */}
+        </div>
       </div>
       <div className={`body-overlay ${isMobileMenu ? "opened" : ""}`} onClick={handleMobileMenu} />
     </>

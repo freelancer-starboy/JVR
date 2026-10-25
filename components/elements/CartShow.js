@@ -1,18 +1,15 @@
 'use client'
 import { useFetchCartQuery } from "@/features/api/cartApi"
-
-import { useDispatch, useSelector } from "react-redux"
 import { useAuth } from "../AuthContent/AuthContent"
 
 export default function CartShow() {
-    const { userId} = useAuth()
-    const {data: cartItems, error} = useFetchCartQuery(userId)
-    const { cart } = useSelector((state) => state.shop) || {}
-    const dispatch = useDispatch()
+    const { userId } = useAuth()
+    const { data: cartItems } = useFetchCartQuery(userId, { skip: !userId })
+    const count = Array.isArray(cartItems) ? cartItems.length : 0
 
     return (
         <>
-            <span className="tp-product-count">{cartItems?.length}</span>
+            <span className="tp-product-count">{count}</span>
         </>
     )
 }

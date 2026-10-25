@@ -1,31 +1,26 @@
 import connectDb from "@/lib/database/db"
 import Product from "@/lib/Schema/productSchema"
 
+export const dynamic = "force-dynamic";
+
+const escapeRegex = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+
+// GET /api/search/suggestions?searchQuery=... -> { words: [...] }
+// Without a query, returns the product types in the catalogue (used as "trending" searches).
 export async function GET(req){
     try {
-        const { searchParams } = new URL(req.URL)
-        const query = searchParams.get('searchQuery')
-        if(query && query.trim() !== ''){
-            await connectDb()
+        const { searchParams } = new URL(req.url)
+        const query = (searchParams.get('searchQuery') || '').trim()
+        await connectDb()
 
-            const productFilter = {
-                $or : [
-                    { productName : { $regex : query, $options : "i"}} ,
-                    { productType : { $regex : query, $options : "i"}} ,
-                    { productCategory : { $regex : query, $options : "i"}} ,
-                ]
-            }
+        const filter = query && query !== 'undefined'
+            ? { productType : { $regex : escapeRegex(query), $options : "i" } }
+            : {}
+        const types = await Product.distinct('productType', filter)
+        const words = types.filter(Boolean).slice(0, 10)
 
-            const productResults = await Product.find(productFilter)
-            if(productResults.length === 0){
-            return new Response(JSON.stringify({details : productResults }), {status : 200})
-            }
-            return new Response({ statuscode : 400, message : "No products found"})
-        }
+        return new Response(JSON.stringify({ words }), { status : 200 })
     } catch (error) {
-        return new Response({
-            statuscode : 500,
-            message : error.message
-        })
+        return new Response(JSON.stringify({ words : [], message : error.message }), { status : 500 })
     }
 }

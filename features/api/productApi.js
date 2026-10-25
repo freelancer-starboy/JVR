@@ -13,14 +13,7 @@ export const productsApi = createApi({
     relatedProducts: builder.query({
       query : (category) => `fetchProducts?category=${category}`
     }),
-    addProducts: builder.mutation({
-      query: (data) => ({
-        url: 'addProducts',
-        method: 'POST',
-        body: data
-      })
-    })
   }),
 });
 
-export const { useFetchProductsQuery, useAddProductsMutation, useFetchProductsByIdQuery, useRelatedProductsQuery } = productsApi;
+export const { useFetchProductsQuery, useFetchProductsByIdQuery, useRelatedProductsQuery } = productsApi;

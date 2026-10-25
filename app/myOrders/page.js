@@ -71,10 +71,10 @@ const OrdersPage = () => {
         });
       }
       const res = await addReview(formData).unwrap();
-      toast.success("Review added successfully!");
+      toast.success(res?.message || "Review added successfully!");
     } catch (error) {
       console.log(error);
-      toast.error("Failed to add review");
+      toast.error(error?.data?.message || "Failed to add review");
     }
 
     setShowPopup(false);
