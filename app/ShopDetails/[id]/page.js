@@ -1,31 +1,26 @@
 "use client";
 import Layout from "@/components/layout/Layout";
 import Link from "next/link";
-import { useState, useEffect, createContext } from "react";
+import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
-import {
-  useFetchProductsByIdQuery,
-  useRelatedProductsQuery,
-} from "@/features/api/productApi";
-import {
-  useAddToCartMutation,
-  useFetchCartQuery,
-} from "@/features/api/cartApi";
+import { useFetchProductsByIdQuery } from "@/features/api/productApi";
+import { useAddToCartMutation } from "@/features/api/cartApi";
 import { useAuth } from "@/components/AuthContent/AuthContent";
 import { toast } from "react-toastify";
 import Preloader from "@/components/elements/Preloader";
 import Loader from "@/components/Loader/page";
 import RelatedProducts from "@/components/relatedProducts/RelatedProducts";
 import { useGetReviewQuery } from "@/features/api/reviewApi";
-import { IdCard } from "lucide-react";
 import ReviewDisplay from "@/components/review/review";
+import ReviewForm from "@/components/review/ReviewForm";
+import WishlistButton from "@/components/wishlist/WishlistButton";
+import WhatsAppOrderButton from "@/components/whatsapp/WhatsAppOrderButton";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faStar as fullStar,
   faStarHalfAlt as halfStar,
   faStar as emptyStar,
 } from "@fortawesome/free-solid-svg-icons";
-// import { createContext } from "react/cjs/react.production.min";
 
 export default function ShopDetails() {
   const [selectedVariant, setSelectedVariant] = useState(null);
@@ -35,15 +30,12 @@ export default function ShopDetails() {
   const [value, setValue] = useState(1);
   const [Loading, setLoading] = useState(false);
   const { userId } = useAuth();
-  const [activeIndex, setActiveIndex] = useState(1);
   const [stock, setStock] = useState(0);
-  const stockData = createContext();
 
   const params = useParams();
   const id = params.id;
   const { data: product, error, isLoading } = useFetchProductsByIdQuery(id);
   const [addToCart] = useAddToCartMutation();
-  const { refetch } = useFetchCartQuery(userId);
 
   // Set initial color and variant when product data is loaded
   useEffect(() => {
@@ -84,36 +76,50 @@ export default function ShopDetails() {
     skip: !id,
   });
 
-  const averageRating = review
-    ? review.reduce((acc, review) => review.rating + acc, 0) / review.length
+  const averageRating = review?.length
+    ? Number(
+        (review.reduce((acc, review) => review.rating + acc, 0) / review.length).toFixed(1)
+      )
     : 0;
 
-  useEffect(() => {
-    if (review) {
-      console.log("Response", review);
+  // Shared by "Add To Bag" and "Order on WhatsApp".
+  const validateSelection = () => {
+    if (!selectedColor) {
+      toast.error("Please select a color");
+      return false;
     }
-  }, [review]);
+    if (!selectedSize) {
+      toast.error("Please select a size");
+      return false;
+    }
+    if (!selectedVariant) {
+      toast.error("Please select a valid variant");
+      return false;
+    }
+    if (stock < value) {
+      toast.error("Selected quantity exceeds available stock");
+      return false;
+    }
+    return true;
+  };
+
+  const whatsAppItems = product
+    ? [
+        {
+          productId: String(product._id),
+          productName: product.productName,
+          productImage: selectedVariant?.images?.[0] || product.productVariants?.[0]?.images?.[0],
+          price: product.productPrice,
+          color: selectedColor,
+          size: selectedSize,
+          quantity: value,
+        },
+      ]
+    : [];
 
   const handleAddToCart = async (e) => {
     e.preventDefault();
-    if (!selectedColor) {
-      alert("Please select color");
-      return;
-    }
-    if (!selectedSize) {
-      alert("Please select size");
-      return;
-    }
-    if (!selectedVariant) {
-      alert("Please select a valid variant");
-      return;
-    }
-
-    const currentStock = stock;
-    if (currentStock < value) {
-      toast.error("Selected quantity exceeds available stock");
-      return;
-    }
+    if (!validateSelection()) return;
 
     setLoading(true);
     try {
@@ -138,7 +144,7 @@ export default function ShopDetails() {
 
       if (response.data) {
         toast.success("Item added to cart successfully");
-        refetch();
+
       } else if (response.error) {
         const errorMessage =
           response.error.data?.message || "Failed to add item to cart";
@@ -153,7 +159,22 @@ export default function ShopDetails() {
   };
 
   if (isLoading) return <Preloader />;
-  if (error) return <div>Error: {error.message}</div>;
+  if (error || !product) {
+    return (
+      <Layout headerStyle={3} footerStyle={2}>
+        <div className="container">
+          <div className="jvr-empty-state">
+            <i className="fal fa-tshirt" />
+            <h3>Product not found</h3>
+            <p>This product may have been removed or is no longer available.</p>
+            <Link href="/shop-2" className="tpcheck-btn d-inline-block">
+              Continue Shopping
+            </Link>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
 
   const discount =
     product.productOldPrice > product.productPrice
@@ -247,7 +268,7 @@ export default function ShopDetails() {
                     <div className="d-flex flex-wrap gap-3">
                       {product.productVariants.map((variant) => (
                         <button
-                          key={variant._id.$oid}
+                          key={variant._id || variant.color}
                           onClick={() => setColor(variant.color)}
                           className={`color-selector rounded-circle p-0 border-2 position-relative`}
                           style={{
@@ -279,29 +300,35 @@ export default function ShopDetails() {
                     <div className="mb-4">
                       <label className="form-label h6 mb-3">Size</label>
                       <div className="d-flex flex-wrap gap-2">
-                        {selectedVariant.sizes.map((sizeObj) => (
-                          <button
-                            key={sizeObj._id.$oid}
-                            onClick={() => setSize(sizeObj.size)}
-                            className={`size-selector px-3 py-2 rounded-1 ${
-                              stock === 0 ? "bg-gray disabled" : ""
-                            }  ${
-                              selectedSize === sizeObj.size
-                                ? "bg-dark text-white"
-                                : "bg-light text-dark"
-                            } `}
-                            style={{
-                              border: "1px solid #dee2e6",
-                              minWidth: "45px",
-                              transition: "all 0.2s ease",
-                              cursor: "pointer",
-                              fontWeight:
-                                selectedSize === sizeObj.size ? "600" : "400",
-                            }}
-                          >
-                            {sizeObj.size}
-                          </button>
-                        ))}
+                        {selectedVariant.sizes.map((sizeObj) => {
+                          const soldOut = Number(sizeObj.stock) <= 0;
+                          return (
+                            <button
+                              key={sizeObj._id || sizeObj.size}
+                              onClick={() => {
+                                setSize(sizeObj.size);
+                                setValue(1);
+                              }}
+                              className={`size-selector px-3 py-2 rounded-1 ${
+                                soldOut ? "is-sold-out" : ""
+                              } ${
+                                selectedSize === sizeObj.size
+                                  ? "bg-dark text-white"
+                                  : "bg-light text-dark"
+                              }`}
+                              title={soldOut ? "Out of stock" : undefined}
+                              style={{
+                                border: "1px solid #dee2e6",
+                                minWidth: "45px",
+                                cursor: "pointer",
+                                fontWeight:
+                                  selectedSize === sizeObj.size ? "600" : "400",
+                              }}
+                            >
+                              {sizeObj.size}
+                            </button>
+                          );
+                        })}
                         <div className="d-flex align-items-center justify-content-center">
                           {selectedVariant &&
                             selectedSize &&
@@ -339,7 +366,13 @@ export default function ShopDetails() {
                       />
                       <span
                         className="cart-plus"
-                        onClick={() => setValue(value + 1)}
+                        onClick={() => {
+                          if (selectedSize && value >= stock) {
+                            toast.info(`Only ${stock} available in this size`);
+                            return;
+                          }
+                          setValue(value + 1);
+                        }}
                       >
                         <i className="far fa-plus" />
                       </span>
@@ -357,35 +390,49 @@ export default function ShopDetails() {
                       )}
                     </div>
                     <div className="tpproduct-details__wishlist ml-20">
-                      <Link href="#">
-                        <i className="fal fa-heart" />
-                      </Link>
+                      <WishlistButton product={product} variant="inline" />
                     </div>
+                  </div>
+
+                  <div className="mb-25">
+                    <WhatsAppOrderButton
+                      source="product"
+                      items={whatsAppItems}
+                      validate={validateSelection}
+                      label="Buy Now on WhatsApp"
+                    />
+                    <p className="jvr-whatsapp-note">
+                      Skip the checkout — chat with our team to confirm size, delivery and payment.
+                    </p>
                   </div>
 
                   <div className="tpproduct-details__information tpproduct-details__categories">
                     <p>Categories:</p>
                     <span>
-                      <Link href="#">{product.productType}</Link>
+                      <Link href={`/shop-2?category=${encodeURIComponent(product.productType)}`}>
+                        {product.productType}
+                      </Link>
                     </span>
                   </div>
                   <div className="tpproduct-details__information tpproduct-details__social">
                     <p>Share:</p>
-                    <Link href="#">
-                      <i className="fab fa-facebook-f" />
-                    </Link>
-                    <Link href="#">
-                      <i className="fab fa-twitter" />
-                    </Link>
-                    <Link href="#">
-                      <i className="fab fa-behance" />
-                    </Link>
-                    <Link href="#">
-                      <i className="fab fa-youtube" />
-                    </Link>
-                    <Link href="#">
-                      <i className="fab fa-linkedin" />
-                    </Link>
+                    {[
+                      { icon: "fa-whatsapp", label: "WhatsApp", url: (u, t) => `https://wa.me/?text=${encodeURIComponent(`${t} ${u}`)}` },
+                      { icon: "fa-facebook-f", label: "Facebook", url: (u) => `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(u)}` },
+                      { icon: "fa-twitter", label: "Twitter", url: (u, t) => `https://twitter.com/intent/tweet?url=${encodeURIComponent(u)}&text=${encodeURIComponent(t)}` },
+                    ].map((share) => (
+                      <a
+                        key={share.icon}
+                        href="#"
+                        aria-label={`Share on ${share.label}`}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          window.open(share.url(window.location.href, product.productName), "_blank");
+                        }}
+                      >
+                        <i className={`fab ${share.icon}`} />
+                      </a>
+                    ))}
                   </div>
                 </div>
               </div>
@@ -438,9 +485,11 @@ export default function ShopDetails() {
             <div className="tpsection mb-40">
               <h4 className="tpsection__title">What Our Customers Say</h4>
               <p className="text-muted mt-2">
-                Authentic reviews from people who purchased this product
+                Honest reviews from our customers
               </p>
             </div>
+
+            <ReviewForm productId={id} />
 
             <div className="review-filter mb-4 d-flex flex-wrap align-items-center justify-content-between">
               <div className="review-summary">
@@ -449,7 +498,7 @@ export default function ShopDetails() {
                     <span className="fs-1 fw-bold">{averageRating}</span>
                   </div>
                   <div className="review-stars">
-                    <div className="flex text-yellow-400 text-xl">
+                    <div className="jvr-stars">
                       {[1, 2, 3, 4, 5].map((star) => {
                         if (averageRating >= star) {
                           return <FontAwesomeIcon key={star} icon={fullStar} />;
@@ -460,7 +509,7 @@ export default function ShopDetails() {
                             <FontAwesomeIcon
                               key={star}
                               icon={emptyStar}
-                              className="text-gray-300"
+                              className="is-off"
                             />
                           );
                         }
@@ -495,6 +544,7 @@ export default function ShopDetails() {
                 Be the first to review this product
               </p>
             </div>
+            <ReviewForm productId={id} />
             </div>
       )}
 

@@ -1,6 +1,7 @@
 'use client';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import WishlistButton from '@/components/wishlist/WishlistButton';
 
 const ShopList = ({
   id,
@@ -32,6 +33,10 @@ const ShopList = ({
       onMouseLeave={() => setIsHovered(false)}
     >
 
+
+      <WishlistButton
+        product={{ _id: id, productName: name, productPrice: price, productOldPrice: oldPrice, productVariants: variants }}
+      />
 
       <Link href={`/ShopDetails/${id}`} className="text-decoration-none">
         <div className="position-relative overflow-hidden tpproduct custom-mobile-container-shop-2-image-div" style={{ maxHeight: '350px'}}>

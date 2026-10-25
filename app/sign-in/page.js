@@ -5,7 +5,6 @@ import {
   useCreateTokenMutation,
   useDeleteTokenMutation,
 } from "@/features/api/authApi";
-import { useFetchCartQuery } from "@/features/api/cartApi";
 // import { deleteCart } from "@/features/shopSlice";
 // import { current } from "@reduxjs/toolkit";
 // import animationData from "@/public/assets/css/images/jvr-lottie-3.json";
@@ -78,7 +77,6 @@ const Login = () => {
     setIsClient(true);
   }, []);
 
-  const { refetch } = useFetchCartQuery(userId);
   const googleProvider = new GoogleAuthProvider();
   const handleSignUp = async (e, email, password) => {
     e.preventDefault();
@@ -164,7 +162,6 @@ const Login = () => {
       const response = await addCookies(token).unwrap();
       if (response) {
         toast.success("Login successful");
-        refetch();
         router.push("/shop-2");
         router.refresh();
       } else {
@@ -205,7 +202,6 @@ const Login = () => {
       const response = await addCookies(token).unwrap();
       if (response) {
         toast.success("Login Successful");
-        refetch();
         router.push("/");
         setError("");
         setMessage("");

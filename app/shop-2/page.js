@@ -1,16 +1,29 @@
 "use client";
 import { useState, useMemo, useEffect } from "react";
-import Preloader from "@/components/elements/Preloader";
 import Layout from "@/components/layout/Layout";
 import ShopList from "@/components/JVR/shopList/ShopList";
-import { useFetchProductsQuery, useRelatedProductsQuery } from "@/features/api/productApi";
+import { useRelatedProductsQuery } from "@/features/api/productApi";
+import { useSearchItemsQuery } from "@/features/api/searchApi";
 import ShopFilter from "@/components/shopFilter/ShopFilter";
-import { IoMdArrowRoundBack } from "react-icons/io";
 import ShopFilterMobile from "@/components/shopFilter/ShopFilterMobile";
 import { useSearchParams } from "next/navigation";
+import Link from "next/link";
+
+function ProductGridSkeleton() {
+  return (
+    <div className="jvr-product-skeleton-grid">
+      {Array.from({ length: 8 }).map((_, i) => (
+        <div key={i}>
+          <div className="jvr-skeleton jvr-skeleton--img" />
+          <div className="jvr-skeleton jvr-skeleton--line" />
+          <div className="jvr-skeleton jvr-skeleton--line short" />
+        </div>
+      ))}
+    </div>
+  );
+}
 
 export default function ShopPage() {
-  const { data: products, error, isLoading } = useFetchProductsQuery();
   const [selectedCategory, setSelectedCategory] = useState([]);
   const [selectedPrice, setSelectedPrice] = useState(0);
   const [selectedType, setSelectedType] = useState([]);
@@ -19,27 +32,31 @@ export default function ShopPage() {
   const [isMobile, setIsMobile] = useState(false);
   const searchParams = useSearchParams();
   const category = searchParams.get('category') || ''
+  const search = (searchParams.get('search') || '').trim()
 
-  const { data: categoryProducts } = useRelatedProductsQuery(category);
+  const categoryQuery = useRelatedProductsQuery(category, { skip: Boolean(search) });
+  const searchQuery = useSearchItemsQuery(search, { skip: !search });
+  const categoryProducts = search ? searchQuery.data?.products : categoryQuery.data;
+  const isLoading = search ? searchQuery.isFetching : categoryQuery.isFetching;
+  const error = search ? searchQuery.error : categoryQuery.error;
+
   useEffect(() => {
     const handleSize = () => {
       setIsMobile(window.innerWidth <= 768);
     }
     handleSize()
-    console.log("isMobile", isMobile);
     window.addEventListener('resize', handleSize)
 
     return () => {
       window.removeEventListener('resize', handleSize)
     }
-  }, [isMobile])
+  }, [])
   const toggleFilterPopup = () => {
     setIsFilterPopup(!isFilterPopup);
   }
   const filteredProducts = useMemo(() => {
     if (!categoryProducts) return [];
     
-    console.log("categoryProducts", categoryProducts);
     return categoryProducts.filter(item => {
       const categoryMatch =
         selectedCategory.length === 0 ||
@@ -66,19 +83,15 @@ export default function ShopPage() {
         item.productVariants.some(variant => 
           variant.sizes?.some(sizeItem => selectedSize.includes(sizeItem.size.trim()))
         );
-        console.log("sizeMatch", sizeMatch);
       return categoryMatch && typeMatch && priceMatch && sizeMatch;
     });
   }, [categoryProducts, selectedCategory, selectedType, selectedPrice, selectedSize]);
 
-  if (isLoading) return <Preloader />;
-  if (error) return <div>Error: {error.message}</div>;
+  const hasFilters = selectedCategory.length !== 0 || selectedType.length !== 0 || selectedPrice !== 0 || selectedSize.length !== 0;
 
-  
   return (
     <Layout headerStyle={3} footerStyle={2}>
       {/* Mobile Filter */}
-    
       <div className="mobile-filter-container">
         <button className="mobile-filter-button" onClick={toggleFilterPopup}>
           FILTERS
@@ -90,11 +103,16 @@ export default function ShopPage() {
         onPriceSelect={setSelectedPrice}
         onSizeSelect={setSelectedSize} />
       )}
-      
-      
       {/* End of mobile filter */}
+
       <div className="product-area pt-70 pb-20">
-        {selectedCategory.length !== 0 || selectedType.length !== 0 || selectedPrice !== 0 || selectedSize.length !== 0 ? (
+        {search && (
+          <div className="jvr-search-heading">
+            <h5>Results for “{search}”</h5>
+            <Link href="/shop-2">Clear search</Link>
+          </div>
+        )}
+        {hasFilters && !isLoading ? (
           <h5 className="custom-mobile-filter-title" style={{fontSize: "30px", marginLeft: "20%"}}>{filteredProducts.length} Products</h5>
         ) : null}
         <div className="custom-container">
@@ -111,25 +129,34 @@ export default function ShopPage() {
               </div>
 
               <div className="custom-main-product flex flex-wrap -mx-2">
-                {filteredProducts.length > 0 ? (
+                {isLoading ? (
+                  <ProductGridSkeleton />
+                ) : error ? (
+                  <div className="jvr-empty-state">
+                    <i className="fal fa-exclamation-circle" />
+                    <h3>Couldn&apos;t load products</h3>
+                    <p>Please check your connection and try again.</p>
+                  </div>
+                ) : filteredProducts.length > 0 ? (
                   filteredProducts.map(item => (
                     <ShopList
-                      // key={item._id}
-                      // thumb1={item.productImage[0]}
-                      // thumb2={item.productImage[1]}
+                      key={item._id}
                       id={item._id}
-                      name={item.productName} /* done */
-                      price={item.productPrice} /* done */
-                      oldPrice={item.productOldPrice} /* done */
-                      category={item.productCategory} /* done */
-                      type={item.productType} /* done */
-                      brand={item.productBrand} /* done */
-                      // color={item.productColor}
+                      name={item.productName}
+                      price={item.productPrice}
+                      oldPrice={item.productOldPrice}
+                      category={item.productCategory}
+                      type={item.productType}
+                      brand={item.productBrand}
                       variants={item.productVariants}
                     />
                   ))
                 ) : (
-                  <div>No products found</div>
+                  <div className="jvr-empty-state">
+                    <i className="fal fa-search" />
+                    <h3>No products found</h3>
+                    <p>Try a different search or clear some filters.</p>
+                  </div>
                 )}
               </div>
             </div>

@@ -14,17 +14,18 @@ export async function GET(req) {
         const { searchParams } = new URL(req.url)
         const query = searchParams.get('searchQuery')
 
-        console.log(query)
+
 
         if(query && query.trim() !== ''){
             await connectDb()
             
             // Product search filter
+            const pattern = query.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
             const productFilter = {
                 $or : [
-                    { productName : { $regex : query, $options : "i"}},
-                    { productType : { $regex : query, $options : "i"}},
-                    { productCategory : { $regex : query, $options : "i"}},
+                    { productName : { $regex : pattern, $options : "i"}},
+                    { productType : { $regex : pattern, $options : "i"}},
+                    { productCategory : { $regex : pattern, $options : "i"}},
                 ]
             }
             

@@ -7,7 +7,6 @@ import { GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged, getAu
 import { useCreateTokenMutation, useDeleteTokenMutation } from "@/features/api/authApi";
 import { toast } from "react-toastify";
 import { useAuth } from "@/components/AuthContent/AuthContent";
-import { useFetchCartQuery } from "@/features/api/cartApi";
 import { useRouter } from "next/navigation";
 
 export default function SignIn() {
@@ -28,7 +27,6 @@ export default function SignIn() {
     });
     return () => unsubscribe();
   }, []);
-  const { refetch} = useFetchCartQuery(userId)
   const router = useRouter()
   const handleGoogleSignIn = async () => {
     setLoading(true);
@@ -46,7 +44,6 @@ export default function SignIn() {
       if(response){
 
         toast.success('Login Successful')
-        refetch()
               router.push('/shop-2')
 
       }else{
@@ -68,7 +65,6 @@ export default function SignIn() {
 
       if (response.success) {
         toast.success('Logout Successful')
-        refetch()
       }else{
         toast.error('Logout Failed')
       }

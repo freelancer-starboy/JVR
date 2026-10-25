@@ -17,8 +17,9 @@ import {
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import { CHECKOUT_ENABLED } from "@/lib/siteConfig";
 
-export default function Checkout() {
+function CheckoutPage() {
   const [transactionId, setTransactionId] = useState(null);
   const [status, setStatus] = useState(null);
   const [method, setMethod] = useState(null);
@@ -446,4 +447,15 @@ export default function Checkout() {
       </Layout>
     </>
   );
+}
+// Razorpay checkout is switched off (see lib/siteConfig.js); orders go through WhatsApp.
+// The page above is kept intact so it can be re-enabled with NEXT_PUBLIC_CHECKOUT_ENABLED=true.
+export default function Checkout() {
+  const router = useRouter();
+  useEffect(() => {
+    if (!CHECKOUT_ENABLED) router.replace("/cart");
+  }, [router]);
+
+  if (!CHECKOUT_ENABLED) return <Preloader />;
+  return <CheckoutPage />;
 }
